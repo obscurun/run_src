@@ -1,0 +1,108 @@
+#php_flag display_startup_errors off
+#php_flag display_errors off
+#php_flag html_errors off
+#php_flag upload_max_filesize 50MB
+<IfModule mod_rewrite.c>
+	RewriteEngine On
+
+	RewriteCond %{REQUEST_FILENAME} !-f
+	RewriteRule ^run/([^/?]*)/([^/?]*)/?([^/?]*)/?([^/?]*)/?([^/?]*)/?([^/?]*)/?([^/?]*)/?$ /run/$1/$2/$3/$4/$5/$6
+
+#	RewriteCond %{REQUEST_FILENAME} !-f
+#	RewriteRule ^js/([^/?]*)$ run-pags/view/js/$1
+
+	RewriteCond %{REQUEST_FILENAME} !-f
+	RewriteRule ^css/([^/]+) run-pags/view/css/$1
+
+	RewriteCond %{REQUEST_FILENAME} !-f
+	RewriteRule ^img/([^/]+)$ run-pags/view/img/$1
+
+	RewriteCond %{REQUEST_FILENAME} !-f
+	RewriteRule ^css/([^/?]*)/([^/?]*)$ run-pags/view/css/$1/$2
+	RewriteCond %{REQUEST_FILENAME} !-f
+	RewriteRule ^css/([^/?]*)/([^/?]*)/?([^/?]*)$ run-pags/view/css/$1/$2/$3
+	RewriteCond %{REQUEST_FILENAME} !-f
+	RewriteRule ^css/([^/?]*)/([^/?]*)/?([^/?]*)/?([^/?]*)$ run-pags/view/css/$1/$2/$3/$4
+	RewriteCond %{REQUEST_FILENAME} !-f
+	RewriteRule ^css/([^/?]*)/([^/?]*)/?([^/?]*)/?([^/?]*)/?([^/?]*)/?([^/?]*)/?([^/?]*)/?([^/?]*)$ run-pags/view/css/$1/$2/$3/$4/$5
+	RewriteCond %{REQUEST_FILENAME} !-f
+	RewriteRule ^css/([^/?]*)/([^/?]*)/?([^/?]*)/?([^/?]*)/?([^/?]*)/?([^/?]*)/?([^/?]*)/?([^/?]*)/?([^/]*)/?$ run-pags/view/css/$1/$2/$3/$4/$5/$6
+	RewriteCond %{REQUEST_FILENAME} !-f
+	RewriteRule ^css/([^/?]*)/([^/?]*)/?([^/?]*)/?([^/?]*)/?([^/?]*)/?([^/?]*)/?([^/?]*)/?([^/?]*)/?([^/]*)/?([^/]*)/?$ run-pags/view/css/$1/$2/$3/$4/$5/$7
+
+	RewriteCond %{REQUEST_FILENAME} !-f
+	RewriteRule ^js/([^/?]*)/([^/?]*)$ run-pags/view/js/$1/$2
+	RewriteCond %{REQUEST_FILENAME} !-f
+	RewriteRule ^js/([^/?]*)/([^/?]*)/?([^/?]*)$ run-pags/view/js/$1/$2/$3
+	RewriteCond %{REQUEST_FILENAME} !-f
+	RewriteRule ^js/([^/?]*)/([^/?]*)/?([^/?]*)/?([^/?]*)$ run-pags/view/js/$1/$2/$3/$4
+	RewriteCond %{REQUEST_FILENAME} !-f
+	RewriteRule ^js/([^/?]*)/([^/?]*)/?([^/?]*)/?([^/?]*)/?([^/?]*)/?([^/?]*)/?([^/?]*)/?([^/?]*)$ run-pags/view/js/$1/$2/$3/$4/$5
+	RewriteCond %{REQUEST_FILENAME} !-f
+	RewriteRule ^js/([^/?]*)/([^/?]*)/?([^/?]*)/?([^/?]*)/?([^/?]*)/?([^/?]*)/?([^/?]*)/?([^/?]*)/?([^/]*)/?$ run-pags/view/js/$1/$2/$3/$4/$5/$6
+	RewriteCond %{REQUEST_FILENAME} !-f
+	RewriteRule ^js/([^/?]*)/([^/?]*)/?([^/?]*)/?([^/?]*)/?([^/?]*)/?([^/?]*)/?([^/?]*)/?([^/?]*)/?([^/]*)/?([^/]*)/?$ run-pags/view/js/$1/$2/$3/$4/$5/$7
+
+	RewriteCond %{REQUEST_FILENAME} !-f
+	RewriteRule ^img/([^/?]*)/([^/?]*)$ run-pags/view/img/$1/$2
+	RewriteCond %{REQUEST_FILENAME} !-f
+	RewriteRule ^img/([^/?]*)/([^/?]*)/?([^/?]*)$ run-pags/view/img/$1/$2/$3
+	RewriteCond %{REQUEST_FILENAME} !-f
+	RewriteRule ^img/([^/?]*)/([^/?]*)/?([^/?]*)/?([^/?]*)$ run-pags/view/img/$1/$2/$3/$4
+	RewriteCond %{REQUEST_FILENAME} !-f
+	RewriteRule ^img/([^/?]*)/([^/?]*)/?([^/?]*)/?([^/?]*)/?([^/?]*)/?([^/?]*)/?([^/?]*)/?([^/?]*)$ run-pags/view/img/$1/$2/$3/$4/$5
+	RewriteCond %{REQUEST_FILENAME} !-f
+	RewriteRule ^img/([^/?]*)/([^/?]*)/?([^/?]*)/?([^/?]*)/?([^/?]*)/?([^/?]*)/?([^/?]*)/?([^/?]*)/?([^/]*)/?$ run-pags/view/img/$1/$2/$3/$4/$5/$6
+	RewriteCond %{REQUEST_FILENAME} !-f
+	RewriteRule ^img/([^/?]*)/([^/?]*)/?([^/?]*)/?([^/?]*)/?([^/?]*)/?([^/?]*)/?([^/?]*)/?([^/?]*)/?([^/]*)/?([^/]*)/?$ run-pags/view/img/$1/$2/$3/$4/$5/$7
+
+	RewriteCond %{REQUEST_FILENAME} !-f
+	RewriteRule ^files/([^/]+)$ run-pags/view/files/$1
+	RewriteCond %{REQUEST_FILENAME} !-f
+	RewriteRule ^files/([^/?]*)/([^/?]*)$ run-pags/view/files/$1/$2
+	RewriteCond %{REQUEST_FILENAME} !-f
+	RewriteRule ^files/([^/?]*)/([^/?]*)/?([^/?]*)$ run-pags/view/files/$1/$2/$3
+	RewriteCond %{REQUEST_FILENAME} !-f
+	RewriteRule ^files/([^/?]*)/([^/?]*)/?([^/?]*)/?([^/?]*)$ run-pags/view/files/$1/$2/$3/$4
+	RewriteCond %{REQUEST_FILENAME} !-f
+	RewriteRule ^files/([^/?]*)/([^/?]*)/?([^/?]*)/?([^/?]*)/?([^/?]*)/?([^/?]*)/?([^/?]*)/?([^/?]*)$ run-pags/view/files/$1/$2/$3/$4/$5
+	RewriteCond %{REQUEST_FILENAME} !-f
+	RewriteRule ^files/([^/?]*)/([^/?]*)/?([^/?]*)/?([^/?]*)/?([^/?]*)/?([^/?]*)/?([^/?]*)/?([^/?]*)/?([^/]*)/?$ run-pags/view/files/$1/$2/$3/$4/$5/$6
+	RewriteCond %{REQUEST_FILENAME} !-f
+	RewriteRule ^files/([^/?]*)/([^/?]*)/?([^/?]*)/?([^/?]*)/?([^/?]*)/?([^/?]*)/?([^/?]*)/?([^/?]*)/?([^/]*)/?([^/]*)/?$ run-pags/view/files/$1/$2/$3/$4/$5/$7
+
+	RewriteCond %{REQUEST_FILENAME} !-f
+	RewriteRule ^fonts/([^/]+)$ run-pags/view/fonts/$1
+	RewriteCond %{REQUEST_FILENAME} !-f
+	RewriteRule ^fonts/([^/?]*)/([^/?]*)$ run-pags/view/fonts/$1/$2
+	RewriteCond %{REQUEST_FILENAME} !-f
+	RewriteRule ^fonts/([^/?]*)/([^/?]*)/?([^/?]*)$ run-pags/view/fonts/$1/$2/$3
+	RewriteCond %{REQUEST_FILENAME} !-f
+	RewriteRule ^fonts/([^/?]*)/([^/?]*)/?([^/?]*)/?([^/?]*)$ run-pags/view/fonts/$1/$2/$3/$4
+	RewriteCond %{REQUEST_FILENAME} !-f
+	RewriteRule ^fonts/([^/?]*)/([^/?]*)/?([^/?]*)/?([^/?]*)/?([^/?]*)/?([^/?]*)/?([^/?]*)/?([^/?]*)$ run-pags/view/fonts/$1/$2/$3/$4/$5
+	RewriteCond %{REQUEST_FILENAME} !-f
+	RewriteRule ^fonts/([^/?]*)/([^/?]*)/?([^/?]*)/?([^/?]*)/?([^/?]*)/?([^/?]*)/?([^/?]*)/?([^/?]*)/?([^/]*)/?$ run-pags/view/fonts/$1/$2/$3/$4/$5/$6
+	RewriteCond %{REQUEST_FILENAME} !-f
+	RewriteRule ^fonts/([^/?]*)/([^/?]*)/?([^/?]*)/?([^/?]*)/?([^/?]*)/?([^/?]*)/?([^/?]*)/?([^/?]*)/?([^/]*)/?([^/]*)/?$ run-pags/view/fonts/$1/$2/$3/$4/$5/$7
+
+	RewriteCond %{REQUEST_FILENAME} !-f
+	RewriteRule ^img/?$ about:blank
+	RewriteCond %{REQUEST_FILENAME} !-f
+	RewriteRule ^files/?$ about:blank
+
+
+	RewriteRule ^$ index.php [QSA]
+	RewriteRule ^([a-z-0-9_]*)\b$ index.php?n1=$1 [QSA]
+
+	RewriteCond %{REQUEST_FILENAME} !-f
+	RewriteRule ^([^/?]*)/([^/?]*)/?([^/?]*)/?([^/?]*)/?([^/?]*)/?([^/?]*)/?([^/?]*)/?([^/?]*)/?([^/?]*)/?([^/?]*)/?([^/?]*)/?([^/]*)/?$ index.php?n1=$1&n2=$2&n3=$3&n4=$4&n5=$5&n6=$6&n7=$7&n8=$8&n9=$9&n10=$10 [QSA]
+	RewriteRule ^adm/$ adm/ [QSA]
+	RewriteRule ^adm\b$ adm/ [QSA]
+	RewriteRule ^dev/log\b$ run/php/dev/log.php [QSA]
+</IfModule>
+
+
+<IfModule !mod_rewrite.c>
+    ErrorDocument 404 /index.php?error=true [QSA]
+</IfModule>

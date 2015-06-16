@@ -1,0 +1,33 @@
+// http://css-tricks.com/custom-scrollbars-in-webkit/
+
+::-webkit-scrollbar{
+	width:12px;
+	border:none;
+}
+::-webkit-scrollbar-track{
+	width:12px;
+	border:none;
+}
+::-webkit-scrollbar-track-piece{ 
+	width:12px;
+//	background: url('../img/main/bg.png') -100px;
+}
+::-webkit-scrollbar-thumb{
+	background-color:rgba(0,0,0, .6);
+//	height: 50% !important;
+}
+::-webkit-scrollbar-button{
+//	background-image:url("../img/main/setas.png");
+	//background-position:top center;
+	display: none;
+}
+::-webkit-scrollbar-button:end{
+//	background-image:url("../img/main/setas.png");
+	//background-position:bottom center;
+}
+::-webkit-scrollbar-button:vertical{
+	height:12px;
+	//background-color:rgba(0,0,0, .6);
+}
+::-webkit-scrollbar-corner       { /* 6 */ }
+::-webkit-resizer                { /* 7 */ }

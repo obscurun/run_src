@@ -1,0 +1,36 @@
+#php_flag display_startup_errors off
+#php_flag display_errors off
+#php_flag html_errors off
+#php_flag upload_max_filesize 50MB
+<IfModule mod_rewrite.c>
+	RewriteEngine On
+	# USADO NA CLASSE RUN/LIBRARIES/ROUTER
+	SetEnv RUN_MOD_REWRITE true
+
+	# REDIRECIONANDO PASTAS PARA A VIEW SE INICIAR COM IMG OU CSS...
+	RewriteCond %{REQUEST_FILENAME} !-d
+	RewriteCond %{REQUEST_FILENAME} !-f
+	RewriteCond $1 ^(img|js|css|fonts)
+	RewriteCond %{REQUEST_URI} !^run-pags/view/
+	RewriteRule ^(.*)$ run-pags/view/$1 [L]
+	ErrorDocument 404 index.php/gome/
+
+	# REDIRECIONANDO FILES PARA A run-files
+	RewriteCond %{REQUEST_FILENAME} !-d
+	RewriteCond %{REQUEST_FILENAME} !-f
+	RewriteRule ^files/(.*)$ run-files/$1 [L]
+	RewriteRule ^files/(.*)/(.*)$ run-files/$1/$2 [L]
+	RewriteRule ^files/(.*)/(.*)/(.*)$ run-files/$1/$2/$3 [L]
+
+	# REDIRECIONANDO URLS AMIGÁVEIS
+	RewriteCond %{REQUEST_FILENAME} !-d
+	RewriteCond %{REQUEST_FILENAME} !-f
+	#RewriteCond $1 ^!(img|css|files|fonts)
+	RewriteCond $1 !^(index\.php|robots\.txt)
+	RewriteRule ^(.*)$ index.php/$1 [L]
+</IfModule>
+
+
+<IfModule !mod_rewrite.c>
+#    ErrorDocument 404 index.php/404 [QSA]
+</IfModule>
