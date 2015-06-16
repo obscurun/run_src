@@ -12,21 +12,24 @@ class token{
 	}
 	//------------------------------------------------------------------------------------------------------------------------
 	public function getToken(){
+		//Run::$DEBUG_PRINT = 1;
 		if(!is_array(Run::$session->get('tokens'))) Run::$session->set('tokens', array());
 		$tk = Run::$session->get(array('tokens', $this->tokenId));
 		if($tk == "") Run::$session->set(array('tokens', $this->tokenId), uniqid($this->tokenId, true));
 		//echo "<br> criando: getToken: ".Run::$session->get(array('tokens', $this->settings['tables']));
-		//Debug::print_r(Run::$session->get(array('tokens')));
 		Action::logRun("token ".$this->tokenId, 0, 100, " getToken:".Run::$session->get(array('tokens', $this->tokenId)), 1);
+		//Debug::print_r( Run::$session->get(array('tokens', $this->tokenId)) );
+		//Run::$DEBUG_PRINT = 0;
 		return Run::$session->get(array('tokens', $this->tokenId));
 	}
 	//------------------------------------------------------------------------------------------------------------------------
 	public function checkToken($data){
 		//Debug::p($data);
 		//exit;
-		if(isset($data['form_name'])){
+		//Run::$DEBUG_PRINT = 1;
+		if(isset($data['form_id'])){
 			$token_session = Run::$session->get(array('tokens', $this->tokenId));
-			//Debug::p("<br> CHECKANDO TOKEN / ".$this->settings['tables'].": ". $token_session ." / ". $this->DATA_INT['token']);
+			Debug::p("<br> CHECKANDO TOKEN / ".$this->settings['tables'].": ". $token_session ." / ". $this->DATA_INT['token']);
 			//exit;
 			if(!isset($data['token'])){
 				//$this->ERRORS['Validação interna']['label'] = "Interno";
@@ -45,6 +48,7 @@ class token{
 				return true;
 			}
 		}
+		//Run::$DEBUG_PRINT = 0;
 	}
 	//------------------------------------------------------------------------------------------------------------------------
 }

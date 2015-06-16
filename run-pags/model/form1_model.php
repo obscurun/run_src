@@ -1,14 +1,14 @@
 <?php
-include_once(RUN_PATH."core/formModel.php");
+include_once(RUN_PATH."core/modelForm.php");
 // ############################################################################################################################
-class Form1Model extends formModel{
+class Form1Model extends modelForm{
 	//*************************************************************************************************************************
 	public function setSchema(){
 		//--- --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- ---
 		$this->settings					=  array(
 		//--- --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- ---
 			"nick_name"					=> 'Cadastro',
-			"form_id"					=> 'form_cadastro',
+			"form_id"					=> 'form1',
 			"ref_page"					=> 'ref',
 			"val_server"				=> true,
 			"val_client"				=> true,
@@ -18,10 +18,10 @@ class Form1Model extends formModel{
 			"permission_insert" 		=> true,
 			"permission_update" 		=> true,
 			"permission_delete" 		=> true,
-			"redirect_insert"			=> "testes/form1/[id]",
+			"redirect_insert"			=> "testes/form1/[pk_cadastro]/[nome]",
 			"encode_utf8" 				=> false,
 			"decode_utf8" 				=> false,
-			"check_token"				=> false,
+			"check_token"				=> true,
 			"paging_num"				=> 20
 		);
 		//--- --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- ---
@@ -629,7 +629,7 @@ class Form1Model extends formModel{
 	//*************************************************************************************************************************
 	function __construct(){
     	Run::$benchmark->mark("Form1Model/Inicio");
-		parent::formModel();
+		parent::modelForm();
     	Run::$benchmark->writeMark("Form1Model/Inicio", "Form1Model/Final");
 	}
 	//*************************************************************************************************************************

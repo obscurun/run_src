@@ -1,6 +1,6 @@
 <?php
 //Run::$DEBUG_PRINT = 1;
-require_once(RUN_PATH."core/form/order_data.php");
+require_once(RUN_PATH."core/modelForm/order_data.php");
 // ****************************************************************************************************************************
 class SaveData{
 	private $model 			= NULL;
@@ -108,8 +108,6 @@ class SaveData{
 						if( 
 							($typeSave == "insert" && $field[$typeSave] !== false) || ($typeSave == "update" && $field[$typeSave] !== false) 
 						){
-							$field_name  = $field['name']!="" ? $field['name'] : $kF;
-							$fields 	.= ",\n\t". $field_name ."";
 							if($tableIsMultiple){
 								//if($k == "et")	//Debug::print_r($data[$refTableIndex][$i]);
 								//if($k == "et")	//Debug::print_r("$k /kF $kF /i $i =".$data[$refTableIndex][$i][$kF]);
@@ -130,6 +128,8 @@ class SaveData{
 								if($field['skipFieldEmpty'] === true && $this->getValueArray($data_multiple) == ""){
 									continue;
 								}
+								$field_name  = $field['name']!="" ? $field['name'] : $kF;
+								$fields 	.= ",\n\t". $field_name ."";
 								$values	.= ",\n\t\"". $this->getValueArray($data_multiple) ."\"";
 								$update_fields .= ",\n\t". $field_name . " = \"". $this->getValueArray($data_multiple) ."\"";
 								if($field['type'] == "file_name"){ $saveFileData['name'] = $this->getValueArray($data_multiple); }
@@ -161,6 +161,8 @@ class SaveData{
 								if($field['skipFieldEmpty'] === true && $data[$kF] == ""){
 									continue;
 								}
+								$field_name  = $field['name']!="" ? $field['name'] : $kF;
+								$fields 	.= ",\n\t". $field_name ."";
 								if($field['type'] == "int" || $field['type'] == "integer"){
 									$data[$kF] = (int)$data[$kF];
 								}

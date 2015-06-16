@@ -172,6 +172,19 @@ class FormAux{
 		if($parseHTML === true) $valueData = htmlentities($valueData);
 		echo $valueData;
 	}
+
+
+
+
+
+	//-------------------------------------------------------------------------------------------------------------------------
+	// Imprime a Url do action no form
+	public function echoAction(){
+		//Debug::p($_SERVER);
+		$url = Run::$router->path['pageBase']."form/";
+		if($_SERVER['REDIRECT_QUERY_STRING']!= '') $url .= "?".$_SERVER['REDIRECT_QUERY_STRING'];
+		echo $url;
+	}
 	//-------------------------------------------------------------------------------------------------------------------------
 	public function echoBtLabel(){
 		if((int)$this->model->dataIntern['ref'] > 0){
@@ -179,6 +192,50 @@ class FormAux{
 		}else{
 			echo $this->model->settings['bt_insert_label'];
 		}
+	}
+
+
+
+
+
+
+
+	//-------------------------------------------------------------------------------------------------------------------------
+	public function convertStringToData($str){
+		preg_match('/\[[a-z(_)?]*(_)?\]/', $str, $matches, PREG_OFFSET_CAPTURE);
+		if($matches[0][0] == "[id]"){
+			$matches[0][0] 	= str_replace('[id]', '['.$this->model->schema['from'][0]['pk'].']', $matches[0][0]);
+			$str 			= str_replace('[id]', '['.$this->model->schema['from'][0]['pk'].']', $str);
+		}
+		if($matches[0][0] == "[ref]"){
+			$matches[0][0] 	= str_replace('[ref]', '['.$this->model->dataIntern['ref'].']', $matches[0][0]);
+			$str 			= str_replace('[ref]', $this->model->dataIntern['ref'], $str);
+		}
+		$changer = $matches[0][0];
+		$changer = str_replace('[', '', $changer );		
+		$changer = str_replace(']', '', $changer );
+		if(is_array($matches) && count($matches) > 0) $str = str_replace($matches[0][0], $this->model->dataFormRecorded[$this->model->schema['from'][0]['table_nick']][$changer], $str);
+
+		preg_match('/\[[a-z(_)?]*(_)?\]/', $str, $matches, PREG_OFFSET_CAPTURE);
+		if(is_array($matches) && count($matches) > 0) $str = $this->convertStringToData($str);
+
+		preg_match('/\[[a-z(-)?]*(-)?\]/', $str, $matches, PREG_OFFSET_CAPTURE);
+		if($matches[0][0] == "[id]"){
+			$matches[0][0] 	= str_replace('[id]', '['.$this->model->schema['from'][0]['pk'].']', $matches[0][0]);
+			$str 			= str_replace('[id]', '['.$this->model->schema['from'][0]['pk'].']', $str);
+		}
+		$changer = $matches[0][0];
+		$changer = str_replace('[', '', $changer );		
+		$changer = str_replace(']', '', $changer );
+		if(is_array($matches) && count($matches) > 0) $str = str_replace($matches[0][0], $this->model->dataFormRecorded[$this->model->schema['from'][0]['table_nick']][$changer], $str);
+
+		Debug::p("convertStringToData matches ", $matches[0][0]);
+		Debug::p("convertStringToData str ", $str);
+
+		preg_match('/\[[a-z(-)?]*(-)?\]/', $str, $matches, PREG_OFFSET_CAPTURE);
+		if(is_array($matches) && count($matches) > 0) $str = $this->convertStringToData($str);
+
+		return $str;
 	}
 }
 // ############################################################################################################################

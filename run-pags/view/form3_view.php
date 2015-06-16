@@ -20,10 +20,10 @@
 		<div class=" blc-content">
 			<article class="col-lg-8">
             <? Render::echoResponse(); ?>
-            <? $this->model->echoErrorsResponse(5, 5); ?>
+            <? $this->model->errors->echoErrorsResponse(5, 5); ?>
 			<div class="well bs-component">
-                <form action="<? $this->model->echoAction(); ?>" method="POST" enctype="multipart/form-data" onsubmit="return orderMultipleIndex(this);" class="form-horizontal">
-                    <input type="hidden" name="form_name"    value="form1" />
+                <form action="<? $this->model->aux->echoAction(); ?>" method="POST" enctype="multipart/form-data" onsubmit="return orderMultipleIndex(this);" class="form-horizontal">
+                    <input type="hidden" name="form_id"      value="form3" />
                     <input type="hidden" name="token"        value="<? echo $this->model->token->getToken(); ?>" />
                     <input type="hidden" name="pk_cadastro"  value="<? $this->model->aux->echoData('pk_cadastro'); ?>" />
                     <fieldset>

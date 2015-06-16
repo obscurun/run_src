@@ -31,7 +31,10 @@ class Properties{
 			$prop = explode("=", $linha);
 			$prop[0] = trim($prop[0]);  // (trim($prop[0]));
 			$prop[0] = $this->string->removeSpecialsNormalize($prop[0]);
-			if($prop[0] != "" && substr(trim($prop[0]), 0, 1) != "#" && substr(trim($prop[0]), 0, 1)!= "//") $array_return[$prop[0]] = trim($prop[1]);
+			$p_name = $prop[0];
+			unset($prop[0]);
+			$p_string = implode("=", $prop);
+			if($p_name != "" && substr(trim($p_name), 0, 1) != "#" && substr(trim($p_name), 0, 1)!= "//") $array_return[$p_name] = trim($p_string);
 		}
 		return $array_return;
 	}
@@ -57,7 +60,10 @@ class Properties{
 			$prop = explode("=", $linha);
 			$prop[0] = (trim($prop[0])); // $this->string->clearSpecials(trim($prop[0]));
 			$prop[0] = $this->string->removeSpecialsNormalize($prop[0]);
-			if($prop[0] != "" && substr(trim($prop[0]), 0, 1) != "#" && substr(trim($prop[0]), 0, 1)!= "//") $array_return[$prop[0]] = trim($prop[1]);
+			$p_name = $prop[0];
+			unset($prop[0]);
+			$p_string = implode("=", $prop);
+			if($p_name != "" && substr(trim($p_name), 0, 1) != "#" && substr(trim($p_name), 0, 1)!= "//") $array_return[$p_name] = trim($p_string);
 		}
 		$propertie_session = $this->session->get(array('PROPERTIES', $name));
 		return $propertie_session;

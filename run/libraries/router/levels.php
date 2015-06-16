@@ -64,9 +64,10 @@ class Levels{
 		return $levels;
 	}
 	//-  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -
-	public static function getPath($level_num=-1){
+	public static function getPath($level_num=0){
 		$path_url = "";
-		if($level_num == -1) $level_num = count(self::$levels);
+		if($level_num == 0) $level_num = count(self::$levels);
+		if($level_num <= -1) $level_num = count(self::$levels) - abs($level_num-1);
 		for($n=0;$n<=$level_num;$n++){
 			if(isset(self::$levels[$n])){
 				if($n>0)$path_url .=  "/";

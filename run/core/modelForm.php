@@ -6,24 +6,26 @@
 
 // carrega as dependências
 require_once(RUN_PATH.'core/model/mysql_query.php');
-require_once(RUN_PATH.'core/form/check.php');
-require_once(RUN_PATH.'core/form/token.php');
-require_once(RUN_PATH.'core/form/data.php');
-require_once(RUN_PATH.'core/form/form_aux.php');
-require_once(RUN_PATH.'core/form/session.php');
-require_once(RUN_PATH.'core/form/select_data.php');
-require_once(RUN_PATH.'core/form/save_data.php');
-require_once(RUN_PATH.'core/form/validate.php');
+require_once(RUN_PATH.'core/modelForm/check.php');
+require_once(RUN_PATH.'core/modelForm/token.php');
+require_once(RUN_PATH.'core/modelForm/data.php');
+require_once(RUN_PATH.'core/modelForm/form_aux.php');
+require_once(RUN_PATH.'core/modelForm/session.php');
+require_once(RUN_PATH.'core/modelForm/select_data.php');
+require_once(RUN_PATH.'core/modelForm/save_data.php');
+require_once(RUN_PATH.'core/modelForm/validate.php');
+require_once(RUN_PATH.'core/modelForm/errors.php');
 
 
 
 //*****************************************************************************************************************************
-class FormModel{
+class modelForm{
 	public 			 $session				= NULL;
 	public 			 $form					= NULL;
 	public 			 $check					= NULL;
 	public 			 $token					= NULL;
 	public 			 $validate				= NULL;
+	public 			 $errors				= NULL;
 	public 			 $saveData				= NULL;
 	public 			 $selectData			= NULL;
 	public 			 $settings 				= array();
@@ -31,18 +33,18 @@ class FormModel{
 	public 			 $schema_unions			= array();
 	public 			 $database				= "";
 	public  		 $query		 			= false;
-	public 			 $dataIntern			= array();
-	public 			 $dataForm				= array();
-	public 			 $dataFormChecked		= array();
-	public 			 $dataFormRecorded		= array();
-	public 			 $dataFormSequencial	= array();
-	public 			 $dataFormTabulated		= array();
-	public 			 $dataFormRecursive		= array();
-	public 			 $dataFormPKList		= array();
-	public 			 $dataErrors			= array();
+	public 			 $dataIntern			= array(); // dados internos, usados como referência, ID, paginação, ordenação, etc...
+	public 			 $dataForm				= array(); // dados recebidos do form
+	public 			 $dataFormChecked		= array(); // retorno dos dados convertidos e analisados
+	public 			 $dataFormRecorded		= array(); // retorno dos dados salvos e processados
+	public 			 $dataFormSequencial	= array(); // usado no form, select, save
+	public 			 $dataFormTabulated		= array(); // deprecated - não usado no momento
+	public 			 $dataFormRecursive		= array(); // deprecated - não usado no momento
+	public 			 $dataFormPKList		= array(); // dados recebidos no select, apenas PKs como referência para autoDelete
+	public 			 $dataErrors			= array(); // apenas dados que geraram erros no validate ou no save
 	public 			 $selectType			= "select";
 	//*************************************************************************************************************************
-	function FormModel(){
+	function modelForm(){
 		Debug::log("Iniciando Core/Form.", __LINE__, __FUNCTION__, __CLASS__, __FILE__);
 		if(function_exists("get_called_class")) Debug::log("Iniciando form pela classe ". get_called_class() , __LINE__, __FUNCTION__, __CLASS__, __FILE__);
 		
@@ -53,6 +55,7 @@ class FormModel{
 		// Instancia a sessão usada para gerenciar os dados entre a View e o FormModel
 		$this->session 		= new SessionForm($this);
 		$this->aux 			= new FormAux($this);
+		$this->errors		= new ErrorsForm($this);
 
 
 
@@ -80,7 +83,9 @@ class FormModel{
 
 
 
+
 		//INSTANCE DATABASE / SUBCLASSES -----------------------------------------------------------------------------------------------------------------------------------------------------------------
+
 
 
 
@@ -155,7 +160,7 @@ class FormModel{
 		//-  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -
 		// Checa o token do form e identifica o tipo de operação insert/update e executa Validação
 		$this->token = new Token($this->settings,$this->session->getFormSessionId());
-		if(isset($this->dataForm['form_name'])){
+		if(isset($this->dataForm['form_id']) && ($this->dataForm['form_id'] == $this->settings['form_id']) ){
 			$this->settings['auto_load'] = false;
 			$checkToken = ($this->settings['check_token'] == true) ? $this->token->checkToken($this->dataForm) : true;
 			//-  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -
@@ -191,12 +196,13 @@ class FormModel{
 
 		//-  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -
 		// Deleta dados automaticamnete do registro, caso não tenha erros do form
-		if(isset($this->dataForm['form_name']) && count($this->dataErrors) <= 0 && $this->settings['auto_delete'] !== false){
+		if(isset($this->dataForm['form_id']) && count($this->dataErrors) <= 0 && $this->settings['auto_delete'] !== false){
 			$this->saveData->autoDeletePKs($this->dataForm);
 			//echo 123; exit;
 		}
 
 		Run::$benchmark->writeMark("FormModel/checkToken/validator", "FormModel/autoDelete");
+
 
 
 
@@ -210,11 +216,13 @@ class FormModel{
 
 
 
+
 		Debug::p("dataFormChecked", $this->dataFormChecked);
 		//-  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -
 		// Salva os dados do formulário caso tenha permissão e não contanha erros e redireciona para o View
-		if(isset($this->dataForm['form_name']) && count($this->dataErrors) <= 0 && ($this->settings['permission_'.$this->settings['auto_save_type']] == true) && ($this->settings['auto_save'] !== false) ){
+		if(isset($this->dataForm['form_id']) && ($this->dataForm['form_id'] == $this->settings['form_id']) && count($this->dataErrors) <= 0 && ($this->settings['permission_'.$this->settings['auto_save_type']] == true) && ($this->settings['auto_save'] !== false) ){
 			//Debug::log("Model-> INI auto insert/update; ", __LINE__, __FUNCTION__, __CLASS__, __FILE__);
+			//Run::$DEBUG_PRINT = 1;
 			$checkToken = ($this->SETTINGS['check_token'] == true) ? $this->token->checkToken() : true;
 			if($checkToken){
 				//Debug::log("Model-> INI checkData; ", __LINE__, __FUNCTION__, __CLASS__, __FILE__);
@@ -222,8 +230,8 @@ class FormModel{
 				if(count($this->dataFormChecked) == 0) $this->dataFormChecked = $this->data->checkData($this->schema, $this->dataForm);
 				$this->dataFormRecorded = $this->saveData->save($this->dataFormChecked, $this->dataIntern, $this->schema, $this->settings);
 				$erros = $this->saveData->dataErrors;
-				if(is_array($erros)){
-					//Debug::p("Erros saveData ", $erros);
+				if(is_array($erros) && count($erros) > 0){
+					Debug::p("SAVE/erros", $erros);
 				}else{
 					$this->session->delDataSession();
 					//exit;
@@ -232,26 +240,27 @@ class FormModel{
 					Run::$benchmark->writeMark("FormModel/autoDelete", "FormModel/saveData/save/delDataSession");
 
 					Debug::p("dataFormRecorded", $this->dataFormRecorded);
-					//exit;
 
-					$from0 = $this->schema['from'][0];
 					if($this->settings['auto_save_type'] == "insert"){
 						if($this->settings['redirect_insert'] !== false){
-							$this->settings['redirect_insert'] = str_replace( "[id]", $this->dataFormRecorded[$from0['table_nick']][$from0['pk']], $this->settings['redirect_insert']);
-
+							$this->settings['redirect_insert'] = $this->aux->convertStringToData($this->settings['redirect_insert']);
+							Debug::p("REDIRECT1 ", $this->settings['redirect_insert']);
 							View::redirect($this->settings['redirect_insert']);
 						}
 						else{
-							$this->settings['redirect'] = str_replace( "[id]", $this->dataFormRecorded[$from0['table_nick']][$from0['pk']], $this->settings['redirect']);
+							$this->settings['redirect'] = $this->aux->convertStringToData($this->settings['redirect']);
+							Debug::p("REDIRECT2 ", $this->settings['redirect']);
 							View::redirect($this->settings['redirect']);
 						}
 					}else{
 						if($this->settings['redirect_update'] !== false){
-							$this->settings['redirect_update'] = str_replace( "[id]", $this->dataFormRecorded[$from0['table_nick']][$from0['pk']], $this->settings['redirect_update']);
+							$this->settings['redirect_update'] = $this->aux->convertStringToData($this->settings['redirect_update']);
+							Debug::p("REDIRECT3 ", $this->settings['redirect_update']);
 							View::redirect($this->settings['redirect_update']);
 						}
 						else{
-							$this->settings['redirect'] = str_replace( "[id]", $this->dataFormRecorded[$from0['table_nick']][$from0['pk']], $this->settings['redirect']);
+							$this->settings['redirect'] = $this->aux->convertStringToData($this->settings['redirect']);
+							Debug::p("REDIRECT4 ", $this->settings['redirect']);
 							View::redirect($this->settings['redirect']);
 						}
 					}
@@ -260,7 +269,7 @@ class FormModel{
 			}
 			//$this->delete();
 		}
-		if(isset($this->dataForm['form_name']) && count($this->dataErrors) <= 0 && ($this->settings['permission_'.$this->settings['auto_save_type']] == true) ){
+		if(isset($this->dataForm['form_id']) && count($this->dataErrors) <= 0 && ($this->settings['permission_'.$this->settings['auto_save_type']] == true) ){
 			$this->exeCustomSave();
 		}
 
@@ -270,7 +279,6 @@ class FormModel{
 
 
 		//AUTO SELECT -----------------------------------------------------------------------------------------------------------------------------------------------------------------
-
 
 
 
@@ -286,6 +294,13 @@ class FormModel{
 			$this->dataFormTabulated 	= $returnDatas['dataSelectTabulated'];
 			$this->dataFormRecursive 	= $returnDatas['dataSelectRecursive'];
 			$this->session->setPKListSession($this->dataFormPKList);
+			if( !isset($this->dataFormSequencial[$this->schema['from'][0]['pk']]) ){
+				//Run::$DEBUG_PRINT = 1;
+				$errorMsg = str_replace('[path]', Run::$router->path['base'].Run::$router->getPath(-1), Language::get("form_msg_auto_load_error"));
+				$errorMsg = $this->aux->convertStringToData($errorMsg);
+				Debug::p("errorMsg", Run::$router->getPath(-1));
+				Render::setResponse($errorMsg, "danger", $this->session->getFormSessionId());
+			}
 		}else{
 			$this->dataFormSequencial 	= $this->dataForm;
 		}
@@ -306,9 +321,10 @@ class FormModel{
 
 
 
+
 		//-  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -
 		// Caso receba dados no formulário e tenha erros, retorna os erros no form
-		if(isset($this->dataForm['form_name']) && count($this->dataErrors) >= 1){
+		if(isset($this->dataForm['form_id']) && count($this->dataErrors) >= 1){
 			Debug::p("dataErrors  ", $this->dataErrors);
 			$this->session->setDataSession();
 			Run::$benchmark->writeMark("FormModel/selectData/select", "FormModel/setDataSession");
@@ -330,12 +346,13 @@ class FormModel{
 
 
 
-		Debug::p("dataFormSequencial", $this->dataFormSequencial);
-		Debug::print_r("dataForm", $this->dataForm);
+
+		Debug::p("dataFormSequencial"	, $this->dataFormSequencial);
+		Debug::p("dataForm"				, $this->dataForm);
 		//exit;
 		//-  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -
 		// Caso tenha recebido os dados do form e não tenha erros, apaga a sessão e volta pra View
-		if(isset($this->dataForm['form_name']) && count($this->dataErrors) <= 0){
+		if(isset($this->dataForm['form_id']) && count($this->dataErrors) <= 0){
 			$this->session->delDataSession();
 			Run::$benchmark->writeMark("FormModel/setDataSession", "FormModel/delDataSession");
 			View::redirect("back");
@@ -345,17 +362,20 @@ class FormModel{
 
 
 
+
 		//GET SESSION -----------------------------------------------------------------------------------------------------------------------------------------------------------------
+
 
 
 
 
 		//-  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -
 		// Na view, caso tenha dados no Session, é recebido os dados para imprimir no formulário
-		if(!isset($this->dataForm['form_name'])){ //&& count($this->dataFormSequencial) == 0
+		if(!isset($this->dataForm['form_id'])){ //&& count($this->dataFormSequencial) == 0
 			if(count($this->session->getDataSession()) > 1) $this->dataFormSequencial = $this->session->getDataSession();
 			//exit;
 		}
+
 
 
 
@@ -364,16 +384,16 @@ class FormModel{
 
 
 
+
 		// Debugação pronta
 		//-  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -
-		Debug::print_r("dataForm", $this->dataForm);
-		Debug::print_r("dataFormSequencial", $this->dataFormSequencial);
-		Debug::print_r("SESSION", $this->session->getDataSession());
-		//Debug::print_r("dataErrors", $this->dataErrors);
-		//Debug::print_r("dataIntern", $this->dataIntern);
-		//Debug::print_r($this->settings);
-		//Debug::print_r(language::$phrase);
-		//echo "<br clear='all' />";
+		Debug::p("dataForm"				, $this->dataForm);
+		Debug::p("dataFormSequencial"	, $this->dataFormSequencial);
+		Debug::p("SESSION"				, $this->session->getDataSession());
+		//Debug::p("dataErrors"			, $this->dataErrors);
+		//Debug::p("dataIntern"			, $this->dataIntern);
+		//Debug::p("settings"			, $this->settings);
+		//Debug::p("language"			, language::$phrase);
 		//Debug::showLog();
 		//-  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -
 		//Debug::getBacktrace();
@@ -391,12 +411,12 @@ class FormModel{
 
 
 	public function setInstances(){ 		// método chamado para instanciar as classes para usar no model da aplicação		
-		//-  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  - 
+		//-  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -
 		// Instancia a sessão usada para gerenciar os dados entre a View e o FormModel
 		$this->session 		= new SessionForm($this);
 		$this->aux 			= new FormAux($this);
 		$this->check    	= new Check();
-		//-  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -
+		//-  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -
 		// Iniciar banco de dados se houver instancia, inicia classes Token, Data, SaveData e SelectData
 		$this->database 	= Model::getInstance();
 		if(!$this->database){
@@ -419,71 +439,6 @@ class FormModel{
 	public function exeCustomSave(){} 		// método chamado depois do autoSave
 	//-------------------------------------------------------------------------------------------------------------------------
 	public function exeCustomSelect(){} 	// método chamado depois do autoSelect
-
-
-
-
-
-	//-------------------------------------------------------------------------------------------------------------------------
-	// Imprime a Url do action no form
-	public function echoAction(){
-		//Debug::p($_SERVER);
-		$url = Run::$router->path['pageBase']."form/";
-		if($_SERVER['REDIRECT_QUERY_STRING']!= '') $url .= "?".$_SERVER['REDIRECT_QUERY_STRING'];
-		echo $url;
-	}
-
-
-
-
-	//-------------------------------------------------------------------------------------------------------------------------
-	public function getErrors(){
-		if(count($this->dataErrors) ==  0){
-			$this->dataErrors = $this->session->getErrorsSession();
-		}
-		return $this->dataErrors;
-	}
-
-
-
-
-	//-------------------------------------------------------------------------------------------------------------------------
-	public function echoErrorsList($qFields=5, $qErrors=5){
-		$errors = $this->getErrors();
-		if(!$errors || count($errors) <= 0) return false;
-		$html   = "<dl>";
-		$qFN 	= 0;
-		$qEN 	= -1;
-		foreach($errors as $field => $erros){
-			if($qFN >= $qFields) break;
-			$html  .= "<dt>".Language::get("form_erro_campo")." ".  $erros['label'] ."</dt>";
-			foreach($erros as $k => $details){
-				if($qEN >= $qErrors) break;
-				if($k === "label") continue;
-				$html .= "<dd>".Language::get("form_erro_detalhes")." ". $details ."</dd>";
-				$qEN++;
-			}
-			$qFN++;
-			$qEN = 0;
-		}
-		$html  .= "</dl>";
-		return $html;
-	}
-
-
-
-
-	//-------------------------------------------------------------------------------------------------------------------------
-	public function echoErrorsResponse($qFields=5, $qErrors=5, $type="warning"){
-		$errorsList = $this->echoErrorsList($qFields, $qErrors);
-		if(!$errorsList || count($errorsList) <= 0) return false;//
-		$typeMsg = (int)$this->dataFormSequencial[$this->schema['from'][0]['pk']] > 0 ? "update":"insert";
-		Render::setResponse("<h4>".Language::get('form_'.$typeMsg.'_unsaved')."</h4>", $type, $this->session->getFormSessionId()."errors", "unsaved");
-		Render::echoResponse($this->session->getFormSessionId()."errors");
-		$errorsList = "<h4>".Language::get("form_error_message")."</h4>" . $errorsList;
-		Render::setResponse($errorsList, $type, $this->session->getFormSessionId()."errors");
-		Render::echoResponse($this->session->getFormSessionId()."errors");
-	}
 
 
 
