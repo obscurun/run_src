@@ -218,7 +218,24 @@ class FormAux{
 			echo $this->model->settings['bt_insert_label'];
 		}
 	}
-
+	//-------------------------------------------------------------------------------------------------------------------------
+	public function echoFormMaxSize(){
+		echo $this->getFormMaxSize();
+	}
+	//-------------------------------------------------------------------------------------------------------------------------
+	public function getFormMaxSize(){
+		return Run::$control->file->getBytesByUnit($this->model->settings['form_max_size'], "MB");
+	}
+	//-------------------------------------------------------------------------------------------------------------------------
+	//-------------------------------------------------------------------------------------------------------------------------
+	public function echoBasicInputs(){
+		$inputs = "";
+		$inputs .= "\r\n\t\t".'<input type="hidden" name="form_id" value="'.$this->model->settings['form_id'].'" />';
+		$inputs .= "\r\n\t\t".'<input type="hidden" name="token" value="'.$this->model->token->getToken().'" />';
+		$inputs .= "\r\n\t\t".'<input type="hidden" name="'.$this->model->schema['from'][0]['pk'].'" value="'.$this->model->dataFormSequencial[$this->model->schema['from'][0]['pk']].'" />';
+		$inputs .= "\r\n";
+		echo $inputs;
+	}
 
 
 

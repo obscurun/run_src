@@ -425,21 +425,28 @@ class modelForm{
 		//-  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -
 		//Debug::getBacktrace();
 		//Debug::showBacktrace();
-		if(Run::$router->getLevel(0, true) == "form" && count($_POST) < 1 && count($_GET) < 1){
-			Error::writeLog("modelForm: A requisição form foi realizada de forma incorreta. A URL foi chamada deliberadamente, sem request.", __FILE__, __LINE__);
-			View::redirect("500");
-		}else if(Run::$router->getLevel(0, true) == "form" && count($_POST) < 1){
-			Error::writeLog("modelForm: A requisição form foi realizada de forma incorreta. A URL foi chamada deliberadamente, sem post.", __FILE__, __LINE__);
-			Render::setResponse("<p>Você tentou acessar uma URL inválida ou tentou enviar os dados do formulário e ocorreu um erro interno.</p><p>Caso esteja com dificuldades em enviar os dados, por favor, entre em contato com o suporte técnico.</p>", "danger msg-error500 msg-".$this->session->getFormSessionId(), $this->session->getFormSessionId());
-			View::redirect("500");
-		}else if(Run::$router->getLevel(0, true) == "form" && (count($_POST) > 1 || count($_GET) > 1) ){
-			Error::writeLog("modelForm: Ocorreu um erro ao processar os dados enviados.", __FILE__, __LINE__);
-			Render::setResponse("<p>Você tentou enviar os dados do formulário e ocorreu um erro interno.</p><p>Caso esteja com dificuldades em enviar os dados, por favor, entre em contato com o suporte técnico.</p>", "danger msg-error500 msg-".$this->session->getFormSessionId(), $this->session->getFormSessionId());
-			View::redirect("500");
-		}else if(Run::$router->getLevel(0, true) == "form"){
-			Error::writeLog("modelForm: Ocorreu um erro ao processar os dados enviados, sem request.", __FILE__, __LINE__);
-			Render::setResponse("<p>Você tentou acessar uma URL inválida ou tentou enviar os dados do formulário e ocorreu um erro interno.</p><p>Caso esteja com dificuldades em enviar os dados, por favor, entre em contato com o suporte técnico.</p>", "danger msg-error500 msg-".$this->session->getFormSessionId(), $this->session->getFormSessionId());
-			View::redirect("500");
+
+
+		if(Run::$router->getLevel(0, true) == "form"){
+			//Run::$DEBUG_PRINT = 1;
+			//Debug::p($_SERVER);
+			//Debug::p($_REQUEST);
+			if(count($_POST) < 1 && count($_GET) < 1){
+				Error::writeLog("modelForm: A requisição form foi realizada de forma incorreta. A URL foi chamada deliberadamente, sem request.", __FILE__, __LINE__);
+				View::redirect("500");
+			}else if(count($_POST) < 1){
+				Error::writeLog("modelForm: A requisição form foi realizada de forma incorreta. A URL foi chamada deliberadamente, sem post.", __FILE__, __LINE__);
+				Render::setResponse("<p>Você tentou acessar uma URL inválida ou tentou enviar os dados do formulário e ocorreu um erro interno.</p><p>Caso esteja com dificuldades em enviar os dados, por favor, entre em contato com o suporte técnico.</p>", "danger msg-error500 msg-".$this->session->getFormSessionId(), $this->session->getFormSessionId());
+				View::redirect("500");
+			}else if((count($_POST) > 1 || count($_GET) > 1) ){
+				Error::writeLog("modelForm: Ocorreu um erro ao processar os dados enviados.", __FILE__, __LINE__);
+				Render::setResponse("<p>Você tentou enviar os dados do formulário e ocorreu um erro interno.</p><p>Caso esteja com dificuldades em enviar os dados, por favor, entre em contato com o suporte técnico.</p>", "danger msg-error500 msg-".$this->session->getFormSessionId(), $this->session->getFormSessionId());
+				View::redirect("500");
+			}else{
+				Error::writeLog("modelForm: Ocorreu um erro ao processar os dados enviados, sem request.", __FILE__, __LINE__);
+				Render::setResponse("<p>Você tentou acessar uma URL inválida ou tentou enviar os dados do formulário e ocorreu um erro interno.</p><p>Caso esteja com dificuldades em enviar os dados, por favor, entre em contato com o suporte técnico.</p>", "danger msg-error500 msg-".$this->session->getFormSessionId(), $this->session->getFormSessionId());
+				View::redirect("500");
+			}
 		}
 		Run::$benchmark->writeMark("FormModel/Inicio", "FormModel/Final");
 		// finaliza o flush para exibir tudo que foi impresso ao longo do processamento

@@ -112,7 +112,7 @@ class Form3Model extends modelForm{
 					'select'			=> true,
 					'export'			=> true,
 					'insert'			=> true,
-					'update'			=> v,
+					'update'			=> true,
 					'addSlashe'			=> true,
 					'skipFieldEmpty'	=> true,
 					'maxLength'			=> 45,
@@ -120,7 +120,27 @@ class Form3Model extends modelForm{
 					'label'				=> 'Arquivo/Nome',
 					'size'				=> '60',
 					'validation1'		=> array(
-						'required'		=> array(true, true, 'Insira um arquivo.')
+						'required'		=> array(true, true, 'Insira um arquivo.'),
+						'filesize'		=> array(array(1014, "MB"), true, 'Arquivo maior que o permitido')	
+					)
+				),
+		//- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+				'size'					=> array(
+					'fieldRef'			=> 'arquivo',
+					'belongsTo'			=> 'c',
+					'list'				=> false,
+					'select'			=> false,
+					'export'			=> false,
+					'insert'			=> false,
+					'update'			=> false,
+					'addSlashe'			=> true,
+					'skipFieldEmpty'	=> true,
+					'maxLength'			=> 45,
+					'type' 				=> 'file_size',
+					'label'				=> 'Tamanho do arquivo',
+					'size'				=> '60',
+					'validation'		=> array(
+						'maxfilesize'	=> array(array(1, "MB"), true)	
 					)
 				),
 		//- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -

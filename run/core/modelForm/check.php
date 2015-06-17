@@ -35,6 +35,7 @@ class check{
 		if(!array_key_exists('encoding',				$settings)){ $settings['encoding'] 				= true;				}
 		//-  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  - 
 		if(!array_key_exists('form_id',					$settings)){ $settings['form_id']				= "form_default";	}
+		if(!array_key_exists('form_max_size',			$settings)){ $settings['form_max_size']			= "30";				} // VALOR EM MB
 		if(!array_key_exists('prefix_page',				$settings)){ $settings['prefix_page']			= "";				}
 		//-  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  - 
 		if(!array_key_exists('database_connection',		$settings)){ $settings['database_connection']	= false;			}		

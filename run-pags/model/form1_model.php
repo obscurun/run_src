@@ -309,10 +309,11 @@ class Form1Model extends modelForm{
 					'update'			=> false,
 					'addSlashe'			=> true,
 					'type' 				=> 'file_size',
-					'label'				=> 'ID',
+					'label'				=> 'Tamanho do arquivo',
 					'size'				=> '60',
 					'validation'		=> array(
-						'required'		=> array(true, true, 'Insira um arquivo.')
+						'required'		=> array(true, true, 'Insira um arquivo.'),
+						'maxfilesize'	=> array(array(1, "MB"), true)
 					)
 				),
 		//- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -

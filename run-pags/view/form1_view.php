@@ -23,9 +23,7 @@
             <? $this->model->errors->echoErrorsResponse(5, 5); ?>
 			<div class="well bs-component">
                 <form action="<? $this->model->aux->echoAction(); ?>" method="POST" enctype="multipart/form-data" onsubmit="return orderMultipleIndex(this);" class="form-horizontal">
-                    <input type="hidden" name="form_id"      value="form1" />
-                    <input type="hidden" name="token"        value="<? echo $this->model->token->getToken(); ?>" />
-                    <input type="hidden" name="pk_cadastro"  value="<? $this->model->aux->echoData('pk_cadastro'); ?>" />
+                    <? $this->model->aux->echoBasicInputs(); ?>
                     <fieldset>
                         <legend>Dados Cadastrais</legend>
                         <div class="form-group">
@@ -65,14 +63,14 @@
                             <label class="col-lg-2 control-label">Arquivos</label>
                             <div class="col-lg-10">
                                 <input type="hidden" name="pk_arquivo[]" value="<? $this->model->aux->echoData('pk_arquivo'); ?>" />
-                                <input type="file"   name="arquivo[]" class="form-control" />
+                                <input type="file" size="10" size="10" name="arquivo[]" class="form-control" />
                                 <input type="hidden" name="status_a[]" value="80" />
                                 <input type="hidden" name="pk_arquivo[]" />
-                                <input type="file"   name="arquivo[]" class="form-control" />
+                                <input type="file" size="10" size="10"   name="arquivo[]" class="form-control" />
                                 <input type="hidden" name="status_a[]" value="80" />
                                 <input type="hidden" name="pk_arquivo[]" />
                                 <input type="hidden" name="status_a[]" value="80" />
-                                <input type="file"   name="arquivo[]" class="form-control" />
+                                <input type="file" size="10" size="10"   name="arquivo[]" class="form-control" />
                             </div>
                         </div>
 
@@ -165,10 +163,10 @@
                                             ?>
                                                 <input type="hidden" name="pk_arquivo[][]" />
                                                 <input type="hidden" name="status_a[][]" value="99" />
-                                                <input type="file"   name="arquivo[][]" class="form-control" />
+                                                <input type="file" size="10"  name="arquivo[][]" class="form-control" />
                                                 <input type="hidden" name="pk_arquivo[][]" />
                                                 <input type="hidden" name="status_a[][]" value="99" />
-                                                <input type="file"   name="arquivo[][]" class="form-control" />
+                                                <input type="file" size="10"  name="arquivo[][]" class="form-control" />
                                             </div>
                                         </div>
 
@@ -260,14 +258,14 @@
                     <label class="col-lg-2 control-label">Arquivos</label>
                     <div class="col-lg-10">
                         <input type="hidden" name="pk_arquivo[][]" value="0" />
-                        <input type="file"   name="arquivo[][]" class="form-control" />
+                        <input type="file" size="10"  name="arquivo[][]" class="form-control" />
                         <input type="hidden" name="status_a[][]" value="90" />
                         <input type="hidden" name="pk_arquivo[][]" value="0" />
-                        <input type="file"   name="arquivo[][]" class="form-control" />
+                        <input type="file" size="10"  name="arquivo[][]" class="form-control" />
                         <input type="hidden" name="status_a[][]" value="90" />
                         <input type="hidden" name="pk_arquivo[][]" />
                         <input type="hidden" name="status_a[][]" value="90" />
-                        <input type="file"   name="arquivo[][]" value="0" class="form-control" />
+                        <input type="file" size="10"  name="arquivo[][]" value="0" class="form-control" />
                     </div>
                 </div>
 
@@ -277,21 +275,21 @@
                     <div class="radio row">
                       <label>
                         <input type="checkbox" name="tipo[][]" value="Residencial">
-                        <input type="hidden" name="pk_endereco_tipo[][]" />
+                        <input type="hidden"  size="10" name="pk_endereco_tipo[][]" />
                         Residencial
                       </label>
                     </div>
                     <div class="radio row">
                       <label>
                         <input type="checkbox" name="tipo[][]" value="Comercial">
-                        <input type="hidden" name="pk_endereco_tipo[][]" />
+                        <input type="hidden"  size="10" name="pk_endereco_tipo[][]" />
                         Comercial
                       </label>
                     </div>
                     <div class="radio row">
                       <label>
                         <input type="checkbox" name="tipo[][]" value="Veraneio">
-                        <input type="hidden" name="pk_endereco_tipo[][]" />
+                        <input type="hidden"  size="10" name="pk_endereco_tipo[][]" />
                         Veraneio
                       </label>
                     </div>

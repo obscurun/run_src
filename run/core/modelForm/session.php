@@ -31,6 +31,10 @@ class SessionForm{
 		Run::$session->set(array("forms", $this->getFormSessionId(), "dataForm"), 	$this->model->dataFormSequencial);
 	}
 	//-------------------------------------------------------------------------------------------------------------------------
+	public function setDataErrorsSession(){ // método para guardar o dataForm na sessão
+		Run::$session->set(array("forms", $this->getFormSessionId(), "dataErrors"), 	$this->model->dataErrors);
+	}
+	//-------------------------------------------------------------------------------------------------------------------------
 	public function setDataFormRecoverSession(){ // método para guardar o dataForm na sessão
 		Run::$session->set(array("forms", $this->getFormSessionId(), "dataFormRecover"), 	$this->model->dataFormSequencial);
 	}

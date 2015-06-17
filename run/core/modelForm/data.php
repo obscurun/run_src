@@ -64,6 +64,10 @@ class Data{
 			 $value = $paramField['value'];
 		}
 	//-  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -
+		if($paramField['type'] == "file"){
+			return $value;
+		}
+	//-  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -
 		if($paramField['type'] == "file_name"){
 			$isFile = true;
 			if(isset($value['name'])) $value = \Run::$control->string->removeSpecialsNormalize($value['name'], true);

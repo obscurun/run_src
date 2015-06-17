@@ -118,9 +118,12 @@ class Validate{
 				//-- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- --
 				if($type == "integer"			&& $required){	if(!$this->_integer($data[$field], $value[0]))			$erro_status = true;	}
 				//-- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- --
-				if($type == "accept"){	if(!$this->_accept($data[$field], $value[0]))									$erro_status = true;	}
+				if($type == "accept"){			if(!$this->_accept($data[$field], $value[0]))							$erro_status = true;	}
 				//-- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- --
-				if($type == "fileSize"){	if(!$this->_fileSize($data[$field], $value[0]))								$erro_status = true;	}
+				if($type == "maxfilesize"){		$this->_maxfileSize($settings, $settings['fieldRef'], $data[$field], $value[0], $count_erros, $msgErro);	}
+				//-- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- --
+				if($type == "minfilesize"){		$this->_minfileSize($settings, $settings['fieldRef'], $data[$field], $value[0], $count_erros, $msgErro);	}
+				//Error::writeLog("TESTE: ".$result, __FILE__, __LINE__);
 				//-- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- --
 				//-- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- --
 				if($erro_status == true){ 
@@ -819,15 +822,87 @@ class Validate{
 		return true;
 	}
 	//-------------------------------------------------------------------------------------------------------------------------
-	public function _fileSize($value, $params){
-		if(is_array($value["size"])){ 
-			foreach($value as $k => $v){ if(!$this->_fileSize($v, $params)) return false;	}
+	public function _maxfileSize($settings, $field, $value, $params, $count_erros, $msgErro, $ind1=-1, $ind2=-1){
+		//Run::$DEBUG_PRINT = 1;
+		if(is_array($value)){ 
+			//	Debug::p($value);
+			//	Debug::p($_FILES);
+			//	Run::$DEBUG_PRINT = 0;
+			//exit;
+			foreach($value as $k => $v){
+				if(is_array($v)){
+					foreach($v as $k2 => $v2){
+						$this->_maxfileSize($settings, $field, $v2, $params, $count_erros++, $msgErro, $k, $k2);
+					}
+				}else{
+					if(!$this->_maxfileSize($settings, $field, $v, $params, $count_erros++, $msgErro, $k)){
+						//return false;
+					}
+				}
+			}
 		}
 		else{
-			if($value["tmp_name"]=="")return true;//retorna se nao foi enviado arquivo
+			if(isset($value["tmp_name"]) && $value["tmp_name"] == "") return true;//retorna se nao foi enviado arquivo
+			else if(!isset($value["tmp_name"]) && $value=="") return true;
 			
-			if((int)$value["size"] <= (int)$params) return true;
-			else return false;
+			if(is_array($params) && count($params) == 2){
+				Error::writeLog("nome>: ".$_FILES[$field]["name"]	, __FILE__, __LINE__);
+				if(is_array($value) && Run::$control->file->getBytesByUnit((int)$value["size"], "B") <= Run::$control->file->getBytesByUnit($params[0], $params[1])) return true;
+				else if(!is_array($value) && Run::$control->file->getBytesByUnit($value, "B") > 2 && Run::$control->file->getBytesByUnit($value, "B") <= Run::$control->file->getBytesByUnit((int)$params[0], $params[1])) return true;
+				else{				
+					$this->errors[$field]['label'] = $settings['label'];
+					$nome = ($ind1 == -1) ? $_FILES[$field]["name"]	: $_FILES[$field][$ind1]["name"];
+					$nome = ($ind2 == -1) ? $nome					: $_FILES[$field][$ind1][$ind2]["name"];
+					$msgErroFile = str_replace('[name]', "<b>".$nome."</b>", $msgErro);		
+					$count_erros++; $this->errors[$field][$count_erros] = $msgErroFile;
+				}
+			}
+			else{
+				if(is_array($value) && (int)$value["size"] <= (int)$params) return true;
+				else if(!is_array($value) && (int)$value > 1 && (int)$value <= (int)$params) return true;
+				else{
+					$this->errors[$field]['label'] = $settings['label'];
+					$nome = ($ind1 == -1) ? $_FILES[$field]["name"]	: $_FILES[$field][$ind1]["name"];
+					$nome = ($ind2 == -1) ? $nome					: $_FILES[$field][$ind1][$ind2]["name"];
+					$msgErroFile = str_replace('[name]',$nome, $msgErro);		
+					$count_erros++; $this->errors[$field][$count_erros] = $msgErroFile;
+				}				
+			}
+		}
+		return true;
+	}
+	//-------------------------------------------------------------------------------------------------------------------------
+	public function _minfileSize($settings, $field, $value, $params, $count_erros, $msgErro, $ind1=-1){
+		Error::writeLog("_maxfileSize: ".$value, __FILE__, __LINE__);
+		if(is_array($value["size"])){ 
+			foreach($value as $k => $v){ 
+				if(!$this->_minfileSize($settings, $v, $params, $count_erros++, $msgErro, $k)){
+					return false;
+				}
+			}
+		}
+		else{
+			if(isset($value["tmp_name"]) && $value["tmp_name"] == "") return true;//retorna se nao foi enviado arquivo
+			else if(!isset($value["tmp_name"]) && $value=="") return true;
+			
+			if(is_array($params) && count($params) == 2){
+				if(is_array($value) && Run::$control->file->getBytesByUnit((int)$value["size"], "B") >= Run::$control->file->getBytesByUnit($params[0], $params[1])) return true;
+				else if(!is_array($value) && (int)$value > 1 && (int)$value <= (int)$params) return true;
+				else{
+					$nome = ($ind1 == -1) ? $_FILES[$field]["name"]:$_FILES[$field][$ind1]["name"];
+					$msgErroFile = str_replace('[name]', "<b>".$nome."</b>", $msgErro);		
+					$count_erros++; $this->errors[$field][$count_erros] = $msgErroFile;
+				}
+			}
+			else{
+				if(is_array($value) && (int)$value["size"] >= (int)$params) return true;
+				else if(!is_array($value) && (int)$value > 1 && (int)$value <= (int)$params) return true;
+				else{
+					$nome = ($ind1 == -1) ? $_FILES[$field]["name"]:$_FILES[$field][$ind1]["name"];
+					$msgErroFile = str_replace('[name]', "<b>".$nome."</b>", $msgErro);		
+					$count_erros++; $this->errors[$field][$count_erros] = $msgErroFile;
+				}			
+			}
 		}
 		return true;
 	}
