@@ -138,7 +138,12 @@
                         <div class="col-lg-12">
                             <button type="button" class="btn adicionar left btn-warning">Adicionar</button>
                             <button type="submit" class="btn right btn-primary"><? $this->model->aux->echoBtLabel(); ?></button>
-                            <button type="reset" class="btn right btn-default">Limpar Dados</button>
+                            <div class="right">&nbsp;&nbsp;&nbsp;</div>
+                            <? if($this->model->aux->getData('cleaned') == ""){ ?>
+                            <a href="<? $this->model->aux->echoCleanForm(); ?>" type="button" class="btn right btn-default">Limpar Dados</a>
+                            <? } else { ?>
+                            <a href="<? $this->model->aux->echoRecoverForm(); ?>" type="button" class="btn right btn-default">Recuperar Dados Salvos</a>
+                            <? } ?>
                         </div>
                     </div>
                 </form>

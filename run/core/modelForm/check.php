@@ -69,6 +69,7 @@ class check{
 		if(!array_key_exists('check_token',				$settings)){ $settings['check_token']			= true;				}
 		if(!array_key_exists('content_length',			$settings)){ $settings['content_length']		= 31257280;			} //30mb = 31457280
 		if(!array_key_exists('check_content_length',	$settings)){ $settings['check_content_length']	= true;				} //$_server['content_length']
+		if(!array_key_exists('show_msg_clean',			$settings)){ $settings['show_msg_clean']		= true;				}
 		//-  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  - 
 		if(!array_key_exists('bt_insert_label',			$settings)){ $settings['bt_insert_label']		= Language::get("form_insert_bt");					}
 		if(!array_key_exists('bt_update_label',			$settings)){ $settings['bt_update_label']		= Language::get("form_update_bt");					}

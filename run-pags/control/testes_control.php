@@ -12,9 +12,6 @@ require_once(PAGS_PATH."model/form1_model.php");
 require_once(PAGS_PATH."model/form2_model.php");
 require_once(PAGS_PATH."model/form3_model.php");
 class TestesController extends Router{
-	public $model;						 // instância de pagModel();
-	public $autoLoadMethod = true;		 // especifica se carrega o método automaticamente pelo RouterMethods
-	public $acceptNextIndexUnknownLevels = 1;
 	//-  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -
 	function __construct(){		
 	//	Debug::print_r($_POST);

@@ -12,6 +12,7 @@ require_once(RUN_PATH.'core/modelForm/data.php');
 require_once(RUN_PATH.'core/modelForm/form_aux.php');
 require_once(RUN_PATH.'core/modelForm/session.php');
 require_once(RUN_PATH.'core/modelForm/select_data.php');
+require_once(RUN_PATH.'core/modelForm/clean_data.php');
 require_once(RUN_PATH.'core/modelForm/save_data.php');
 require_once(RUN_PATH.'core/modelForm/validate.php');
 require_once(RUN_PATH.'core/modelForm/errors.php');
@@ -28,6 +29,7 @@ class modelForm{
 	public 			 $errors				= NULL;
 	public 			 $saveData				= NULL;
 	public 			 $selectData			= NULL;
+	public 			 $cleanData				= NULL;
 	public 			 $settings 				= array();
 	public 			 $schema				= array();
 	public 			 $schema_unions			= array();
@@ -84,7 +86,11 @@ class modelForm{
 
 
 
+
+
 		//INSTANCE DATABASE / SUBCLASSES -----------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+
 
 
 
@@ -131,6 +137,26 @@ class modelForm{
 		//Debug::print_r("dataForm", $this->dataForm);
 		//Debug::print_r("dataFormSequencial", $this->dataFormSequencial);
 		//Debug::print_r("SESSION", $this->session->getDataSession());
+
+
+		
+
+
+
+
+		//CLEAN DATA / AUTO CLEAN IF GET -----------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+
+
+
+
+
+
+		$this->clean		= new cleanData($this);
+
+
+
+
 
 
 
@@ -294,6 +320,7 @@ class modelForm{
 			$this->dataFormTabulated 	= $returnDatas['dataSelectTabulated'];
 			$this->dataFormRecursive 	= $returnDatas['dataSelectRecursive'];
 			$this->session->setPKListSession($this->dataFormPKList);
+			$this->session->setDataFormRecoverSession();
 			if( !isset($this->dataFormSequencial[$this->schema['from'][0]['pk']]) ){
 				//Run::$DEBUG_PRINT = 1;
 				$errorMsg = str_replace('[path]', Run::$router->path['base'].Run::$router->getPath(-1), Language::get("form_msg_auto_load_error"));
@@ -398,8 +425,22 @@ class modelForm{
 		//-  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -
 		//Debug::getBacktrace();
 		//Debug::showBacktrace();
-
-
+		if(Run::$router->getLevel(0, true) == "form" && count($_POST) < 1 && count($_GET) < 1){
+			Error::writeLog("modelForm: A requisição form foi realizada de forma incorreta. A URL foi chamada deliberadamente, sem request.", __FILE__, __LINE__);
+			View::redirect("500");
+		}else if(Run::$router->getLevel(0, true) == "form" && count($_POST) < 1){
+			Error::writeLog("modelForm: A requisição form foi realizada de forma incorreta. A URL foi chamada deliberadamente, sem post.", __FILE__, __LINE__);
+			Render::setResponse("<p>Você tentou acessar uma URL inválida ou tentou enviar os dados do formulário e ocorreu um erro interno.</p><p>Caso esteja com dificuldades em enviar os dados, por favor, entre em contato com o suporte técnico.</p>", "danger msg-error500 msg-".$this->session->getFormSessionId(), $this->session->getFormSessionId());
+			View::redirect("500");
+		}else if(Run::$router->getLevel(0, true) == "form" && (count($_POST) > 1 || count($_GET) > 1) ){
+			Error::writeLog("modelForm: Ocorreu um erro ao processar os dados enviados.", __FILE__, __LINE__);
+			Render::setResponse("<p>Você tentou enviar os dados do formulário e ocorreu um erro interno.</p><p>Caso esteja com dificuldades em enviar os dados, por favor, entre em contato com o suporte técnico.</p>", "danger msg-error500 msg-".$this->session->getFormSessionId(), $this->session->getFormSessionId());
+			View::redirect("500");
+		}else if(Run::$router->getLevel(0, true) == "form"){
+			Error::writeLog("modelForm: Ocorreu um erro ao processar os dados enviados, sem request.", __FILE__, __LINE__);
+			Render::setResponse("<p>Você tentou acessar uma URL inválida ou tentou enviar os dados do formulário e ocorreu um erro interno.</p><p>Caso esteja com dificuldades em enviar os dados, por favor, entre em contato com o suporte técnico.</p>", "danger msg-error500 msg-".$this->session->getFormSessionId(), $this->session->getFormSessionId());
+			View::redirect("500");
+		}
 		Run::$benchmark->writeMark("FormModel/Inicio", "FormModel/Final");
 		// finaliza o flush para exibir tudo que foi impresso ao longo do processamento
 		//ob_end_flush();

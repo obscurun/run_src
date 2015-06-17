@@ -9,8 +9,12 @@ include_once(RUN_PATH.'libraries/router/router_base.php');
 class Router extends RouterBase{
 	private $level_to_load_method = 1;
 	private $executedCheckAccepts = false;
-	public $acceptNextIndexUnknownLevels = 0;
 	private static $instance;
+	// propriedades usadas no controller >>>
+	//------------------------------------------------------------------------------------------------------------------------
+	public $model;								// instância de pagModel();
+	public $autoLoadMethod = true;		 		// especifica se carrega o método automaticamente pelo RouterMethods
+	public $acceptNextIndexUnknownLevels = 1;	// especifica se aceita parametros extras na url, depois da urlMetodo
 	//-  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -
 	function __construct(){ 
 		self::$instance =& $this;
@@ -55,30 +59,35 @@ class Router extends RouterBase{
 	private function loadPageFile($pag){
 		Run::$benchmark->mark("loadPageFile/Inicio");
 		Debug::log("Router - loadPageFile() ", __LINE__, __FUNCTION__, __CLASS__, __FILE__);
-		$page_control = APP_PATH.Run::PATH_PAG."control/".$pag."_control.php";
-		$page_view = APP_PATH.Run::PATH_PAG."view/".$pag."_view.php";
-		$page_single = APP_PATH.Run::PATH_PAG."view/". implode(self::$levels, "__");
+		$page_control 		= APP_PATH.Run::PATH_PAG."control/".$pag."_control.php";
+		$page_view 			= APP_PATH.Run::PATH_PAG."view/".$pag."_view.php";
+		$page_single 		= APP_PATH.Run::PATH_PAG."view/".$pag;
+		$page_single_full	= APP_PATH.Run::PATH_PAG."view/". implode(self::$levels, "__");
 
 		//tenta carregar o controle ou o view
 		if(file_exists($page_control)){
 			$this->loadControl($pag);
 			Run::$benchmark->writeMark("loadPageFile/Inicio", "loadPageFile/if/Final");
-		}else if(file_exists($page_view)){
-			$this->loadView($pag);
+		}else if(file_exists($page_single_full.".php")){
+			$this->loadPath($page_single_full.".php");
 			Run::$benchmark->writeMark("loadPageFile/Inicio", "loadPageFile/else1/Final");
+			exit;
+		}else if(file_exists($page_single_full.".htm")){
+			$this->loadPath($page_single_full.".htm");
+			Run::$benchmark->writeMark("loadPageFile/Inicio", "loadPageFile/else2/Final");
 			exit;
 		}else if(file_exists($page_single.".php")){
 			$this->loadPath($page_single.".php");
-			Run::$benchmark->writeMark("loadPageFile/Inicio", "loadPageFile/else2/Final");
+			Run::$benchmark->writeMark("loadPageFile/Inicio", "loadPageFile/else3/Final");
 			exit;
 		}else if(file_exists($page_single.".htm")){
 			$this->loadPath($page_single.".htm");
-			Run::$benchmark->writeMark("loadPageFile/Inicio", "loadPageFile/else3/Final");
+			Run::$benchmark->writeMark("loadPageFile/Inicio", "loadPageFile/else4/Final");
 			exit;
 		}else{
 			$this->load("404");
 			Run::$benchmark->writeMark("loadPageFile/Inicio", "loadPageFile/else/Final");
-			Error::show(0, "Router->loadPageFile: Pág Control ou View <b>$pag</b> não existe. (control/".$pag."_control.php).", __FILE__, __LINE__);
+			Error::writeLog("Router->loadPageFile: Pág Control ou View <b>$pag</b> não existe. (control/".$pag."_control.php).", __FILE__, __LINE__);
 			exit;
 		}
 
@@ -118,8 +127,8 @@ class Router extends RouterBase{
 				self::$controller->$method();
 			}
 		}else{
-			if(!class_exists($class)) Error::show(0, "Router->loadPageContent: Classe <b>$class</b> não existe. (control/".$pag."_control.php).", __FILE__, __LINE__);
-			else Error::show(0, "Router->loadPageContent: Metodo <b>$method</b> não existe. {self::$controller->acceptNextUnknownLevels} (control/".$pag."_control.php).", __FILE__, __LINE__);
+			if(!class_exists($class)) Error::show(8, "Router->loadPageContent: Classe <b>$class</b> não existe. (control/".$pag."_control.php).", __FILE__, __LINE__);
+			else Error::show(8, "Router->loadPageContent: Metodo <b>$method</b> não existe. {self::$controller->acceptNextUnknownLevels} (control/".$pag."_control.php).", __FILE__, __LINE__);
 			$this->load("404");
 		}
 		$this->flush();

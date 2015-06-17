@@ -182,8 +182,33 @@ class FormAux{
 	public function echoAction(){
 		//Debug::p($_SERVER);
 		$url = Run::$router->path['pageBase']."form/";
-		if($_SERVER['REDIRECT_QUERY_STRING']!= '') $url .= "?".$_SERVER['REDIRECT_QUERY_STRING'];
+		if($_SERVER['REDIRECT_QUERY_STRING'] != '') $url .= "?".$_SERVER['REDIRECT_QUERY_STRING'];
 		echo $url;
+	}
+	//-------------------------------------------------------------------------------------------------------------------------
+	// Imprime a Url do bt limpar dados no form
+	public function echoCleanForm(){
+		//Debug::p($_SERVER);
+		$url = Run::$router->path['pageBase']."form/";
+		$url .= "?cleanForm=".$this->model->settings['form_id']."&".$this->model->settings['ref']."=".$this->model->dataFormSequencial[$this->model->schema['from'][0]['pk']];
+		if($_SERVER['REDIRECT_QUERY_STRING']!= '') $url .= "&".$_SERVER['REDIRECT_QUERY_STRING'];
+		echo $url;
+	}
+	//-------------------------------------------------------------------------------------------------------------------------
+	// Imprime a Url do bt limpar dados no form
+	public function echoRecoverForm(){
+		echo $this->getRecoverForm();
+	}
+	//-------------------------------------------------------------------------------------------------------------------------
+	// Imprime a Url do bt limpar dados no form
+	public function getRecoverForm($pExtra="form/"){
+		//Debug::p($_SERVER);
+		//echo 123;
+		$url = Run::$router->path['pageBase'].$pExtra;
+		$url .= "?recoverForm=".$this->model->settings['form_id']."&".$this->model->settings['ref']."=". ( $this->model->dataFormSequencial[$this->model->schema['from'][0]['pk']] );
+		$_SERVER['REDIRECT_QUERY_STRING'] = str_replace("cleanForm=".$this->model->settings['form_id'], '', $_SERVER['REDIRECT_QUERY_STRING']);
+		if($_SERVER['REDIRECT_QUERY_STRING']!= '') $url .= "&".$_SERVER['REDIRECT_QUERY_STRING'];
+		return $url;
 	}
 	//-------------------------------------------------------------------------------------------------------------------------
 	public function echoBtLabel(){

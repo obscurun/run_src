@@ -27,19 +27,35 @@ class SessionForm{
 		Run::$session->set(array("forms", $this->getFormSessionId(), "pkList"), 	$pkList);
 	}
 	//-------------------------------------------------------------------------------------------------------------------------
+	public function setDataFormSession(){ // método para guardar o dataForm na sessão
+		Run::$session->set(array("forms", $this->getFormSessionId(), "dataForm"), 	$this->model->dataFormSequencial);
+	}
+	//-------------------------------------------------------------------------------------------------------------------------
+	public function setDataFormRecoverSession(){ // método para guardar o dataForm na sessão
+		Run::$session->set(array("forms", $this->getFormSessionId(), "dataFormRecover"), 	$this->model->dataFormSequencial);
+	}
+	//-------------------------------------------------------------------------------------------------------------------------
 	public function setDataSession(){ // método para guardar o dataForm na sessão
 		//Debug::p("setDataSession:".$this->getFormSessionId(), $dataFormSequencial);
 		//Debug::p("setDataSession:".$this->getFormSessionId(), $this->model->dataErrors);
-		Run::$session->set(array("forms", $this->getFormSessionId(), "dataForm"), 	$this->model->dataFormSequencial);
-		Run::$session->set(array("forms", $this->getFormSessionId(), "pkList"), 	$this->model->pkList);
-		Run::$session->set(array("forms", $this->getFormSessionId(), "dataFiles"), 	$this->model->data->_POST_FILES);
-		Run::$session->set(array("forms", $this->getFormSessionId(), "dataErrors"),	$this->model->dataErrors);
+		Run::$session->set(array("forms", $this->getFormSessionId(), "dataForm"), 		$this->model->dataFormSequencial);
+		Run::$session->set(array("forms", $this->getFormSessionId(), "dataFormRecover"),$this->model->dataFormSequencial);
+		Run::$session->set(array("forms", $this->getFormSessionId(), "pkList"), 		$this->model->pkList);
+		Run::$session->set(array("forms", $this->getFormSessionId(), "dataFiles"), 		$this->model->data->_POST_FILES);
+		Run::$session->set(array("forms", $this->getFormSessionId(), "dataErrors"),		$this->model->dataErrors);
 	}
 	//-------------------------------------------------------------------------------------------------------------------------
 	public function getDataSession(){ // método para pegar o dataForm na sessão
 		$dataForm = Run::$session->get(array("forms", $this->getFormSessionId(), "dataForm"));
 		if(!(is_array($dataForm) && count($dataForm) > 1)) $dataForm = false;
 		Debug::p("getDataSession", $dataForm);
+		return $dataForm;
+	}
+	//-------------------------------------------------------------------------------------------------------------------------
+	public function getRecoverSession(){ // método para pegar o dataForm na sessão
+		$dataForm = Run::$session->get(array("forms", $this->getFormSessionId(), "dataFormRecover"));
+		if(!(is_array($dataForm) && count($dataForm) > 1)) $dataForm = false;
+		Debug::p("getRecoverSession", $dataForm);
 		return $dataForm;
 	}
 	//-------------------------------------------------------------------------------------------------------------------------

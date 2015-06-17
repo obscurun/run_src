@@ -1,4 +1,5 @@
 <?php 
+include_once('run_exception.php');
 //*********************************************************************************************************************************
 class Error{
 	public static  $ERROR_EXECUTION		= true;
@@ -111,10 +112,33 @@ class Error{
 			
 			if(self::$REC_LOG == true){
 				if(!is_dir(APP_PATH."run_logs")) mkdir(APP_PATH."run_logs", 0700);
-				error_log($msgRec, 3, APP_PATH."run_logs/_php_error_". date("Ymd") .".log");
+				error_log($msgRec, 3, APP_PATH."run_logs/_php_error_".Run::$control->date->getWeekOfYear().".log");
 			}
 			return $msgRec;
 		}
+	}
+	// -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -
+	static public function writeLog($_error_msg="Erro encontrado", $_error_file="", $_error_line="", $_error_vars=""){
+		self::$DEBUG_DATE = @date("d-m-Y H:i:s");
+		$msgRec  = "\r\n<errorentry>\r\n";
+		$msgRec .= "\t <type>"	 		. "log"										. "</type>\r\n";
+		$msgRec .= "\t <msg>" 			. $_error_msg 								. "</msg>\r\n";
+		$msgRec .= "\t <file>" 			. $_error_file 								. "</file>\r\n";
+		$msgRec .= "\t <uri>" 			. $_SERVER['REQUEST_URI']					. "</uri>\r\n";
+		$msgRec .= "\t <line>" 			. $_error_line 								. "</line>\r\n";
+		$msgRec .= "\t <num>" 			. $_error_num 								. "</num>\r\n";
+		$msgRec .= "\t <date>" 			. self::$DEBUG_DATE							. "</date>\r\n";
+		$msgRec .= "\t <ip>" 			. $_SERVER['REMOTE_ADDR'] 					. "</ip>\r\n";
+		$msgRec .= "\t <client>" 		. $_SERVER['HTTP_USER_AGENT']				. "</client>\r\n";
+		$msgRec .= "\t <memory>" 		. memory_get_peak_usage(true)				. "</memory>\r\n";
+		if(Error::$REC_VAR == true) $msgRec .= "\t <vartrace>" 		. wddx_serialize_value($_error_vars, "Variables")	. "</vartrace>\r\n";
+		$msgRec .= "</errorentry>\r\n";
+		
+		if(self::$REC_LOG == true){
+			if(!is_dir(APP_PATH."run_logs")) mkdir(APP_PATH."run_logs", 0700);
+			error_log($msgRec, 3, APP_PATH."run_logs/_php_error_log_".Run::$control->date->getWeekOfYear().".log");
+		}
+		return $msgRec;
 	}
 	// -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -
 	static function sqlError($mensagem="Erro SQL.", $erro = 'Erro desconhecido.', $sql ='Erro sql não declarado.'){

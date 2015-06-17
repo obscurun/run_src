@@ -1,6 +1,6 @@
 <?php
 // ****************************************************************************************************************************
- class Erro extends Exception{
+ class RunException extends Exception{
 	//-------------------------------------------------------------------------------------------------------------------------
      private $cod		= 0,
              $msg		= "",
@@ -37,7 +37,7 @@
 			$msgRec .= "\t<client>" 		. $_SERVER['HTTP_USER_AGENT']	. "</client>\r\n";
 			$msgRec .= "\t<memory>" 		. memory_get_usage()			. "</memory>\r\n";
 			$msgRec .= "</log>\r\n";
-			error_log($msgRec, 3, APP_PATH."run_app/_php_exceptions.log");
+			error_log($msgRec, 3, APP_PATH."run_logs/_php_exceptions_".Run::$control->date->getWeekOfYear().".log");
 		}
 	}
 	//-------------------------------------------------------------------------------------------------------------------------
