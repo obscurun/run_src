@@ -98,13 +98,21 @@ class modelForm{
 
 		//-  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -
 		// Iniciar banco de dados se houver instancia, inicia classes Token, Data, SaveData e SelectData
-		$this->database 	= Model::getInstance();
+		if($this->settings['database_connection'] !== false){
+			$connection 		= Model::getConnectionData($this->settings['database_connection']);
+			$this->database 	= Model::getInstance($connection['type_db']);
+		}else{
+			$connection 		= array('type_db' => 'mysql');
+			$this->database 	= Model::getInstance();
+		}
 		if(!$this->database){
 			Error::show(5200, "Model-> A conexão com o banco não foi iniciada. ".__FUNCTION__, __FILE__, __LINE__, '');
 			$this->settings['auto_load'] = false;
 			$this->settings['auto_save'] = false;
 		}
-		$this->query 		= new MysqlQuery();
+		if($connection['type_db'] == "mysql") 			$this->query 	= new MysqlQuery();
+		else if($connection['type_db'] == "postgre")	$this->query 	= new PostgreQuery();
+		else{ Error::show(5200, "Model-> O tipo de conexão não está definido corretamente ".__FUNCTION__, __FILE__, __LINE__, ''); }
 		$this->validate    	= new Validate();
 		$this->data  		= new FormModel\Data($this->schema, $this->settings);
 		$this->saveData  	= new SaveData($this, $this->database, $this->query);

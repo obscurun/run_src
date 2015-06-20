@@ -98,8 +98,8 @@ class SaveData{
 				// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 				if(isset($refs['fk_ref'])){
 					$fields 	.= ",\n\t". $refs['fk_ref'] ."";
-					$values		.= ",\n\t\"". $orderTables['fk_ref_value'] ."\"";
-					$update_fields .= ",\n\t". $refs['fk_ref'] . " = \"". $orderTables['fk_ref_value'] ."\"";
+					$values		.= ",\n\t'". $orderTables['fk_ref_value'] ."'";
+					$update_fields .= ",\n\t". $refs['fk_ref'] . " = '". $orderTables['fk_ref_value'] ."'";
 				}
 				// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 				$skipRec = false;
@@ -131,7 +131,7 @@ class SaveData{
 								$field_name  = $field['name']!="" ? $field['name'] : $kF;
 								$fields 	.= ",\n\t". $field_name ."";
 								$values	.= ",\n\t\"". $this->getValueArray($data_multiple) ."\"";
-								$update_fields .= ",\n\t". $field_name . " = \"". $this->getValueArray($data_multiple) ."\"";
+								$update_fields .= ",\n\t". $field_name . " = '". $this->getValueArray($data_multiple) ."'";
 								if($field['type'] == "file_name"){ $saveFileData['name'] = $this->getValueArray($data_multiple); }
 								if($field['type'] == "file_path"){ 
 									$saveFileData['index'] 		= $reIndexed; 
@@ -166,8 +166,8 @@ class SaveData{
 								if($field['type'] == "int" || $field['type'] == "integer"){
 									$data[$kF] = (int)$data[$kF];
 								}
-								$values	.= ",\n\t\"". $data[$kF] ."\"";
-								if($field['skipFieldEmpty'] !== true || ($field['skipFieldEmpty'] === true && $data[$kF] != $field['value'])) $update_fields .= ",\n\t". $field_name . " = \"". $data[$kF] ."\"";
+								$values	.= ",\n\t'". $data[$kF] ."'";
+								if($field['skipFieldEmpty'] !== true || ($field['skipFieldEmpty'] === true && $data[$kF] != $field['value'])) $update_fields .= ",\n\t". $field_name . " = '". $data[$kF] ."'";
 							}
 						}
 					}
@@ -190,10 +190,11 @@ class SaveData{
 				if($saveFileData['name'] === "" && $saveFileData['path'] !== false ) continue;
 				//	//Debug::p("pqp ------------{$saveFileData['name']}------------------------- {$saveFileData['path']} ");
 				$sql_obj = $this->database->query($sql_query, __LINE__, __FUNCTION__, __CLASS__, __FILE__, $this->settings['database_connection']);
-				$warMsg = $this->database->getMysqlWarning();
-				if(is_integer($sql_obj) || $warMsg != ""){ 
+				
+				$warMsg = $this->database->getWarning();
+				if((is_integer($sql_obj) || $warMsg != "") && $this->database->getError() != "00000"){ 
 					$this->query_errors++;  
-					Error::show(5200, "Model-> Erro no SQL:\n ".$warMsg."\n  ". $this->database->getMysqlError() ."  \n$sql_query".__FUNCTION__, __FILE__, __LINE__, '');
+					Error::show(5200, "Model-> Erro no SQL:\n ".$warMsg."\n  ". $this->database->getError() ."  \n$sql_query ".__FUNCTION__, __FILE__, __LINE__, '');
 				}
 				else{
 					//Debug::log("Model: SQL Executado com sucesso (returnID:". $this->database->getID($this->settings['database_connection']) ."): \n $sql_query", __LINE__, __FUNCTION__, __CLASS__, __FILE__);
@@ -434,11 +435,11 @@ class SaveData{
 		//Debug::p("SQL_DELETE sql_query:", $sql_query);
 		//return false;
 		$sql_obj 	= $this->database->query($sql_query, __LINE__, __FUNCTION__, __CLASS__, __FILE__, $this->settings['database_connection']);
-		//Debug::p($this->database->getMysqlError());
-		$warMsg = $this->database->getMysqlWarning();
+		//Debug::p($this->database->getError());
+		$warMsg = $this->database->getWarning();
 		if(is_integer($sql_obj) || $warMsg != ""){ 
 			$this->query_errors++;  
-			Error::show(5200, "Model-> Erro ao deletar multiplo registro não recebido do form:\n ".$warMsg."\n  ". $this->database->getMysqlError() ."  \n$sql_query".__FUNCTION__, __FILE__, __LINE__, '');
+			Error::show(5200, "Model-> Erro ao deletar multiplo registro não recebido do form:\n ".$warMsg."\n  ". $this->database->getError() ."  \n$sql_query".__FUNCTION__, __FILE__, __LINE__, '');
 		}else{
 			$log = "Model: SQL Executado com sucesso (returnID:". $this->database->getID($this->settings['database_connection']) ."): \n $sql_query";
 			// Debug::print_r($log);
@@ -456,11 +457,11 @@ class SaveData{
 			$sql_query = "UPDATE ". $refs['table'] ." SET $updateTime ". $refs['status_name'] ."='-1'  WHERE ".$refs['pk']." = $v ";
 			//Debug::p("SQL_DELETE", $sql_query);
 			$sql_obj 	= $this->database->query($sql_query, __LINE__, __FUNCTION__, __CLASS__, __FILE__, $this->settings['database_connection']);
-			//Debug::p($this->database->getMysqlError());
-			$warMsg = $this->database->getMysqlWarning();
+			//Debug::p($this->database->getError());
+			$warMsg = $this->database->getWarning();
 			if(is_integer($sql_obj) || $warMsg != ""){ 
 				$this->query_errors++;  
-				Error::show(5200, "Model-> Erro ao deletar multiplo registro não selecionado no form:\n ".$warMsg."\n  ". $this->database->getMysqlError() ."  \n$sql_query".__FUNCTION__, __FILE__, __LINE__, '');
+				Error::show(5200, "Model-> Erro ao deletar multiplo registro não selecionado no form:\n ".$warMsg."\n  ". $this->database->getError() ."  \n$sql_query".__FUNCTION__, __FILE__, __LINE__, '');
 			}else{
 				$log = "Model: SQL Executado com sucesso (returnID:". $this->database->getID($this->settings['database_connection']) ."): \n $sql_query";
 				// Debug::print_r($log);

@@ -26,8 +26,11 @@ class SelectData{
 		$dataSelectTabulated 	= array();
 		$dataSelectRecursive 	= array();
 		$dataSelectPKList 		= array();
+
 		$query_obj = $this->database->query($sql, __LINE__, __FUNCTION__, __CLASS__, __FILE__, $settings['database_connection']);
 		Run::$benchmark->writeMark("SelectData/select/buildSQL", "SelectData/select/database->query(sql)");
+				echo $query_obj;
+		exit;
 		if($query_obj === -2) Error::show(0, "MODEL:: Houve um erro ao executar o select query automaticamente: ".$sql);
 		else if($query_obj->num_rows > 0){
 			$dataSelectSequencial 	= $this->buildSQLDataSequencial($type, $query_obj, $schema, $settings, $dataIntern);

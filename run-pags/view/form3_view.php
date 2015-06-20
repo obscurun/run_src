@@ -23,9 +23,7 @@
             <? $this->model->errors->echoErrorsResponse(5, 5); ?>
 			<div class="well bs-component">
                 <form action="<? $this->model->aux->echoAction(); ?>" method="POST" enctype="multipart/form-data" onsubmit="return orderMultipleIndex(this);" class="form-horizontal">
-                    <input type="hidden" name="form_id"      value="form3" />
-                    <input type="hidden" name="token"        value="<? echo $this->model->token->getToken(); ?>" />
-                    <input type="hidden" name="pk_cadastro"  value="<? $this->model->aux->echoData('pk_cadastro'); ?>" />
+                    <? $this->model->aux->echoBasicInputs(); ?>
                     <fieldset>
                         <legend>Dados Cadastrais</legend>
                         <div class="form-group">

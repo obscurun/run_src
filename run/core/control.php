@@ -61,7 +61,7 @@ class Control{
 	//*************************************************************************************************************************
 	public function checkBaseConfig(){
 		if(isset(Config::$USE_BASE_CONFIG)){
-			if(Config::$USE_BASE_CONFIG === true && count(Config::getConnectionData()) > 0){
+			if(Config::$USE_BASE_CONFIG === true && count(Config::getConnectionsData()) > 0){
 				if(!is_array($this->session->get(array('CONFIG')))){
 					Run::loadHelper("query");
 					$q = new Query();

@@ -11,6 +11,8 @@
 require_once(PAGS_PATH."model/form1_model.php");
 require_once(PAGS_PATH."model/form2_model.php");
 require_once(PAGS_PATH."model/form3_model.php");
+require_once(PAGS_PATH."model/form3b_model.php");
+require_once(PAGS_PATH."model/form3p_model.php");
 class TestesController extends Router{
 	//-  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -
 	function __construct(){		
@@ -49,6 +51,28 @@ class TestesController extends Router{
 		$this->loadView("form3");
 		Run::$benchmark->writeMark("Form3Controller/newModel", "Form3Controller/loadView");
 		Run::$benchmark->writeMark("Form3Controller/Inicio", "Form3Controller/Final");
+	}
+	//-  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -
+	public function form3b(){
+		Run::$benchmark->mark("Form3bController/Inicio");
+		Run::$router->acceptNextLevels(1);
+		Run::$router->setTemplateData("title", "Form3b");
+		$this->model = new Form3bModel("form3_cadastro");
+		Run::$benchmark->writeMark("Form3bController/Inicio", "Form3bController/newModel");
+		$this->loadView("form3");
+		Run::$benchmark->writeMark("Form3bController/newModel", "Form3bController/loadView");
+		Run::$benchmark->writeMark("Form3bController/Inicio", "Form3bController/Final");
+	}
+	//-  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -
+	public function form3p(){
+		Run::$benchmark->mark("Form3pController/Inicio");
+		Run::$router->acceptNextLevels(1);
+		Run::$router->setTemplateData("title", "Form3p");
+		$this->model = new Form3pModel("form3_cadastro");
+		Run::$benchmark->writeMark("Form3pController/Inicio", "Form3pController/newModel");
+		$this->loadView("form3");
+		Run::$benchmark->writeMark("Form3pController/newModel", "Form3pController/loadView");
+		Run::$benchmark->writeMark("Form3pController/Inicio", "Form3pController/Final");
 	}
 	//-  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -
 	public function form(){

@@ -26,6 +26,7 @@ class ModelMysql{
 		self::$connectionData[$index]["name"] 		= $name;
 		self::$connectionData[$index]["user"]  		= $user;
 		self::$connectionData[$index]["pass"]  		= $pass;
+		self::$connectionData[$index]["db"]  		= "mysql";
 		Debug::log("setConnectionData($host/$name/$user/$pass/$index)", __LINE__, __FUNCTION__, __CLASS__, __FILE__);
 	}
 	//*************************************************************************************************************************

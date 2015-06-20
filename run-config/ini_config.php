@@ -50,6 +50,8 @@ class Config{
 //-  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  
 	const			 MYSQL 						= true; 												// boolean 	- ATENÇÃO, FALSE PARA NAO USAR MYSQLI
 //-  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  
+	const			 POSTGRE					= true; 												// boolean 	- ATENÇÃO, FALSE PARA NAO USAR MYSQLI
+//-  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  
 	const 			 SESSION_TIMEOUT			= 1800; 												// int 		- [segundos] 300 = 5 minutos
 	const 			 LOGIN_TIMEOUT				= 1800; 												// int 		- [segundos] 300 = 5 minutos
 //-  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  
@@ -70,11 +72,12 @@ class Config{
 	function onStartConfig(){
 		switch($_SERVER['SERVER_NAME']){
 			case "127.0.0.1":
-				if(Config::MYSQL) Model::setConnectionData('192.168.1.248','run_db','run_db','run_db','default');
+				if(Config::MYSQL) Model::setConnectionData('mysql', '192.168.1.248','run_db','run_db','run_db','default');
 				break;
 			default:
-				if(Config::MYSQL) Model::setConnectionData('localhost','run','root','dev123','default');
-				//if(Config::MYSQL) Model::setConnectionData('localhost','run','sccon','sccon123','default');
+				if(Config::MYSQL) Model::setConnectionData('mysql', 'localhost','run','root','dev123','default');
+				if(Config::MYSQL) Model::setConnectionData('mysql', 'localhost','runb','root','dev123','runb');
+				if(Config::POSTGRE) Model::setConnectionData('postgre', 'localhost','run','postgres','dev','postgre');
 				break;
 		}
 		//-  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -
