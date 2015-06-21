@@ -11,8 +11,6 @@ class Config{
 	const			 VERSION					= '01984';												// string 	- caminho padrão no servidor
 	const			 PATH_PAG					= "run-pags/";											// string 	- caminho padrão das páginas
 	const		 	 FILES_BASE					= "run-files/";											// string 	- caminho padrão para upload de arquivos
-	const			 DB							= 'run_';												// string 	- prefix_ das querys dentro de models
-	const			 QUERY_USE_PREFIX			= true;													// boolean 	- usar a const DB nas querys caso true
 	const			 VIEW_HTML_ENTITIES			= true;													// boolean 	- converter html normal para entities ao imprimir
 	const		 	 ENCODING					= "utf8";												// string 	- encoding padrão do projeto: uft8, iso8859-1
 	const			 TIMEZONE					= "America/Sao_Paulo";									// string 	- timezone para não dar erro em datas: date();
@@ -49,6 +47,9 @@ class Config{
 	public static	 $LANGUAGES_AVAILABLE		= array("pt", "br", "eng");								// array 	- siglas de linguagens disponíveis no app
 //-  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  
 	const			 MYSQL 						= true; 												// boolean 	- ATENÇÃO, FALSE PARA NAO USAR MYSQLI
+	const			 DB							= 'run_';												// string 	- prefix_ das querys dentro de models
+	const			 QUERY_USE_PREFIX_TABLE		= true;													// boolean 	- usar a const DB nas querys caso true
+	const			 QUERY_USE_PREFIX_SCHEMA	= false;												// boolean 	- usar o db/name nas querys caso true
 //-  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  
 	const			 POSTGRE					= true; 												// boolean 	- ATENÇÃO, FALSE PARA NAO USAR MYSQLI
 //-  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  
@@ -72,12 +73,12 @@ class Config{
 	function onStartConfig(){
 		switch($_SERVER['SERVER_NAME']){
 			case "127.0.0.1":
-				if(Config::MYSQL) Model::setConnectionData('mysql', '192.168.1.248','run_db','run_db','run_db','default');
+				Model::setConnectionData('default', 'mysql',	'192.168.1.248',	'run_db',	'run_db',	'run_db'	);
 				break;
 			default:
-				if(Config::MYSQL) Model::setConnectionData('mysql', 'localhost','run','root','dev123','default');
-				if(Config::MYSQL) Model::setConnectionData('mysql', 'localhost','runb','root','dev123','runb');
-				if(Config::POSTGRE) Model::setConnectionData('postgre', 'localhost','run','postgres','dev','postgre');
+				Model::setConnectionData('default', 'mysql', 	'localhost',		'run',		'root',		'dev123'	);
+				Model::setConnectionData('runb', 	'mysql', 	'localhost',		'runb',		'root',		'dev123'	);
+				Model::setConnectionData('postgre', 'postgre', 	'localhost',		'run',		'postgres',	'dev', 	true);
 				break;
 		}
 		//-  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -

@@ -6,39 +6,43 @@ class Postgre extends Database{
 	static private $instance;
 	static private $connection 	= array();
 	static public  $active	 	= false;
+	public  $schema	 	= "";
 	//*************************************************************************************************************************
-	private function __construct(){
+	private function __construct($id){		
+		$this->newConnection($id);
+	}
+	//*************************************************************************************************************************
+	private function newConnection($id){
 		$connectionData = Model::getConnectionsData();
-		if(count($connectionData)>0){
+		if(isset($connectionData[$id])){
 			Debug::log("Iniciando POSTGRE.", __LINE__, __FUNCTION__, __CLASS__, __FILE__);
-			foreach($connectionData as $conn => $data){
-				if($data["type_db"] !== "postgre") continue;
-				if(self::$active == false){
-					self::$active = $conn;
+			$data = $connectionData[$id] ;
+			if(self::$active == false){
+				self::$active = $id;
+			}
+			$host = $data["host"];
+			$name = $data["name"];
+			$user = $data["user"];
+			$pass = $data["pass"];
+			$this->schema = $data["schema"];
+			if($host && $name && $user){
+				//echo "$host, $user, $pass, $name";
+				try {
+					self::$connection[$id] = new PDO('pgsql:host='.$host.';dbname='.$name, $user, $pass);
 				}
-				$host = $data["host"];
-				$name = $data["name"];
-				$user = $data["user"];
-				$pass = $data["pass"];
-				if($host && $name && $user){
-					//echo "$host, $user, $pass, $name";
-					try {
-						self::$connection[$conn] = new PDO('pgsql:host='.$host.';dbname='.$name, $user, $pass);
-					}
-					catch(Exception $e) {
-						Error::show(5200, "Erro ao conectar ao POSTGRE. Mensagem:". $e->getMessage(), __FILE__, __LINE__, '' );						
-						return -2;
-					}
-					if(self::$connection[$conn]->connect_error){
-						ob_flush();
-				        flush();
-						Error::show(5200, "Erro ao conectar ao POSTGRE. Código:". Run::$control->string->encoding(self::$connection[$conn]->connect_errno .' -- Mensagem:'. self::$connection[$conn]->connect_error), __FILE__, __LINE__, '' );
-						return -2;
-					}
-				}else{
-					Error::show(5200, "Não conecta no POSTGRE: ".$host ." / ". $name ." / ". $user ." / ", __FILE__, __LINE__, '');
+				catch(Exception $e) {
+					Error::show(5200, "Erro ao conectar ao POSTGRE. Mensagem:". $e->getMessage(), __FILE__, __LINE__, '' );						
 					return -2;
 				}
+				if(self::$connection[$id]->connect_error){
+					ob_flush();
+			        flush();
+					Error::show(5200, "Erro ao conectar ao POSTGRE. Código:". Run::$control->string->encoding(self::$connection[$id]->connect_errno .' -- Mensagem:'. self::$connection[$conn]->connect_error), __FILE__, __LINE__, '' );
+					return -2;
+				}
+			}else{
+				Error::show(5200, "Não conecta no POSTGRE: ".$host ." / ". $name ." / ". $user ." / ", __FILE__, __LINE__, '');
+				return -2;
 			}
 		}else{
 			Error::show(0, "Dados de conexão não foram definidos ", __FILE__, __LINE__, '');
@@ -46,11 +50,14 @@ class Postgre extends Database{
 		}
 	}
 	//*************************************************************************************************************************
-	static public function getInstance(){
+	static public function getInstance($id='default'){
 		Debug::log("getInstance Postgre.", __LINE__, __FUNCTION__, __CLASS__, __FILE__);
 		if(!isset(self::$instance) || !is_object(self::$instance)) {
             $class = __CLASS__;
-            self::$instance = new $class();
+            self::$instance = new $class($id);
+        }
+		if(!isset(self::$connection[$id]) ) {
+            self::$instance->newConnection($id);
         }
         return self::$instance;
 	}

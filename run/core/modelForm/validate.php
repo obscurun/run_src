@@ -846,7 +846,7 @@ class Validate{
 			else if(!isset($value["tmp_name"]) && $value=="") return true;
 			
 			if(is_array($params) && count($params) == 2){
-				Error::writeLog("nome>: ".$_FILES[$field]["name"]	, __FILE__, __LINE__);
+				Error::writeLog("nome>: ".Run::$control->file->getBytesByUnit($value, "B")." >> ".Run::$control->file->getBytesByUnit((int)$params[0], $params[1])	, __FILE__, __LINE__);
 				if(is_array($value) && Run::$control->file->getBytesByUnit((int)$value["size"], "B") <= Run::$control->file->getBytesByUnit($params[0], $params[1])) return true;
 				else if(!is_array($value) && Run::$control->file->getBytesByUnit($value, "B") > 2 && Run::$control->file->getBytesByUnit($value, "B") <= Run::$control->file->getBytesByUnit((int)$params[0], $params[1])) return true;
 				else{				

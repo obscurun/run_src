@@ -217,7 +217,7 @@ class Date{
 		return $data;
 	}
 	//-------------------------------------------------------------------------------------------------------------------------
-	public function getWeekOfYear($date){
+	public function getWeekOfYear(){
 		$week = (int)date('W', self::$TODAY["MKTIME"]);
 		return $week;
 	}

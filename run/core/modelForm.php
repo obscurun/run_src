@@ -96,36 +96,6 @@ class modelForm{
 
 
 
-		//-  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -
-		// Iniciar banco de dados se houver instancia, inicia classes Token, Data, SaveData e SelectData
-		if($this->settings['database_connection'] !== false){
-			$connection 		= Model::getConnectionData($this->settings['database_connection']);
-			$this->database 	= Model::getInstance($connection['type_db']);
-		}else{
-			$connection 		= array('type_db' => 'mysql');
-			$this->database 	= Model::getInstance();
-		}
-		if(!$this->database){
-			Error::show(5200, "Model-> A conexão com o banco não foi iniciada. ".__FUNCTION__, __FILE__, __LINE__, '');
-			$this->settings['auto_load'] = false;
-			$this->settings['auto_save'] = false;
-		}
-		if($connection['type_db'] == "mysql") 			$this->query 	= new MysqlQuery();
-		else if($connection['type_db'] == "postgre")	$this->query 	= new PostgreQuery();
-		else{ Error::show(5200, "Model-> O tipo de conexão não está definido corretamente ".__FUNCTION__, __FILE__, __LINE__, ''); }
-		$this->validate    	= new Validate();
-		$this->data  		= new FormModel\Data($this->schema, $this->settings);
-		$this->saveData  	= new SaveData($this, $this->database, $this->query);
-		$this->selectData  	= new selectData($this);
-		
-		Run::$benchmark->writeMark("FormModel/Check/Schema/Settings", "FormModel/Instance/Mysql/Validate/SaveData/SelectData");
-
-
-
-
-
-
-
 		//EXE REQUEST / POST / FILES / REF -----------------------------------------------------------------------------------------------------------------------------------------------------------------
 
 
@@ -134,6 +104,7 @@ class modelForm{
 
 		//-  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -
 		// Executa método exeBeforeRequest usando na aplicação, trata os requests e unifica em DataForm e executa exeAfterRequest
+		$this->data  		= new FormModel\Data($this->schema, $this->settings);
 		$this->exeBeforeRequest();
 		$this->dataForm 	= $this->data->getRequests();
 		$this->dataIntern 	= $this->data->getDataInternal();
@@ -145,9 +116,21 @@ class modelForm{
 		//Debug::print_r("dataForm", $this->dataForm);
 		//Debug::print_r("dataFormSequencial", $this->dataFormSequencial);
 		//Debug::print_r("SESSION", $this->session->getDataSession());
+		//
 
 
+
+
+
+
+
+
+		$this->validate    	= new Validate();
 		
+		Run::$benchmark->writeMark("FormModel/Check/Schema/Settings", "FormModel/Instance/Mysql/Validate/SaveData/SelectData");
+
+
+
 
 
 
@@ -224,6 +207,29 @@ class modelForm{
 		}		
 		Run::$benchmark->writeMark("FormModel/exeBeforeRequest/getRequests/exeAfterRequest", "FormModel/checkToken/validator");
 
+
+
+		
+
+
+
+
+		//-  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -
+		// Iniciar banco de dados se houver instancia, inicia classes Token, Data, SaveData e SelectData
+		//Run::$DEBUG_PRINT = 1;
+		Debug::print_r("dataForm", $this->dataForm);
+		if(((int)$this->dataIntern[$this->settings['ref']] > 0) || ( isset($this->dataForm['form_id']) && ($this->dataForm['form_id'] == $this->settings['form_id']) ) && count($this->dataErrors) <= 0 ){
+
+			$this->database = Model::getInstance($this->settings['database_connection']);
+			if(!$this->database){
+				Error::show(5200, "Model-> A conexão com o banco não foi iniciada. ".__FUNCTION__, __FILE__, __LINE__, '');
+				$this->settings['auto_load'] = false;
+				$this->settings['auto_save'] = false;
+			}
+			$this->query 	= Model::$query;
+		}
+		$this->saveData  	= new SaveData($this, $this->database, $this->query);
+		$this->selectData  	= new selectData($this);
 
 
 

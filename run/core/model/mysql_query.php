@@ -116,7 +116,8 @@ class MysqlQuery{
 	function insert($table="", $_use_prefix=true){
 		Debug::log("Query->insert", $this->_line, $this->_function, $this->_class, $this->_file);
 		if($table == "") Error::show(0, "Query:: Não foi declarado o TABLE para o query em {$this->_file} na linha: {$this->_line}.");
-		if(Config::QUERY_USE_PREFIX && $_use_prefix) $table = Config::DB.$table;
+		if(Config::QUERY_USE_PREFIX_TABLE && $_use_prefix) $table = Config::DB.$table;
+		$table = $this->mysql->schema.$table;
 		$this->query_string = "INSERT INTO ".$table." \r\n";
 		return $this;
 	}
@@ -124,7 +125,8 @@ class MysqlQuery{
 	function replace($table="", $_use_prefix=true){
 		Debug::log("Query->replace", $this->_line, $this->_function, $this->_class, $this->_file);
 		if($table == "") Error::show(0, "Query:: Não foi declarado o TABLE para o query em {$this->_file} na linha: {$this->_line}.");
-		if(Config::QUERY_USE_PREFIX && $_use_prefix) $table = Config::DB.$table;
+		if(Config::QUERY_USE_PREFIX_TABLE && $_use_prefix) $table = Config::DB.$table;
+		$table = $this->mysql->schema.$table;
 		$this->query_string = "REPLACE INTO ".$table." \r\n";
 		return $this;
 	}
@@ -148,8 +150,9 @@ class MysqlQuery{
 	function update($table="", $_use_prefix=true){
 		Debug::log("Query->update", $this->_line, $this->_function, $this->_class, $this->_file);
 		if($table == "") Error::show(0, "Query:: Não foi declarado o TABLE para o query em {$this->_file} na linha: {$this->_line}.");
-		//if(Config::QUERY_USE_PREFIX) $table = Config::DB.$table;
-		if(Config::QUERY_USE_PREFIX && $_use_prefix) $table = Config::DB.$table;
+		//if(Config::QUERY_USE_PREFIX_TABLE) $table = Config::DB.$table;
+		if(Config::QUERY_USE_PREFIX_TABLE && $_use_prefix) $table = Config::DB.$table;
+		$table = $this->mysql->schema.$table;
 		$this->query_string = "UPDATE ".$table." \r\n";
 		return $this;
 	}
@@ -157,7 +160,8 @@ class MysqlQuery{
 	function delete($table=""){
 		Debug::log("Query->delete", $this->_line, $this->_function, $this->_class, $this->_file);
 		if($table == "") Error::show(0, "Query:: Não foi declarado o TABLE para o query em {$this->_file} na linha: {$this->_line}.");
-		if(Config::QUERY_USE_PREFIX) $table = Config::DB.$table;
+		if(Config::QUERY_USE_PREFIX_TABLE) $table = Config::DB.$table;
+		$table = $this->mysql->schema.$table;
 		$this->query_string = "DELETE FROM ".$table." \r\n";
 		return $this;
 	}
@@ -171,12 +175,13 @@ class MysqlQuery{
 	function from($table="", $nick="", $_use_prefix=true){
 		if($table == "") Error::show(0, "Query:: Não foi declarado o TABLE para o query.");
 		if(is_array($table)){
-			if(Config::QUERY_USE_PREFIX && $_use_prefix)$table = implode(', '.Config::DB, $table);
-			else			$table = implode(', ', $table);
+			if(Config::QUERY_USE_PREFIX_TABLE && $_use_prefix)$table = implode(', '.$this->mysql->schema.Config::DB, $table);
+			else			$table = implode(', ', $this->mysql->schema.$table);
 		}
 		else{
 			if($nick != "") $table .= " ".$nick;
-			if(Config::QUERY_USE_PREFIX && $_use_prefix) $table = Config::DB.$table;
+			if(Config::QUERY_USE_PREFIX_TABLE && $_use_prefix) $table = Config::DB.$table;
+			$table = $this->mysql->schema.$table;
 		}
 		$this->query_string .= "FROM ". $table ." \r\n";
 		return $this;
@@ -184,7 +189,8 @@ class MysqlQuery{
 	//-------------------------------------------------------------------------------------------------------------------------
 	function join($table="", $on="", $nick="", $_use_prefix=true){
 		if($table == "") Error::show(0, "Query:: Não foi declarado o TABLE para o query em {$this->_file} na linha: {$this->_line}.");
-		if(Config::QUERY_USE_PREFIX && $_use_prefix) $table = Config::DB.$table;
+		if(Config::QUERY_USE_PREFIX_TABLE && $_use_prefix) $table = Config::DB.$table;
+		$table = $this->mysql->schema.$table;
 		if($nick != "") $table .= " ".$nick;
 		$this->query_string .= "JOIN ".$table." ON(". $on .") \r\n";
 		return $this;
@@ -192,7 +198,8 @@ class MysqlQuery{
 	//-------------------------------------------------------------------------------------------------------------------------
 	function leftjoin($table="", $on="", $nick=""){
 		if($table == "") Error::show(0, "Query:: Não foi declarado o TABLE para o query em {$this->_file} na linha: {$this->_line}.");
-		if(Config::QUERY_USE_PREFIX) $table = Config::DB.$table;
+		if(Config::QUERY_USE_PREFIX_TABLE) $table = Config::DB.$table;
+		$table = $this->mysql->schema.$table;
 		if($nick != "") $table .= " ".$nick;
 		$this->query_string .= "LEFT JOIN ".$table." ON(". $on .") \r\n";
 		return $this;
@@ -200,7 +207,8 @@ class MysqlQuery{
 	//-------------------------------------------------------------------------------------------------------------------------
 	function rightjoin($table="", $on="", $nick=""){
 		if($table == "") Error::show(0, "Query:: Não foi declarado o TABLE para o query em {$this->_file} na linha: {$this->_line}.");
-		if(Config::QUERY_USE_PREFIX) $table = Config::DB.$table;
+		if(Config::QUERY_USE_PREFIX_TABLE) $table = Config::DB.$table;
+		$table = $this->mysql->schema.$table;
 		if($nick != "") $table .= " ".$nick;
 		$this->query_string .= "RIGHT JOIN ".$table." ON(". $on .") \r\n";
 		return $this;

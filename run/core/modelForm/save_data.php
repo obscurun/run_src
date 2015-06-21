@@ -182,9 +182,9 @@ class SaveData{
 				if($dataPK > 0){
 					// não pode ser com replace, pois os campos não atualizados são apagados do registro.
 					//$sql_query = "REPLACE INTO ". $refs['table'] ." \n(\n".$fields ."\n) \nVALUES(\n".$values."\n)";
-					$sql_query = "UPDATE ". $refs['table'] ." SET \n".$update_fields ."\n \n WHERE \n\t {$refs['pk']} = $dataPK \n";
+					$sql_query = "UPDATE ". $this->database->schema.$refs['table'] ." SET \n".$update_fields ."\n \n WHERE \n\t {$refs['pk']} = $dataPK \n";
 				}else{
-					$sql_query = "INSERT INTO ". $refs['table'] ." \n(\n".$fields ."\n) \nVALUES(\n".$values."\n)";
+					$sql_query = "INSERT INTO ". $this->database->schema.$refs['table'] ." \n(\n".$fields ."\n) \nVALUES(\n".$values."\n)";
 				}
 				Debug::p("sql_query", $sql_query);
 				if($saveFileData['name'] === "" && $saveFileData['path'] !== false ) continue;

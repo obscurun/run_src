@@ -349,7 +349,7 @@ class Form2Model extends modelForm{
 					'size'				=> '60',
 					'validation'		=> array(
 						'required'		=> array(true, true, 'Insira um arquivo.'),
-						'maxfilesize'	=> array(array(1, "MB"), true)
+						'maxfilesize'	=> array(array(500, "KB"), true, 'O arquivo [name] é maior que o permitido')
 					)
 				),
 		//- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -

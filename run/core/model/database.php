@@ -25,17 +25,8 @@ class Database{
 	private function __construct(){
 
 	}
-	//*************************************************************************************************************************
-	static public function getInstance(){
-		Debug::log("getInstance Database.", __LINE__, __FUNCTION__, __CLASS__, __FILE__);
-		if(!isset(self::$instance) || !is_object(self::$instance)) {
-            $class = __CLASS__;
-            self::$instance = new $class();
-        }
-        return self::$instance;
-	}
 	//-------------------------------------------------------------------------------------------------------------------------
-	public function setActive($id){
+	static public function setActive($id){
 		if(isset(self::$connection[$id])){
 			self::$active = $id;
 		}else{

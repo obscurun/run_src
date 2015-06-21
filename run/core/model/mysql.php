@@ -16,39 +16,47 @@
 // $dadosConexao['server2']["name"]
 // $dadosConexao['server2']["user"]
 // $dadosConexao['server2']["pass"]
+require_once("database.php");
 // ############################################################################################################################
-class Mysql{
+class Mysql extends Database{
 	static private $instance;
 	static private $connection 	= array();
 	static public  $active	 	= false;
+	public  $schema	 	= "";
 	//*************************************************************************************************************************
-	private function __construct(){
+	private function __construct($id){		
+		$this->newConnection($id);
+	}
+	//*************************************************************************************************************************
+	private function newConnection($id){
 		$connectionData = Model::getConnectionsData();
-		if(count($connectionData)>0){
+		//Run::$DEBUG_PRINT = 1;
+		Debug::print_r("__construct", $id);
+		if(isset($connectionData[$id])){
+			$data = $connectionData[$id] ;
 			Debug::log("Iniciando Mysqli.", __LINE__, __FUNCTION__, __CLASS__, __FILE__);
-			foreach($connectionData as $conn => $data){
-				if($data["type_db"] !== "mysql") continue;
-				if(self::$active == false){
-					self::$active = $conn;
-				}
-				$host = $data["host"];
-				$name = $data["name"];
-				$user = $data["user"];
-				$pass = $data["pass"];
-				if($host && $name && $user){
-					//echo "$host, $user, $pass, $name";
-					self::$connection[$conn] = new mysqli($host, $user, $pass, $name); 
-					self::$connection[$conn]->set_charset("utf8");
-					if(self::$connection[$conn]->connect_error){
-						ob_flush();
-				        flush();
-						Error::show(5200, "Erro ao conectar ao Mysqli. Código:". Run::$control->string->encoding(self::$connection[$conn]->connect_errno .' -- Mensagem:'. self::$connection[$conn]->connect_error), __FILE__, __LINE__, '' );
-						return -2;
-					} else{ self::$connection[$conn]->set_charset("utf8"); }
-				}else{
-					Error::show(5200, "Não conecta no MYSQLI: ".$host ." / ". $name ." / ". $user ." / ", __FILE__, __LINE__, '');
+			if(self::$active == false){
+				self::$active = $id;
+			}
+			$host = $data["host"];
+			$name = $data["name"];
+			$user = $data["user"];
+			$pass = $data["pass"];
+			$this->schema = $data["schema"];
+			if($host && $name && $user){
+				//echo "$host, $user, $pass, $name";
+				self::$connection[$id] = new mysqli($host, $user, $pass, $name); 
+				self::$connection[$id]->set_charset("utf8");
+				Debug::print_r("conectando mysql $id ");
+				if(self::$connection[$id]->connect_error){
+					ob_flush();
+			        flush();
+					Error::show(5200, "Erro ao conectar ao Mysqli. Código:". Run::$control->string->encoding(self::$connection[$id]->connect_errno .' -- Mensagem:'. self::$connection[$conn]->connect_error), __FILE__, __LINE__, '' );
 					return -2;
-				}
+				} else{ self::$connection[$id]->set_charset("utf8"); }
+			}else{
+				Error::show(5200, "Não conecta no MYSQLI: ".$host ." / ". $name ." / ". $user ." / ", __FILE__, __LINE__, '');
+				return -2;
 			}
 		}else{
 			Error::show(0, "Dados de conexão não foram definidos ", __FILE__, __LINE__, '');
@@ -56,11 +64,14 @@ class Mysql{
 		}
 	}
 	//*************************************************************************************************************************
-	static public function getInstance(){
+	static public function getInstance($id){
 		Debug::log("getInstance Mysql.", __LINE__, __FUNCTION__, __CLASS__, __FILE__);
 		if(!isset(self::$instance) || !is_object(self::$instance)) {
             $class = __CLASS__;
-            self::$instance = new $class();
+            self::$instance = new $class($id);
+        }
+		if(!isset(self::$connection[$id]) ) {
+            self::$instance->newConnection($id);
         }
         return self::$instance;
 	}
