@@ -12,13 +12,13 @@ class MysqlQuery{
 	public $mysql			="";
 	public static $sql		="";
 	//*************************************************************************************************************************
-	function Query(){
+	function MysqlQuery($id){
 		$this->query_string = "";
 		$this->_line 		= __LINE__;
 		$this->_function 	= __FUNCTION__;
 		$this->_class 		= __CLASS__;
 		$this->_file 		= __FILE__;
-		$this->mysql 		= Mysql::getInstance();
+		$this->mysql 		= Mysql::getInstance($id);
 	}
 	//*************************************************************************************************************************
 	function setLog($_line=__LINE__, $_function=__FUNCTION__, $_class=__CLASS__, $_file=__FILE__){
@@ -29,16 +29,36 @@ class MysqlQuery{
 		return $this;
 	}
 	//*************************************************************************************************************************
-	function execute($sql="", $conn=false,$_line=__LINE__, $_function=__FUNCTION__, $_class=__CLASS__, $_file=__FILE__){
+	function execute($sql="", $conn=false, $returnId=false, $_line=__LINE__, $_function=__FUNCTION__, $_class=__CLASS__, $_file=__FILE__){
 		if($sql == "") $sql = $this->query_string;
 		self::$sql = $sql;
-		$this->query_result = $this->mysql->query($sql, $_line, $_function, $_class, $_file, $conn);
+		$this->query_result = $this->mysql->query($sql, $returnId, $_line, $_function, $_class, $_file, $conn);
 		if(is_integer($this->query_result)){ 
 			Debug::log("Query->execute: ".mysqli_error($conn), $this->_line, $this->_function, $this->_class, $this->_file);
 			Error::show(5200, "Model-> Erro no Query->Result ".__FUNCTION__, __FILE__, __LINE__, '');
 		}
-		if($sql == "") return $this->query_result;
+		if($sql != "") return $this->query_result;
 		else return $this;
+	}
+	//*************************************************************************************************************************
+	function returnFetchAssoc($resultObj=false, $_line=__LINE__, $_function=__FUNCTION__, $_class=__CLASS__, $_file=__FILE__){
+		return $this->mysql->returnFetchAssoc($resultObj, $n); 
+	}
+	//*************************************************************************************************************************
+	function returnFetchArray($resultObj=false, $_line=__LINE__, $_function=__FUNCTION__, $_class=__CLASS__, $_file=__FILE__){
+		return $this->mysql->returnFetchArray($resultObj, $n); 
+	}
+	//*************************************************************************************************************************
+	function returnFetchRow($resultObj=false, $_line=__LINE__, $_function=__FUNCTION__, $_class=__CLASS__, $_file=__FILE__){
+		return $this->mysql->returnFetchRow($resultObj, $n); 
+	}
+	//-------------------------------------------------------------------------------------------------------------------------
+	function resultSeek($resultObj=false, $n=0){
+		return $this->mysql->resultSeek($resultObj, $n);
+	}
+	//-------------------------------------------------------------------------------------------------------------------------
+	function returnNumRows($resultObj=false){
+		return $this->mysql->returnNumRows($resultObj);
 	}
 	//*************************************************************************************************************************
 	function returnAssoc($_line=__LINE__, $_function=__FUNCTION__, $_class=__CLASS__, $_file=__FILE__){

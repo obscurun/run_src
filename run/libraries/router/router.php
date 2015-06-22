@@ -124,7 +124,11 @@ class Router extends RouterBase{
 				Debug::log("Router->loadPageContent : Chamando metodo index/{self::$controller->acceptNextIndexUnknownLevels} para a URL. (control/".$pag."_control.php) - $class");
 				Action::registerAccess();
 				Run::$benchmark->writeMark("startRouter/Inicio", "loadPageContent/else/controller/method");
-				self::$controller->$method();
+				if(method_exists($class,$method)) self::$controller->$method();
+				else{
+					Error::show(8, "Router->loadPageContent: Metodo <b>$method</b> não existe. {self::$controller->acceptNextUnknownLevels} (control/".$pag."_control.php).", __FILE__, __LINE__);
+					$this->load("404");
+				}
 			}
 		}else{
 			if(!class_exists($class)) Error::show(8, "Router->loadPageContent: Classe <b>$class</b> não existe. (control/".$pag."_control.php).", __FILE__, __LINE__);

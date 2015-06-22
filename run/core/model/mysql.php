@@ -30,14 +30,13 @@ class Mysql extends Database{
 	//*************************************************************************************************************************
 	private function newConnection($id){
 		$connectionData = Model::getConnectionsData();
+		if(!$id)	foreach($connectionData as $k=>$v){ if($v['type_db'] == "mysql"){ $id = $k; break; } }
 		//Run::$DEBUG_PRINT = 1;
 		Debug::print_r("__construct", $id);
 		if(isset($connectionData[$id])){
 			$data = $connectionData[$id] ;
 			Debug::log("Iniciando Mysqli.", __LINE__, __FUNCTION__, __CLASS__, __FILE__);
-			if(self::$active == false){
-				self::$active = $id;
-			}
+			self::$active = $id;
 			$host = $data["host"];
 			$name = $data["name"];
 			$user = $data["user"];
@@ -65,6 +64,7 @@ class Mysql extends Database{
 	}
 	//*************************************************************************************************************************
 	static public function getInstance($id){
+		if(!$id)	foreach(Model::getConnectionsData() as $k=>$v){ if($v['type_db'] == "mysql"){ $id = $k; break; }  }
 		Debug::log("getInstance Mysql.", __LINE__, __FUNCTION__, __CLASS__, __FILE__);
 		if(!isset(self::$instance) || !is_object(self::$instance)) {
             $class = __CLASS__;
@@ -93,7 +93,7 @@ class Mysql extends Database{
 		return $war;
 	}
 	//-------------------------------------------------------------------------------------------------------------------------
-	public function query($sql, $_line=__LINE__, $_function=__FUNCTION__, $_class=__CLASS__, $_file=__FILE__, $conn=false){
+	public function query($sql, $returnId=false, $_line=__LINE__, $_function=__FUNCTION__, $_class=__CLASS__, $_file=__FILE__, $conn=false){
 		if($conn == false) $conn = self::$active;
 		Debug::log("Mysql->query: $sql", __LINE__, __FUNCTION__, __CLASS__, __FILE__);
 		if(isset(self::$connection[$conn])){
@@ -118,10 +118,44 @@ class Mysql extends Database{
 		return self::$connection[self::$active]->query($sql);
 	}
 	//-------------------------------------------------------------------------------------------------------------------------
-	public function getID($conn=false){
-		if($conn == false) $conn = self::$active;
+	public function getID(){
+		$conn = self::$active;
 		return mysqli_insert_id(self::$connection[$conn]);
 	}
+	//*************************************************************************************************************************
+	public function returnFetchAssoc($resultObj=false){
+		if(!$resultObj) $resultObj = $this->resultQuery;
+		return $resultObj->fetch_assoc();
+	}
+	//*************************************************************************************************************************
+	public function returnFetchArray($resultObj=false){
+		if(!$resultObj) $resultObj = $this->resultQuery;
+		return $resultObj->fetch_array();
+	}
+	//*************************************************************************************************************************
+	public function returnFetchRow($resultObj=false){
+		if(!$resultObj) $resultObj = $this->resultQuery;
+		return $resultObj->fetch_row();
+	}
+	//-------------------------------------------------------------------------------------------------------------------------
+	public function resultSeek($resultQuery=false, $n=0){
+		if($resultQuery == false) $resultQuery = $this->resultQuery;
+		$resultQuery->data_seek($n);
+		return $resultQuery;
+	}
+	//-------------------------------------------------------------------------------------------------------------------------
+	public function returnNumRows($resultObj=false){
+		if(!$resultObj) $resultObj = $this->resultQuery;
+		return $resultObj->num_rows; 
+	}
+
+
+
+
+
+
+
+
 	//-------------------------------------------------------------------------------------------------------------------------
 	public function getAffecteds($conn=false){
 		if($conn == false) $conn = self::$active;

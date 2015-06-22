@@ -18,7 +18,7 @@ class Form3bModel extends modelForm{
 			"permission_insert" 		=> true,
 			"permission_update" 		=> true,
 			"permission_delete" 		=> true,
-			"redirect_insert"			=> "testes/form3b/[id]",
+			"redirect_insert"			=> "testes/form3b/[id]/".Run::$control->data->getQueryToString(),
 			"encode_utf8" 				=> false,
 			"decode_utf8" 				=> false,
 			"check_token"				=> true,

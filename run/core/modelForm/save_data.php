@@ -189,7 +189,7 @@ class SaveData{
 				Debug::p("sql_query", $sql_query);
 				if($saveFileData['name'] === "" && $saveFileData['path'] !== false ) continue;
 				//	//Debug::p("pqp ------------{$saveFileData['name']}------------------------- {$saveFileData['path']} ");
-				$sql_obj = $this->database->query($sql_query, __LINE__, __FUNCTION__, __CLASS__, __FILE__, $this->settings['database_id']);
+				$sql_obj = $this->database->query($sql_query, $refs['pk'], __LINE__, __FUNCTION__, __CLASS__, __FILE__, $this->settings['database_id']);
 				
 				$warMsg = $this->database->getWarning();
 				if((is_integer($sql_obj) || $warMsg != "") && $this->database->getError() != "00000"){ 
@@ -202,7 +202,7 @@ class SaveData{
 				if($dataPK > 0){
 					$id_pf_ref = $data[ $refs['pk'] ] = $dataPK;
 				}
-				else $id_pf_ref  = $this->database->getID($this->settings['database_id']);
+				else $id_pf_ref  = $this->database->getID($sql_query);
 					
 				if(isset($dataTables[$k][$refTableIndex][$reIndexed][ $refs['pk'] ])){
 					$dataTables[$k][$refTableIndex][$reIndexed][ $refs['pk'] ] = $id_pf_ref;

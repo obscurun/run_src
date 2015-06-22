@@ -34,21 +34,22 @@ class Model{
 		return self::getInstance($id);
 	}
 	//*************************************************************************************************************************
-	static public function getInstance($id){
-		if(!$id)	foreach(self::$connectionData as $k=>$v){ $id = $k; break; }
-		$connection = Model::getConnectionData($id);
+	static public function getInstance($id=false){
+		if(!$id)	foreach(self::$connectionData as $k=>$v){ $idC = $k; break; }
+		else $idC = $id;
+		$connection = Model::getConnectionData($idC);
 		$database 	= NULL;
 		Debug::print_r("getInstance $id ", $connection);
 		if(Run::MYSQL === true && $connection['type_db'] == "mysql"){
 			$database = Mysql::getInstance($id);
-			Mysql::setActive($id);
-			self::$query 	= new MysqlQuery();
+			if($id) Mysql::setActive($id);
+			self::$query 	= new MysqlQuery($id);
 			return $database;
 		}
 		else if(Run::POSTGRE === true && $connection['type_db'] == "postgre"){
 			$database = Postgre::getInstance($id);
-			Postgre::setActive($id);
-			self::$query 	= new PostgreQuery();
+			if($id) Postgre::setActive($id);
+			self::$query 	= new PostgreQuery($id);
 			return $database;
 		}else{
 			return false;

@@ -21,7 +21,7 @@ class Form3pModel extends modelForm{
 			"redirect_insert"			=> "testes/form3p/[id]",
 			"encode_utf8" 				=> false,
 			"decode_utf8" 				=> false,
-			"check_token"				=> true,
+			"check_token"				=> false,
 			"database_id"				=> "postgre",
 			"paging_num"				=> 20
 		);
@@ -86,6 +86,24 @@ class Form3pModel extends modelForm{
 						'minwords'		=> array(2, true),
 						'rangenumbers'	=> array(array(1, 3), true)
 					)
+				),
+		//- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+				'date_insert'			=> array(
+					'belongsTo'			=> 'c',
+					'update'			=> false,
+					'label'				=> 'Data de Inserção',
+					'type' 				=> 'date_insert',
+					'name' 				=> 'date_insert',
+					'list' 				=> true
+				),
+		//- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+				'date_update'			=> array(
+					'belongsTo'			=> 'c',
+					'update'			=> true,
+					'label'				=> 'Data de Atualização',
+					'type' 				=> 'date_update',
+					'name' 				=> 'date_update',
+					'list' 				=> true
 				)
 		//- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 			)

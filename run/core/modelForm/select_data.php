@@ -8,6 +8,8 @@ class SelectData{
 	private $query 				= NULL;
 	private $orderData 			= NULL;
 	private $model 				= NULL;
+	private $fetchData			= NULL;
+	private $queryResult		= NULL;
 	//*************************************************************************************************************************
 	function SelectData($model){
 		Debug::log("Iniciando Core/Form/Select.", __LINE__, __FUNCTION__, __CLASS__, __FILE__);
@@ -27,23 +29,31 @@ class SelectData{
 		$dataSelectRecursive 	= array();
 		$dataSelectPKList 		= array();
 
-		$query_obj = $this->database->query($sql, __LINE__, __FUNCTION__, __CLASS__, __FILE__, $settings['database_id']);
-		Run::$benchmark->writeMark("SelectData/select/buildSQL", "SelectData/select/database->query(sql)");
+		//echo $sql; exit;
 
-		if($query_obj === -2) Error::show(0, "MODEL:: Houve um erro ao executar o select query automaticamente: ".$sql);
-		else if($query_obj->num_rows > 0){
-			$dataSelectSequencial 	= $this->buildSQLDataSequencial($type, $query_obj, $schema, $settings, $dataIntern);
+
+		$this->queryResult = $this->query->execute($sql, false, false, __LINE__, __FUNCTION__, __CLASS__, __FILE__, $settings['database_id']);
+		//$this->fetchData = $this->queryResult; //$this->query->returnFetchAssoc($this->queryResult);
+		Run::$benchmark->writeMark("SelectData/select/buildSQL", "SelectData/select/database->query(sql)");
+		if(!$this->queryResult){
+			Error::show(0, "MODEL:: Houve um erro ao executar o select query automaticamente: ".$sql);
+		}
+
+
+		if($this->queryResult === -2) Error::show(0, "MODEL:: Houve um erro ao executar o select query automaticamente: ".$sql);
+		else if($this->query->returnNumRows($this->queryResult) > 0){
+			$dataSelectSequencial 	= $this->buildSQLDataSequencial($type, $this->queryResult, $schema, $settings, $dataIntern);
 			Run::$benchmark->writeMark("SelectData/select/buildSQL", "SelectData/select/buildSQLDataSequencial");
 			if($settings['select_tabulated'] === true){
-				$dataSelectTabulated 	= $this->buildSQLData($type, $query_obj, $schema, $settings, $dataIntern);
+				$dataSelectTabulated 	= $this->buildSQLData($type, $this->queryResult, $schema, $settings, $dataIntern);
 				Run::$benchmark->writeMark("SelectData/select/buildSQL", "SelectData/select/buildSQLDataTabulated");
 			}
 			if($settings['select_recursive'] === true){
 				$orderTables 			= $this->orderData->getOrderedTables($data, $schema);
-				$dataSelectRecursive 	= $this->buildSQLDataRecursive($type, $orderTables, $query_obj, $schema, $settings, $dataIntern);
+				$dataSelectRecursive 	= $this->buildSQLDataRecursive($type, $orderTables, $this->queryResult, $schema, $settings, $dataIntern);
 				Run::$benchmark->writeMark("SelectData/select/buildSQL", "SelectData/select/buildSQLDataRecursive");
 			}
-			$dataSelectPKList			= $this->buildSQLPKList($type, $query_obj, $schema, $settings, $dataIntern);
+			$dataSelectPKList			= $this->buildSQLPKList($type, $this->queryResult, $schema, $settings, $dataIntern);
 
 			Run::$benchmark->writeMark("SelectData/select/Inicio", "SelectData/select/Final");
 		}
@@ -58,43 +68,44 @@ class SelectData{
 		);
 	}
 	//*************************************************************************************************************************
-	public function buildSQLPKList($type, $dataSQL, $schema, $settings, $dataIntern, $fkTableID=0){	
+	public function buildSQLPKList($type, $queryResult, $schema, $settings, $dataIntern, $fkTableID=0){	
 		Run::$benchmark->mark("SelectData/buildSQLPKList/Inicio");
 		//Debug::prownt_r($orderTables);	
-		$dataSQL->data_seek(0);
+		//$queryResult->data_seek(0);
 		$dataTable = array();
 		foreach($schema['from'] as $index => $paramTable){
-			$dataTable = $this->fetchSQLPKList($type, $paramTable, $dataTable, $dataSQL, $schema, $settings, $dataIntern);
+			$dataTable = $this->fetchSQLPKList($type, $paramTable, $dataTable, $queryResult, $schema, $settings, $dataIntern);
 		}
 		Run::$benchmark->writeMark("SelectData/buildSQLPKList/Inicio", "SelectData/buildSQLPKList/schema[from]");
 		foreach($schema['join'] as $index => $paramTable){
-			$dataTable = $this->fetchSQLPKList($type, $paramTable, $dataTable, $dataSQL, $schema, $settings, $dataIntern);
+			$dataTable = $this->fetchSQLPKList($type, $paramTable, $dataTable, $queryResult, $schema, $settings, $dataIntern);
 		}
 		Run::$benchmark->writeMark("SelectData/buildSQLPKList/schema[from]", "SelectData/buildSQLPKList/schema[joins]");
 		return $dataTable;
 	}
 	//*************************************************************************************************************************
-	public function buildSQLDataSequencial($type, $dataSQL, $schema, $settings, $dataIntern, $fkTableID=0){	
+	public function buildSQLDataSequencial($type, $queryResult, $schema, $settings, $dataIntern, $fkTableID=0){	
 		Run::$benchmark->mark("SelectData/buildSQLDataSequencial/Inicio");
 		//Debug::prownt_r($orderTables);	
-		$dataSQL->data_seek(0);
+		//$queryResult->data_seek(0);
 		$dataTable = array();
 		foreach($schema['from'] as $index => $paramTable){
-			$dataTable = $this->fetchSQLDataSequencial($type, $paramTable, $dataTable, $dataSQL, $schema, $settings, $dataIntern);
+			$dataTable = $this->fetchSQLDataSequencial($type, $paramTable, $dataTable, $queryResult, $schema, $settings, $dataIntern);
 		}
 		Run::$benchmark->writeMark("SelectData/buildSQLDataSequencial/Inicio", "SelectData/buildSQLDataSequencial/schema[from]");
 		foreach($schema['join'] as $index => $paramTable){
-			$dataTable = $this->fetchSQLDataSequencial($type, $paramTable, $dataTable, $dataSQL, $schema, $settings, $dataIntern);
+			$dataTable = $this->fetchSQLDataSequencial($type, $paramTable, $dataTable, $queryResult, $schema, $settings, $dataIntern);
 		}
 		Run::$benchmark->writeMark("SelectData/buildSQLDataSequencial/schema[from]", "SelectData/buildSQLDataSequencial/schema[joins]");
 		return $dataTable;
 	}
 	//*************************************************************************************************************************
-	private function fetchSQLPKList($type, $tableParams, $dataTable, $dataSQL, $schema, $settings, $dataIntern){
+	private function fetchSQLPKList($type, $tableParams, $dataTable, $queryResult, $schema, $settings, $dataIntern){
 		Run::$benchmark->mark("fetchSQLPKList/".$tableParams['table_nick']."/Inicio");
-		$dataSQL->data_seek(0);
+		//$queryResult->data_seek(0);
+		$this->queryResult = $this->query->resultSeek($this->queryResult, 0);
 		$table_ref = $this->findTableByParams($tableParams, $schema);
-		while($row = $dataSQL->fetch_assoc()){
+		while( $row = $this->query->returnFetchAssoc($this->queryResult) ){
 			if((int)$row[$tableParams['pk']] > 0){
 				$dataTable[$tableParams['table_nick']][$row[$tableParams['pk']]] = $row[$tableParams['pk']];
 			}
@@ -103,9 +114,10 @@ class SelectData{
 		return $dataTable;
 	}
 	//*************************************************************************************************************************
-	private function fetchSQLDataSequencial($type, $tableParams, $dataTable, $dataSQL, $schema, $settings, $dataIntern){
+	private function fetchSQLDataSequencial($type, $tableParams, $dataTable, $queryResult, $schema, $settings, $dataIntern){
 		Run::$benchmark->mark("fetchSQLDataSequencial/".$tableParams['table_nick']."/Inicio");
-		$dataSQL->data_seek(0);
+		//$queryResult->data_seek(0);
+		$this->queryResult = $this->query->resultSeek($this->queryResult, 0);
 		$table_ref = $this->findTableByParams($tableParams, $schema);
 		//Debug::p($tableParams, $table_ref);
 		$fieldsTable = array();
@@ -114,8 +126,9 @@ class SelectData{
 				$fieldsTable[$field] = $params;
 			}
 		}
+
 		//Run::$benchmark->writeMark("fetchSQLDataSequencial/".$tableParams['table_nick']."/Inicio", "fetchSQLDataSequencial/".$tableParams['table_nick']."/fieldsFilter");
-		while($row = $dataSQL->fetch_assoc()){
+		while( $row = $this->query->returnFetchAssoc($this->queryResult) ){
 			if((int)$row[$tableParams['pk']] > 0){
 				foreach($fieldsTable as $field => $params){
 					if(
@@ -141,9 +154,9 @@ class SelectData{
 		return $dataTable;
 	}
 	//*************************************************************************************************************************
-	private function fetchSQLDataSequencialBKP($type, $tableParams, $dataTable, $dataSQL, $schema, $settings, $dataIntern){
-		$dataSQL->data_seek(0);
-		while($row = $dataSQL->fetch_assoc()){
+	private function fetchSQLDataSequencialBKP($type, $tableParams, $dataTable, $queryResult, $schema, $settings, $dataIntern){
+		$queryResult->data_seek(0);
+		while($row = $queryResult->fetch_assoc()){
 			if((int)$row[$tableParams['pk']] > 0){
 				foreach($schema['fields'] as $field => $params){
 					if($params[$type] == true && ($params['belongsTo'] == $tableParams['table_nick'] || $params['belongsTo'] == $tableParams['table']) ){
@@ -205,29 +218,30 @@ class SelectData{
 		return $found;
 	}
 	//*************************************************************************************************************************
-	public function buildSQLData($type, $dataSQL, $schema, $settings, $dataIntern, $fkTableID=0){	
+	public function buildSQLData($type, $queryResult, $schema, $settings, $dataIntern, $fkTableID=0){	
 		//Debug::prownt_r($orderTables);	
-		$dataSQL->data_seek(0);
+		$queryResult->data_seek(0);
 		$dataTable = array();
 		foreach($schema['from'] as $index => $paramTable){
-			$dataTable = $this->fetchSQLData($type, $paramTable, $dataTable, $dataSQL, $schema, $settings, $dataIntern);
+			$dataTable = $this->fetchSQLData($type, $paramTable, $dataTable, $queryResult, $schema, $settings, $dataIntern);
 		}
 		foreach($schema['join'] as $index => $paramTable){
-			$dataTable = $this->fetchSQLData($type, $paramTable, $dataTable, $dataSQL, $schema, $settings, $dataIntern);
+			$dataTable = $this->fetchSQLData($type, $paramTable, $dataTable, $queryResult, $schema, $settings, $dataIntern);
 		}
 		return $dataTable;
 	}
 	//*************************************************************************************************************************
-	private function fetchSQLData($type, $tableParams, $dataTable, $dataSQL, $schema, $settings, $dataIntern){
-		$dataSQL->data_seek(0);
+	private function fetchSQLData($type, $tableParams, $dataTable, $queryResult, $schema, $settings, $dataIntern){
+		$queryResult->data_seek(0);
 		$fieldsTable = array();
 		foreach($schema['fields'] as $field => $params){
 			if($params[$type] == true && ($params['belongsTo'] == $tableParams['table_nick'] || $params['belongsTo'] == $tableParams['table']) ){
 				$fieldsTable[$field] = $params;
 			}
 		}
-		while($row = $dataSQL->fetch_assoc()){
-			if((int)$row[$tableParams['pk']] > 0){
+			echo "123 ";
+
+		while($row = $this->fetchData){			if((int)$row[$tableParams['pk']] > 0){
 				foreach($fieldsTable as $field => $params){
 					if($params[$type] == true && ($params['belongsTo'] == $tableParams['table_nick'] || $params['belongsTo'] == $tableParams['table']) ){
 						if(
@@ -244,9 +258,9 @@ class SelectData{
 		return $dataTable;
 	}
 	//*************************************************************************************************************************
-	public function buildSQLDataRecursive($type, $orderTables, $dataSQL, $schema, $settings, $dataIntern, $fkTableID=0){	
+	public function buildSQLDataRecursive($type, $orderTables, $queryResult, $schema, $settings, $dataIntern, $fkTableID=0){	
 		//Debug::prownt_r($orderTables);	
-		$dataSQL->data_seek(0);
+		$queryResult->data_seek(0);
 		$dataTable = array();
 		$fieldsTable = array();
 		foreach($schema['fields'] as $field => $params){
@@ -256,7 +270,7 @@ class SelectData{
 		}
 		if(count($orderTables) < 1) return;
 		foreach($orderTables as $table => $paramTable){
-			while($row = $dataSQL->fetch_assoc()){
+			while($row = $this->fetchData){
 				foreach($fieldsTable as $field => $params){
 					if($params[$type] == true && ($params['belongsTo'] == $table || $params['belongsTo'] == $paramTable['table']) ){
 						if($row[$paramTable['fk_ref']] == $fkTableID || $fkTableID === 0){
@@ -271,7 +285,7 @@ class SelectData{
 					}
 				}
 			}
-			$dataTable[$table]['joined'] = $this->buildSQLDataRecursive($type, $paramTable['joineds'], $dataSQL, $schema, $settings, $dataIntern, $row[$paramTable['pk']]);
+			$dataTable[$table]['joined'] = $this->buildSQLDataRecursive($type, $paramTable['joineds'], $queryResult, $schema, $settings, $dataIntern, $row[$paramTable['pk']]);
 		}
 		return $dataTable;
 	}
@@ -323,7 +337,7 @@ class SelectData{
 		foreach($schema['from'] as $k => $table){
 			if( ($type == "select" && $table['select'] === true) || ($type == "list" && $table['list'] === true) ){
 				//Debug::prownt_r($table['table']);
-				$sql .= ",\n\t". $table['table'];
+				$sql .= ",\n\t". $this->database->schema.$table['table'];
 				if($table['table'] != $table['table_nick'] ) $sql .= " AS ".$table['table_nick'];
 			}
 		}
@@ -341,6 +355,7 @@ class SelectData{
 				$sql .= " ". $table['table'];
 				if($table['table'] != $table['table_nick'] ) $sql .= " ".$table['table_nick'];
 				$table_name = $table['table_nick'] != "" ? $table['table_nick'] : $table['table'] ;
+				$table_name = $this->database->schema.$table_name;
 				if(isset($table['table_ref']) || $table['table_ref']!="") $sql .= "\n\tON( ".$table['table_ref'].".".$table['pk_ref']." = ".$table_name.".".$table['fk_ref']." ".$table['on']." ) AND (".$table_name.".". $table['status_name'] ." != '-1')";
 				else{ $sql .= "\n\tON( ".$table_name.".".$table['pk']." > 0 ".$table['on']." ) AND (".$table_name.".". $table['status_name'] ." != '-1')"; }
 			}

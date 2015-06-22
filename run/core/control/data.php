@@ -28,6 +28,20 @@ class Data{
         }
 	}
 	//-------------------------------------------------------------------------------------------------------------------------
+	public function getQueryToString() {
+		$str = "aaaaaaaaaaaaa";
+		if(count($_GET) > 0 ){
+			$str ="?";
+			$n = 0;
+			foreach($_GET as $k=>$v){
+				if($n != 0) $str .="&"; 
+				$str .="$k=$v";
+				$n++;
+			}
+		}
+		return $str;
+	}
+	//-------------------------------------------------------------------------------------------------------------------------
 	public function formatNumber($num, $format){
 		return sprintf($format, $num);
 	}

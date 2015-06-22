@@ -4,21 +4,21 @@ namespace FormModel{
 class Data{
 	private $settings 		= NULL;
 	private $schema 		= NULL;
+	private $model 			= NULL;
 	private $dataInt 		= array();
-	private $database 		= NULL;
 	public 	$_POST_FILES    = array();
 	public 	$dataErrors    	= array();
 	public 	$formId    		= "";
 	//*************************************************************************************************************************
-	function __construct($schema, $settings){
+	function __construct($model, $schema, $settings){
 		//\Run::$DEBUG_PRINT = 1;
 		\Debug::log("Iniciando Core/Form/Data.", __LINE__, __FUNCTION__, __CLASS__, __FILE__);
 		$this->settings = $settings;
 		//\Debug::print_r($settings);
 		//$dataFormInt 	= $this->getRequests();
+		$this->model 	= $model;
 		$this->formId 	= $formSessionId;
 		$this->schema 	= $schema;
-		$this->database = \Model::getInstance();
 	}
 	//*************************************************************************************************************************
 	public function getDataInternal(){
