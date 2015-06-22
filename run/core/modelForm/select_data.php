@@ -27,7 +27,7 @@ class SelectData{
 		$dataSelectRecursive 	= array();
 		$dataSelectPKList 		= array();
 
-		$query_obj = $this->database->query($sql, __LINE__, __FUNCTION__, __CLASS__, __FILE__, $settings['database_connection']);
+		$query_obj = $this->database->query($sql, __LINE__, __FUNCTION__, __CLASS__, __FILE__, $settings['database_id']);
 		Run::$benchmark->writeMark("SelectData/select/buildSQL", "SelectData/select/database->query(sql)");
 
 		if($query_obj === -2) Error::show(0, "MODEL:: Houve um erro ao executar o select query automaticamente: ".$sql);

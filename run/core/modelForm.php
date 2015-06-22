@@ -220,7 +220,7 @@ class modelForm{
 		Debug::print_r("dataForm", $this->dataForm);
 		if(((int)$this->dataIntern[$this->settings['ref']] > 0) || ( isset($this->dataForm['form_id']) && ($this->dataForm['form_id'] == $this->settings['form_id']) ) && count($this->dataErrors) <= 0 ){
 
-			$this->database = Model::getInstance($this->settings['database_connection']);
+			$this->database = Model::connect($this->settings['database_id']);
 			if(!$this->database){
 				Error::show(5200, "Model-> A conexão com o banco não foi iniciada. ".__FUNCTION__, __FILE__, __LINE__, '');
 				$this->settings['auto_load'] = false;

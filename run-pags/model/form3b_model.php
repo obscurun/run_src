@@ -22,7 +22,7 @@ class Form3bModel extends modelForm{
 			"encode_utf8" 				=> false,
 			"decode_utf8" 				=> false,
 			"check_token"				=> true,
-			"database_connection"		=> "runb",
+			"database_id"				=> "runb",
 			"paging_num"				=> 20
 		);
 		//--- --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- ---

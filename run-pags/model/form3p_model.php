@@ -22,7 +22,7 @@ class Form3pModel extends modelForm{
 			"encode_utf8" 				=> false,
 			"decode_utf8" 				=> false,
 			"check_token"				=> true,
-			"database_connection"		=> "postgre",
+			"database_id"				=> "postgre",
 			"paging_num"				=> 20
 		);
 		//--- --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- ---

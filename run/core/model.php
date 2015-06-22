@@ -30,6 +30,10 @@ class Model{
 		}
 	}
 	//*************************************************************************************************************************
+	static public function connect($id){
+		return self::getInstance($id);
+	}
+	//*************************************************************************************************************************
 	static public function getInstance($id){
 		if(!$id)	foreach(self::$connectionData as $k=>$v){ $id = $k; break; }
 		$connection = Model::getConnectionData($id);

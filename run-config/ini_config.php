@@ -73,12 +73,12 @@ class Config{
 	function onStartConfig(){
 		switch($_SERVER['SERVER_NAME']){
 			case "127.0.0.1":
-				Model::setConnectionData('default', 'mysql',	'192.168.1.248',	'run_db',	'run_db',	'run_db'	);
+				Model::setConnectionData('default'	,'mysql'	,'192.168.1.248','run_db'	,'run_db'	,'run_db'			);
 				break;
 			default:
-				Model::setConnectionData('default', 'mysql', 	'localhost',		'run',		'root',		'dev123'	);
-				Model::setConnectionData('runb', 	'mysql', 	'localhost',		'runb',		'root',		'dev123'	);
-				Model::setConnectionData('postgre', 'postgre', 	'localhost',		'run',		'postgres',	'dev', 	true);
+				Model::setConnectionData('default'	,'mysql'	,'localhost'	,'run'		,'root'		,'dev123'			);
+				Model::setConnectionData('runb'		,'mysql'	,'localhost'	,'runb'		,'root'		,'dev123'			);
+				Model::setConnectionData('postgre'	,'postgre'	,'localhost'	,'run'		,'postgres'	,'dev'		,true 	);
 				break;
 		}
 		//-  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -

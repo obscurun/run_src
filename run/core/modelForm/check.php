@@ -38,7 +38,7 @@ class check{
 		if(!array_key_exists('form_max_size',			$settings)){ $settings['form_max_size']			= "30";				} // VALOR EM MB
 		if(!array_key_exists('prefix_page',				$settings)){ $settings['prefix_page']			= "";				}
 		//-  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  - 
-		if(!array_key_exists('database_connection',		$settings)){ $settings['database_connection']	= false;			}		
+		if(!array_key_exists('database_id',		$settings)){ $settings['database_id']	= false;			}		
 		if(!array_key_exists('sql_from',				$settings)){ $settings['sql_from']				= false;			}
 		if(!array_key_exists('sql_where',				$settings)){ $settings['sql_where']				= false;			}
 		if(!array_key_exists('sql_limit',				$settings)){ $settings['sql_limit']				= false;			}
