@@ -19,7 +19,7 @@ class Language{
 		if(!Config::$MYSQL || !Config::$USE_BASE_CONFIG){
 				return;
 		}
-		$result = Run::$mysql->query("SELECT acronym, pk_language FROM ".Config::DB."languages;");
+		$result = Run::$mysql->query("SELECT acronym, pk_language FROM ".Config::QUERY_PREFIX."languages;");
 		if($result->num_rows <= 0)
 			$idiomas = false;
 		else

@@ -65,7 +65,7 @@ class Control{
 				if(!is_array($this->session->get(array('CONFIG')))){
 					Run::loadHelper("query");
 					$q = new Query();
-					$configs = $q->execute("SELECT * FROM ".Config::DB."config_view")->returnAssoc();
+					$configs = $q->execute("SELECT * FROM ".Config::QUERY_PREFIX."config_view")->returnAssoc();
 					$this->session->set('CONFIG', $configs );
 					if(isset($configs[0]['email']))	Config::$SEND_MAIL = $configs[0]['email'];
 				}

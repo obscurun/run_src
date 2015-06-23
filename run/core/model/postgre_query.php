@@ -136,7 +136,7 @@ class PostgreQuery{
 	function insert($table="", $_use_prefix=true){
 		Debug::log("Query->insert", $this->_line, $this->_function, $this->_class, $this->_file);
 		if($table == "") Error::show(0, "Query:: Não foi declarado o TABLE para o query em {$this->_file} na linha: {$this->_line}.");
-		if(Config::QUERY_USE_PREFIX_TABLE && $_use_prefix) $table = Config::DB.$table;
+		if(Config::QUERY_USE_PREFIX_TABLE && $_use_prefix) $table = Config::QUERY_PREFIX.$table;
 		$table = $this->postgre->schema.$table;
 		$this->query_string = "INSERT INTO ".$table." \r\n";
 		return $this;
@@ -145,7 +145,7 @@ class PostgreQuery{
 	function replace($table="", $_use_prefix=true){
 		Debug::log("Query->replace", $this->_line, $this->_function, $this->_class, $this->_file);
 		if($table == "") Error::show(0, "Query:: Não foi declarado o TABLE para o query em {$this->_file} na linha: {$this->_line}.");
-		if(Config::QUERY_USE_PREFIX_TABLE && $_use_prefix) $table = Config::DB.$table;
+		if(Config::QUERY_USE_PREFIX_TABLE && $_use_prefix) $table = Config::QUERY_PREFIX.$table;
 		$table = $this->postgre->schema.$table;
 		$this->query_string = "REPLACE INTO ".$table." \r\n";
 		return $this;
@@ -170,8 +170,8 @@ class PostgreQuery{
 	function update($table="", $_use_prefix=true){
 		Debug::log("Query->update", $this->_line, $this->_function, $this->_class, $this->_file);
 		if($table == "") Error::show(0, "Query:: Não foi declarado o TABLE para o query em {$this->_file} na linha: {$this->_line}.");
-		//if(Config::QUERY_USE_PREFIX_TABLE) $table = Config::DB.$table;
-		if(Config::QUERY_USE_PREFIX_TABLE && $_use_prefix) $table = Config::DB.$table;
+		//if(Config::QUERY_USE_PREFIX_TABLE) $table = Config::QUERY_PREFIX.$table;
+		if(Config::QUERY_USE_PREFIX_TABLE && $_use_prefix) $table = Config::QUERY_PREFIX.$table;
 		$table = $this->postgre->schema.$table;
 		$this->query_string = "UPDATE ".$table." \r\n";
 		return $this;
@@ -180,7 +180,7 @@ class PostgreQuery{
 	function delete($table=""){
 		Debug::log("Query->delete", $this->_line, $this->_function, $this->_class, $this->_file);
 		if($table == "") Error::show(0, "Query:: Não foi declarado o TABLE para o query em {$this->_file} na linha: {$this->_line}.");
-		if(Config::QUERY_USE_PREFIX_TABLE) $table = Config::DB.$table;
+		if(Config::QUERY_USE_PREFIX_TABLE) $table = Config::QUERY_PREFIX.$table;
 		$table = $this->postgre->schema.$table;
 		$this->query_string = "DELETE FROM ".$table." \r\n";
 		return $this;
@@ -195,12 +195,12 @@ class PostgreQuery{
 	function from($table="", $nick="", $_use_prefix=true){
 		if($table == "") Error::show(0, "Query:: Não foi declarado o TABLE para o query.");
 		if(is_array($table)){
-			if(Config::QUERY_USE_PREFIX_TABLE && $_use_prefix)$table = implode(', '.$this->postgre->schema.Config::DB, $table);
+			if(Config::QUERY_USE_PREFIX_TABLE && $_use_prefix)$table = implode(', '.$this->postgre->schema.Config::QUERY_PREFIX, $table);
 			else			$table = implode(', ', $this->postgre->schema.$table);
 		}
 		else{
 			if($nick != "") $table .= " ".$nick;
-			if(Config::QUERY_USE_PREFIX_TABLE && $_use_prefix) $table = Config::DB.$table;
+			if(Config::QUERY_USE_PREFIX_TABLE && $_use_prefix) $table = Config::QUERY_PREFIX.$table;
 			$table = $this->postgre->schema.$table;
 		}
 		$this->query_string .= "FROM ". $table ." \r\n";
@@ -209,7 +209,7 @@ class PostgreQuery{
 	//-------------------------------------------------------------------------------------------------------------------------
 	function join($table="", $on="", $nick="", $_use_prefix=true){
 		if($table == "") Error::show(0, "Query:: Não foi declarado o TABLE para o query em {$this->_file} na linha: {$this->_line}.");
-		if(Config::QUERY_USE_PREFIX_TABLE && $_use_prefix) $table = Config::DB.$table;
+		if(Config::QUERY_USE_PREFIX_TABLE && $_use_prefix) $table = Config::QUERY_PREFIX.$table;
 		$table = $this->postgre->schema.$table;
 		if($nick != "") $table .= " ".$nick;
 		$this->query_string .= "JOIN ".$table." ON(". $on .") \r\n";
@@ -218,7 +218,7 @@ class PostgreQuery{
 	//-------------------------------------------------------------------------------------------------------------------------
 	function leftjoin($table="", $on="", $nick=""){
 		if($table == "") Error::show(0, "Query:: Não foi declarado o TABLE para o query em {$this->_file} na linha: {$this->_line}.");
-		if(Config::QUERY_USE_PREFIX_TABLE) $table = Config::DB.$table;
+		if(Config::QUERY_USE_PREFIX_TABLE) $table = Config::QUERY_PREFIX.$table;
 		$table = $this->postgre->schema.$table;
 		if($nick != "") $table .= " ".$nick;
 		$this->query_string .= "LEFT JOIN ".$table." ON(". $on .") \r\n";
@@ -227,7 +227,7 @@ class PostgreQuery{
 	//-------------------------------------------------------------------------------------------------------------------------
 	function rightjoin($table="", $on="", $nick=""){
 		if($table == "") Error::show(0, "Query:: Não foi declarado o TABLE para o query em {$this->_file} na linha: {$this->_line}.");
-		if(Config::QUERY_USE_PREFIX_TABLE) $table = Config::DB.$table;
+		if(Config::QUERY_USE_PREFIX_TABLE) $table = Config::QUERY_PREFIX.$table;
 		$table = $this->postgre->schema.$table;
 		if($nick != "") $table .= " ".$nick;
 		$this->query_string .= "RIGHT JOIN ".$table." ON(". $on .") \r\n";

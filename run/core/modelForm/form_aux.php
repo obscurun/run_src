@@ -141,7 +141,7 @@ class FormAux{
 	}
 	//-------------------------------------------------------------------------------------------------------------------------
 	public function echoFile($fileName, $pathName, $idPath, $idFile, $i1=false, $i2=false, $i3=false, $iF1="", $iF2="", $iF3=""){
-		Run::$DEBUG_PRINT = 1;
+
 		if($i3 !== false) $fileInputName = $fileName."[$iF1][$iF2][$iF3]";
 		else if($i2 !== false) $fileInputName = $fileName."[$iF1][$iF2]";
 		else if($i1 !== false) $fileInputName = $fileName."[$iF1]";
@@ -243,7 +243,7 @@ class FormAux{
 
 
 	//-------------------------------------------------------------------------------------------------------------------------
-	public function convertStringToData($str){
+	public function convertStringToData($str){		//Run::$DEBUG_PRINT = 1;
 		preg_match('/\[[a-z(_)?]*(_)?\]/', $str, $matches, PREG_OFFSET_CAPTURE);
 		if($matches[0][0] == "[id]"){
 			$matches[0][0] 	= str_replace('[id]', '['.$this->model->schema['from'][0]['pk'].']', $matches[0][0]);
@@ -276,7 +276,6 @@ class FormAux{
 
 		preg_match('/\[[a-z(-)?]*(-)?\]/', $str, $matches, PREG_OFFSET_CAPTURE);
 		if(is_array($matches) && count($matches) > 0) $str = $this->convertStringToData($str);
-
 		return $str;
 	}
 }

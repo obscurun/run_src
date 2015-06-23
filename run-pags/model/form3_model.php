@@ -29,7 +29,7 @@ class Form3Model extends modelForm{
 		//--- --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- ---
 			"from"						=> array(
 				array(
-					"table"       		=> Run::DB."form3_cadastros",
+					"table"       		=> Run::QUERY_PREFIX."form3_cadastros",
 					"table_nick"  		=> "c",
 					"pk"          		=> "pk_cadastro",
 					"pk_del"      		=> "del_pk_cadastro",
@@ -189,7 +189,7 @@ class Form3Model extends modelForm{
 		//--- --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- ---
 		$this->schema_unions	=  array(
 			// "all" => $this->schema,
-			// "all1" => " select * from ".Run::DB.".form1_cadastros"
+			// "all1" => " select * from ".Run::QUERY_PREFIX.".form1_cadastros"
 		);
 	}
 	//*************************************************************************************************************************

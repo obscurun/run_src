@@ -29,7 +29,8 @@ class Data{
 	}
 	//-------------------------------------------------------------------------------------------------------------------------
 	public function getQueryToString() {
-		$str = "aaaaaaaaaaaaa";
+		/*
+		$str = "";
 		if(count($_GET) > 0 ){
 			$str ="?";
 			$n = 0;
@@ -38,8 +39,8 @@ class Data{
 				$str .="$k=$v";
 				$n++;
 			}
-		}
-		return $str;
+		}*/
+		return "?".$_SERVER['QUERY_STRING'];
 	}
 	//-------------------------------------------------------------------------------------------------------------------------
 	public function formatNumber($num, $format){

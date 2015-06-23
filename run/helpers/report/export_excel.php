@@ -134,7 +134,7 @@ class ModelExportToExcel{
 		$objWriter = PHPExcel_IOFactory::createWriter($objPHPExcel, 'Excel2007');
 		$objWriter->save('php://output');
 
-		Action::logAdmin(Config::DB."admins", (int)Run::$control->session->get(array('LOGIN', 'USER', 'pk_admin')), 7, 'Download de relatório '.$this->model->SETTINGS['TABLE'], 1);
+		Action::logAdmin(Config::QUERY_PREFIX."admins", (int)Run::$control->session->get(array('LOGIN', 'USER', 'pk_admin')), 7, 'Download de relatório '.$this->model->SETTINGS['TABLE'], 1);
 	
 		exit;
 		

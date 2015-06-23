@@ -46,12 +46,12 @@ class Config{
 	const		 	 LANGUAGE_AUTO_LOAD_PHRASES	= true;													// boolean 	- true para carregar a propertie com lista de frases do idioma
 	public static	 $LANGUAGES_AVAILABLE		= array("pt", "br", "eng");								// array 	- siglas de linguagens disponíveis no app
 //-  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  
-	const			 MYSQL 						= true; 												// boolean 	- ATENÇÃO, FALSE PARA NAO USAR MYSQLI
-	const			 DB							= 'run_';												// string 	- prefix_ das querys dentro de models
+	const			 QUERY_PREFIX				= 'run_';												// string 	- prefix_ das querys dentro de models
 	const			 QUERY_USE_PREFIX_TABLE		= true;													// boolean 	- usar a const DB nas querys caso true
 	const			 QUERY_USE_PREFIX_SCHEMA	= false;												// boolean 	- usar o db/name nas querys caso true
 //-  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  
-	const			 POSTGRE					= true; 												// boolean 	- ATENÇÃO, FALSE PARA NAO USAR MYSQLI
+	const			 POSTGRE					= true; 												// boolean 	- ATENÇÃO, FALSE PARA NAO USAR POSTGRE
+	const			 MYSQL 						= true; 												// boolean 	- ATENÇÃO, FALSE PARA NAO USAR MYSQLI
 //-  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  
 	const 			 SESSION_TIMEOUT			= 1800; 												// int 		- [segundos] 300 = 5 minutos
 	const 			 LOGIN_TIMEOUT				= 1800; 												// int 		- [segundos] 300 = 5 minutos
@@ -73,12 +73,12 @@ class Config{
 	function onStartConfig(){
 		switch($_SERVER['SERVER_NAME']){
 			case "127.0.0.1":
-				Model::setConnectionData('default'	,'mysql'	,'192.168.1.248','run_db'	,'run_db'	,'run_db'			);
+				Model::setConnection('default'	,'mysql'	,'192.168.1.248','run_db'	,'run_db'	,'run_db'				);
 				break;
 			default:
-				Model::setConnectionData('default'	,'mysql'	,'localhost'	,'run'		,'root'		,'dev123'			);
-				Model::setConnectionData('runb'		,'mysql'	,'localhost'	,'runb'		,'root'		,'dev123'			);
-				Model::setConnectionData('postgre'	,'postgre'	,'localhost'	,'run'		,'postgres'	,'dev'		,true 	);
+				Model::setConnection('default'	,'mysql'	,'localhost'	,'run'		,'root'		,'dev123'				);
+				Model::setConnection('runb'		,'mysql'	,'localhost'	,'runb'		,'root'		,'dev123'				);
+				Model::setConnection('postgre'	,'postgre'	,'localhost'	,'run'		,'postgres'	,'dev'		,	true 	);
 				break;
 		}
 		//-  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -

@@ -56,7 +56,7 @@ class Model{
 		}
 	}
 	//*************************************************************************************************************************
-	static public function setConnectionData($index, $type_db, $host, $name, $user, $pass, $useSchemaPrefix=false){
+	static public function setConnection($index, $type_db, $host, $name, $user, $pass, $useSchemaPrefix=false){
 		if($useSchemaPrefix == false) $useSchemaPrefix = Config::QUERY_USE_PREFIX_SCHEMA;
 		self::$connectionData[$index]["host"] 		= $host;
 		self::$connectionData[$index]["name"] 		= $name;
@@ -65,7 +65,7 @@ class Model{
 		if($useSchemaPrefix) self::$connectionData[$index]["schema"] 	= $name.".";
 		else self::$connectionData[$index]["schema"]= "";
 		self::$connectionData[$index]["type_db"]	= $type_db;
-		Debug::log("setConnectionData($host/$name/$user/$pass/$index)", __LINE__, __FUNCTION__, __CLASS__, __FILE__);
+		Debug::log("setConnection($host/$name/$user/$pass/$index)", __LINE__, __FUNCTION__, __CLASS__, __FILE__);
 	}
 	//*************************************************************************************************************************
 	static public function getConnectionData($id="default"){

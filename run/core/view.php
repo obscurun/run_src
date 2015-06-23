@@ -31,7 +31,8 @@ class View{
 
         $checkPos = strpos($path, Run::$router->path['base']);
         $redirect = ( $checkPos  === 0 || $checkPos > 0 ) ? ($path) : (Run::$router->path['base'].$path) ;
-
+        //echo $redirect;
+        //exit;
         header("Location: ".$redirect);
         exit;
     }
