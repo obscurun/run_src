@@ -23,6 +23,7 @@ class Levels{
 	}
 	//-  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -
 	private function getParameterLevels($level=false){
+		//Debug::p("REQUEST_URI", $_SERVER['REQUEST_URI']);
 		$request 			= $_SERVER['REQUEST_URI'];
 		$request			= explode("?", $request);
 		$request_query 		= $request[1];
@@ -37,8 +38,13 @@ class Levels{
 		$request 			= substr_replace($request, '', 0, 1);
 		$levels 			= explode("/",$request);
 		$request_last 		=& $levels[count($levels)-1];
+		$pre_path 			= "";
 
-		//Debug::p($request_last);
+		if(!isset($_SERVER['RUN_MOD_REWRITE'])){
+			$pre_path = "/index.php/";
+		}
+
+		//Debug::p("LEVELS", $levels);
 		if($request_last == "" ) unset($levels[count($levels)-1]);
 		if(strrpos($request_last, "?") === 0) unset($levels[count($levels)-1]);
 
@@ -46,20 +52,27 @@ class Levels{
 		$request_relative 		= $request_relative."/";
 		$request 				= str_replace("//","/",$request);
 		$request_relative 		= str_replace("//","/",$request_relative);
-		$this->path['base'] 	= $request_relative;
-		$this->path['page'] 		= $request_relative."".$request."?".$request_query;
-		$this->path['pageBase']		= $request_relative."".$request;
+		$this->path['base'] 	= $request_relative.$pre_path;
+		$this->path['base'] 	= str_replace("//","/",$this->path['base']);
+		$this->path['src'] 		= $request_relative;
+
+		$this->path['page'] 		= $request_relative.$pre_path."".$request;
+		if($request_query != "") 	$this->path['page'] .="?".$request_query;
+		$this->path['page'] 		= str_replace("//","/",$this->path['page']);
+		$this->path['pageBase']		= $request_relative.$pre_path."".$request;
+		$this->path['pageBase'] 	= str_replace("//","/",$this->path['pageBase']);
 		$this->path['pageQuery'] 	= $request_query;
 		$this->path['run'] 			= $request_relative."run/";
 		$this->path['view']	 		= $request_relative.Run::PATH_PAG."view/";
 		$this->path['files'] 		= $request_relative."files/";
 
 		if(!isset($_SERVER['RUN_MOD_REWRITE'])){
-			$this->path['files'] 	= $request_relative.Run::PATH_FILES."";
-			$this->path['base'] 	= $request_relative.Run::PATH_PAG."view/";
+			$this->path['files'] 	= $request_relative.Run::FILES_BASE."";
+			$this->path['src'] 	= $request_relative.Run::PATH_PAG."view/";
 			$this->path['url'] 		= $_SERVER['SCRIPT_NAME']."/";
 		}
 		else $this->path['url'] 	= $request_relative;
+		//Debug::p("path", $this->path);
 
 		return $levels;
 	}

@@ -29,7 +29,7 @@ class Form3Model extends modelForm{
 		//--- --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- ---
 			"from"						=> array(
 				array(
-					"table"       		=> Run::QUERY_PREFIX."form3_cadastros",
+					"table"       		=> "form3_cadastros",
 					"table_nick"  		=> "c",
 					"pk"          		=> "pk_cadastro",
 					"pk_del"      		=> "del_pk_cadastro",

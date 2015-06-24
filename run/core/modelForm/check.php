@@ -13,6 +13,7 @@ class check{
 //-----------------------------------------------------------------------------------------------------------------------------
 	private function checkSettings($settings){
 		Debug::log("FormModel->checksettings:", __LINE__, __FUNCTION__, __CLASS__, __FILE__);
+		$query_prefix = (Run::QUERY_USE_PREFIX_TABLE != false) ? Run::QUERY_PREFIX : "";
 		if(!array_key_exists('ref',						$settings) || $settings['ref'] == ""){ $settings['ref'] = "ref";	}
 		if(!array_key_exists('nick_name',				$settings)){ $settings['nick_name']				= "Registro";		}
 		if(!array_key_exists('debug',					$settings)){ $settings['debug'] 				= false;			}
@@ -38,7 +39,8 @@ class check{
 		if(!array_key_exists('form_max_size',			$settings)){ $settings['form_max_size']			= "30";				} // VALOR EM MB
 		if(!array_key_exists('prefix_page',				$settings)){ $settings['prefix_page']			= "";				}
 		//-  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  - 
-		if(!array_key_exists('database_id',		$settings)){ $settings['database_id']	= false;			}		
+		if(!array_key_exists('database_id',				$settings)){ $settings['database_id']			= false;			}
+		if(!array_key_exists('sql_table_prefix',		$settings)){ $settings['sql_table_prefix']		= $query_prefix;	}		
 		if(!array_key_exists('sql_from',				$settings)){ $settings['sql_from']				= false;			}
 		if(!array_key_exists('sql_where',				$settings)){ $settings['sql_where']				= false;			}
 		if(!array_key_exists('sql_limit',				$settings)){ $settings['sql_limit']				= false;			}
@@ -106,14 +108,19 @@ class check{
 		foreach($schema['from'] as $k => $table){
 
 			$if0_false = ($k == 0) ? false : true;
-			if(!array_key_exists('table_nick',			$table)){ $schema['from'][$k]['table_nick'] 		= $table['table'];		}
-			if(!array_key_exists('save',				$table)){ $schema['from'][$k]['save'] 				= "";					}
-			if(!array_key_exists('select',				$table)){ $schema['from'][$k]['select'] 			= true;					}
-			if(!array_key_exists('list',				$table)){ $schema['from'][$k]['list'] 				= true;					}
-			if(!array_key_exists('export',				$table)){ $schema['from'][$k]['export'] 			= true;					}
-			if(!array_key_exists('order',				$table)){ $schema['from'][$k]['order'] 				= "";					}
-			if(!array_key_exists('status_name',			$table)){ $schema['from'][$k]['status_name']		= 'status_int';			}
-			if(!array_key_exists('delete_pk_empties',	$table)){ $schema['from'][$k]['delete_pk_empties'] 	= $if0_false;			}
+			if(!array_key_exists('table_nick',			$table)){ $schema['from'][$k]['table_nick'] 		= $table['table'];					}
+			if(!array_key_exists('save',				$table)){ $schema['from'][$k]['save'] 				= "";								}
+			if(!array_key_exists('select',				$table)){ $schema['from'][$k]['select'] 			= true;								}
+			if(!array_key_exists('list',				$table)){ $schema['from'][$k]['list'] 				= true;								}
+			if(!array_key_exists('export',				$table)){ $schema['from'][$k]['export'] 			= true;								}
+			if(!array_key_exists('order',				$table)){ $schema['from'][$k]['order'] 				= "";								}
+			if(!array_key_exists('status_name',			$table)){ $schema['from'][$k]['status_name']		= 'status_int';						}
+			if(!array_key_exists('delete_pk_empties',	$table)){ $schema['from'][$k]['delete_pk_empties'] 	= $if0_false;						}
+			if(!array_key_exists('table_prefix',		$table)){ $schema['from'][$k]['table_prefix'] 		= $settings['sql_table_prefix'];	}
+			
+			$checkPos = strpos($schema['from'][$k]['table'], $schema['from'][$k]['table_prefix']);
+	        $schema['from'][$k]['table'] = ( $checkPos  === 0 || $checkPos > 0 ) ? ($schema['from'][$k]['table']) : ($schema['from'][$k]['table_prefix'].$schema['from'][$k]['table']) ;
+			
 			if($settings['check_schema'] === true){
 				$check = false;
 				foreach($schema['fields'] as $key=>$val){
@@ -129,16 +136,20 @@ class check{
 	// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - --
 	// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - --
 		foreach($schema['join'] as $k => $table){
-			if(!array_key_exists('table_nick',			$table)){ $schema['join'][$k]['table_nick'] 		= $table['table'];	}
-			if(!array_key_exists('save',				$table)){ $schema['join'][$k]['save'] 				= true;				}
-			if(!array_key_exists('select',				$table)){ $schema['join'][$k]['select'] 			= true;				}
-			if(!array_key_exists('list',				$table)){ $schema['join'][$k]['list'] 				= true;				}
-			if(!array_key_exists('export',				$table)){ $schema['join'][$k]['export'] 			= true;				}
-			if(!array_key_exists('delete_pk_empties',	$table)){ $schema['join'][$k]['delete_pk_empties'] 	= true;				}
-			if(!array_key_exists('on',					$table)){ $schema['join'][$k]['on'] 				= "";				}
-			if(!array_key_exists('order',				$table)){ $schema['join'][$k]['order'] 				= "";				}
-			if(!array_key_exists('status_name',			$table)){ $schema['join'][$k]['status_name']		= 'status_int';		}
-			
+			if(!array_key_exists('table_nick',			$table)){ $schema['join'][$k]['table_nick'] 		= $table['table'];					}
+			if(!array_key_exists('save',				$table)){ $schema['join'][$k]['save'] 				= true;								}
+			if(!array_key_exists('select',				$table)){ $schema['join'][$k]['select'] 			= true;								}
+			if(!array_key_exists('list',				$table)){ $schema['join'][$k]['list'] 				= true;								}
+			if(!array_key_exists('export',				$table)){ $schema['join'][$k]['export'] 			= true;								}
+			if(!array_key_exists('delete_pk_empties',	$table)){ $schema['join'][$k]['delete_pk_empties'] 	= true;								}
+			if(!array_key_exists('on',					$table)){ $schema['join'][$k]['on'] 				= "";								}
+			if(!array_key_exists('order',				$table)){ $schema['join'][$k]['order'] 				= "";								}
+			if(!array_key_exists('status_name',			$table)){ $schema['join'][$k]['status_name']		= 'status_int';						}
+			if(!array_key_exists('table_prefix',		$table)){ $schema['join'][$k]['table_prefix'] 		= $settings['sql_table_prefix'];	}
+
+	        $checkPos = strpos($schema['join'][$k]['table'], $schema['join'][$k]['table_prefix']);
+	        $schema['join'][$k]['table'] = ( $checkPos  === 0 || $checkPos > 0 ) ? ($schema['join'][$k]['table']) : ($schema['join'][$k]['table_prefix'].$schema['join'][$k]['table']) ;
+
 			if($settings['check_schema'] === true){
 				$check = false;
 				foreach($schema['fields'] as $key=>$val){

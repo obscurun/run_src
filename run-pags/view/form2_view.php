@@ -26,6 +26,7 @@
                     <input type="hidden" name="form_id"      value="form2" />
                     <input type="hidden" name="token"        value="<? echo $this->model->token->getToken(); ?>" />
                     <input type="hidden" name="pk_cadastro"  value="<? $this->model->aux->echoData('pk_cadastro'); ?>" />
+                    <input type="hidden" name="cleaned" value="<? $this->model->aux->echoData('cleaned'); ?>" />
                     <fieldset>
                         <legend>Dados Cadastrais</legend>
                         <div class="form-group">

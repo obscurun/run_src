@@ -9,6 +9,7 @@
  * Utilize Run::$router->acceptNextLevels(NUM_PROX_LEVELS_PERMITIDO) para proteger as urls dentro de cada método;
  **/
 require_once(PAGS_PATH."model/form1_model.php");
+require_once(PAGS_PATH."model/form1p_model.php");
 require_once(PAGS_PATH."model/form2_model.php");
 require_once(PAGS_PATH."model/form3_model.php");
 require_once(PAGS_PATH."model/form3b_model.php");
@@ -29,6 +30,17 @@ class TestesController extends Router{
 		$this->loadView("form1");
 		Run::$benchmark->writeMark("Form1Controller/newModel", "Form1Controller/loadView");
 		Run::$benchmark->writeMark("Form1Controller/Inicio", "Form1Controller/Final");
+	}
+	//-  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -
+	public function form1p(){
+		Run::$benchmark->mark("Form1pController/Inicio");
+		Run::$router->acceptNextLevels(1);
+		Run::$router->setTemplateData("title", "Form1p");
+		$this->model = new Form1pModel("form_cadastro");
+		Run::$benchmark->writeMark("Form1pController/Inicio", "Form1pController/newModel");
+		$this->loadView("form1");
+		Run::$benchmark->writeMark("Form1pController/newModel", "Form1pController/loadView");
+		Run::$benchmark->writeMark("Form1pController/Inicio", "Form1pController/Final");
 	}
 	//-  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -
 	public function form2(){

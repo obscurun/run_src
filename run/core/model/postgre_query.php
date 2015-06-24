@@ -62,7 +62,6 @@ class PostgreQuery{
 	}
 	//*************************************************************************************************************************
 	function returnAssoc($_line=__LINE__, $_function=__FUNCTION__, $_class=__CLASS__, $_file=__FILE__){
-		if(!Config::POSTGRE) return;
 		$this->array_return = array();
 		$n=0;
 		if($this->query_result){
@@ -107,7 +106,7 @@ class PostgreQuery{
 		else $postgrei_result = $query_obj;
 		if(!is_object($postgrei_result)){ Error::show(5200, "Model-> Erro no Query->Result /".__FUNCTION__, __FILE__, __LINE__, ''); }
 		else{
-			$postgrei_result->data_seek($row);
+			$postgrei_result->resultSeek($row);
 			$postgrei_result = $postgrei_result->fetch_row();
 			$postgrei_result = $postgrei_result[$index];
 			Debug::log("Query->getUniqueResult: ", $this->_line, $this->_function, $this->_class, $this->_file);

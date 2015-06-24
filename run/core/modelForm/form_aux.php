@@ -233,6 +233,7 @@ class FormAux{
 		$inputs .= "\r\n\t\t".'<input type="hidden" name="form_id" value="'.$this->model->settings['form_id'].'" />';
 		$inputs .= "\r\n\t\t".'<input type="hidden" name="token" value="'.$this->model->token->getToken().'" />';
 		$inputs .= "\r\n\t\t".'<input type="hidden" name="'.$this->model->schema['from'][0]['pk'].'" value="'.$this->model->dataFormSequencial[$this->model->schema['from'][0]['pk']].'" />';
+		$inputs .= "\r\n\t\t".'<input type="hidden" name="cleaned" value="'.$this->model->dataFormSequencial['cleaned'].'" />';
 		$inputs .= "\r\n";
 		echo $inputs;
 	}

@@ -62,7 +62,6 @@ class MysqlQuery{
 	}
 	//*************************************************************************************************************************
 	function returnAssoc($_line=__LINE__, $_function=__FUNCTION__, $_class=__CLASS__, $_file=__FILE__){
-		if(!Config::$MYSQL) return;
 		$this->array_return = array();
 		$n=0;
 		if($this->query_result->num_rows > 0){
@@ -107,7 +106,7 @@ class MysqlQuery{
 		else $mysqli_result = $query_obj;
 		if(!is_object($mysqli_result)){ Error::show(5200, "Model-> Erro no Query->Result /".__FUNCTION__, __FILE__, __LINE__, ''); }
 		else{
-			$mysqli_result->data_seek($row);
+			$mysqli_result->resultSeek($row);
 			$mysqli_result = $mysqli_result->fetch_row();
 			$mysqli_result = $mysqli_result[$index];
 			Debug::log("Query->getUniqueResult: ", $this->_line, $this->_function, $this->_class, $this->_file);
@@ -279,7 +278,6 @@ class MysqlQuery{
         	Error::show(5200, "Model->query->queue() Erro na Transaction: ".$this->mysql->getMysqlError().__FUNCTION__, __FILE__, __LINE__, '');
         	$this->query_transaction = false;
         }
-        
         return $this;
     }
 	//-------------------------------------------------------------------------------------------------------------------------
@@ -292,24 +290,6 @@ class MysqlQuery{
         $this->mysql->autocommit(TRUE);
         return $this->query_result;
     }
-	//-------------------------------------------------------------------------------------------------------------------------
-	public function getToken($id="default"){
-		if(!is_array(Run::$session->get('TOKENS'))) Run::$session->set('TOKENS', array());
-		$tk = Run::$session->get(array('TOKENS', ($id)));
-		if($tk == "") Run::$session->set(array('TOKENS', $id), uniqid($id, true));
-		return Run::$session->get(array('TOKENS', ($id)));
-	}
-	//--------------------------------------------------------------------------------------------------------------------------
-	public function checkToken($id="default", $tk="--"){
-		$token_session = Run::$session->get(array('TOKENS', ($id)));
-		if($token_session == "" || $token_session != $tk){
-			return false;
-		}
-		else{
-			Run::$session->set(array('TOKENS', $id), "");
-			return true;
-		}
-	}
 	//-------------------------------------------------------------------------------------------------------------------------
 }
 // ****************************************************************************************************************************

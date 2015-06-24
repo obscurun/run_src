@@ -4,6 +4,7 @@ class Debug{
 	public static $log = ""; 
 	//*************************************************************************************************************************
 	function __construct(){
+		//Run::$DEBUG_PRINT = true;
 		Debug::log("Iniciando Core/Debug.", __LINE__, __FUNCTION__, __CLASS__, __FILE__);
 		if(isset($_GET['debug-print'])) Run::$DEBUG_PRINT = true;
 	}

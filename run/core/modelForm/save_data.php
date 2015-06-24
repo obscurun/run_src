@@ -130,7 +130,7 @@ class SaveData{
 								}
 								$field_name  = $field['name']!="" ? $field['name'] : $kF;
 								$fields 	.= ",\n\t". $field_name ."";
-								$values	.= ",\n\t\"". $this->getValueArray($data_multiple) ."\"";
+								$values	.= ",\n\t'". $this->getValueArray($data_multiple) ."'";
 								$update_fields .= ",\n\t". $field_name . " = '". $this->getValueArray($data_multiple) ."'";
 								if($field['type'] == "file_name"){ $saveFileData['name'] = $this->getValueArray($data_multiple); }
 								if($field['type'] == "file_path"){ 

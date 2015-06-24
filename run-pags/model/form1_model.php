@@ -29,7 +29,7 @@ class Form1Model extends modelForm{
 		//--- --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- ---
 			"from"						=> array(
 				array(
-					"table"       		=> Run::QUERY_PREFIX."form1_cadastros",
+					"table"       		=> "form1_cadastros",
 					"table_nick"  		=> "c",
 					"pk"          		=> "pk_cadastro",
 					"pk_del"      		=> "del_pk_cadastro",
@@ -45,7 +45,7 @@ class Form1Model extends modelForm{
 			"join"						=> array(
 				array(
 					"type"        		=> "left",
-					"table"       		=> Run::QUERY_PREFIX."form1_ufs",
+					"table"       		=> "form1_ufs",
 					"table_nick"  		=> "u",
 					"pk"          		=> "pk_uf",
 					"pk_del"      		=> "del_pk_uf",
@@ -55,7 +55,7 @@ class Form1Model extends modelForm{
 				),
 				array(
 					"type"        		=> "left",
-					"table"       		=> Run::QUERY_PREFIX."form1_enderecos",
+					"table"       		=> "form1_enderecos",
 					"table_nick"  		=> "e",
 					"table_ref"   		=> "c",
 					"pk"          		=> "pk_endereco",
@@ -68,7 +68,7 @@ class Form1Model extends modelForm{
 				),
 				array(
 					"type"        		=> "left",
-					"table"       		=> Run::QUERY_PREFIX."form1_cores",
+					"table"       		=> "form1_cores",
 					"table_ref"   		=> "c",
 					"pk"          		=> "pk_cor",
 					"pk_del"      		=> "del_cor",
@@ -80,7 +80,7 @@ class Form1Model extends modelForm{
 				),
 				array(
 					"type"        		=> "left",
-					"table"       		=> Run::QUERY_PREFIX."form1_enderecos_tipos",
+					"table"       		=> "form1_enderecos_tipos",
 					"table_nick"  		=> "et",
 					"table_ref"   		=> "e",
 					"pk"          		=> "pk_endereco_tipo",
@@ -93,7 +93,7 @@ class Form1Model extends modelForm{
 				),
 				array(
 					"type"        		=> "left",
-					"table"       		=> Run::QUERY_PREFIX."form1_arquivos",
+					"table"       		=> "form1_arquivos",
 					"table_nick"  		=> "a",
 					"table_ref"   		=> "e",
 					"pk"          		=> "pk_arquivo",
@@ -452,7 +452,7 @@ class Form1Model extends modelForm{
 		//- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 		//- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 				'pk_endereco_tipo'		=> array(
-					'belongsTo'			=> Run::QUERY_PREFIX.'form1_enderecos_tipos',
+					'belongsTo'			=> 'form1_enderecos_tipos',
 					'list'				=> true,
 					'select'			=> true,
 					'export'			=> true,
@@ -515,7 +515,7 @@ class Form1Model extends modelForm{
 		//- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 		//- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 				'pk_cor'				=> array(
-					'belongsTo'			=> Run::QUERY_PREFIX.'form1_cores',
+					'belongsTo'			=> 'form1_cores',
 					'list'				=> true,
 					'select'			=> true,
 					'export'			=> true,
@@ -528,7 +528,7 @@ class Form1Model extends modelForm{
 		//- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 				'fk_cadastro_c'			=> array(
 					'name'				=> 'fk_cadastro',
-					'belongsTo'			=> Run::QUERY_PREFIX.'form1_cores',
+					'belongsTo'			=> 'form1_cores',
 					'list'				=> true,
 					'select'			=> true,
 					'export'			=> true,
@@ -540,7 +540,7 @@ class Form1Model extends modelForm{
 				),
 		//- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 				'nome_cor'				=> array(
-					'belongsTo'			=> Run::QUERY_PREFIX.'form1_cores',
+					'belongsTo'			=> 'form1_cores',
 					'name'				=> 'nome',
 					'list'				=> true,
 					'select'			=> true,
@@ -559,7 +559,7 @@ class Form1Model extends modelForm{
 				),
 		//- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 				'date_insert_cor'		=> array(
-					'belongsTo'			=> Run::QUERY_PREFIX.'form1_cores',
+					'belongsTo'			=> 'form1_cores',
 					'type' 				=> 'date_insert',
 					'name' 				=> 'date_insert',
 					'update'			=> false,
@@ -568,7 +568,7 @@ class Form1Model extends modelForm{
 				),
 		//- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 				'date_update_cor'		=> array(
-					'belongsTo'			=> Run::QUERY_PREFIX.'form1_cores',
+					'belongsTo'			=> 'form1_cores',
 					'type' 				=> 'date_update',
 					'name' 				=> 'date_update',
 					'update'			=> true,
@@ -624,7 +624,7 @@ class Form1Model extends modelForm{
 		//--- --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- ---
 		$this->schema_unions	=  array(
 			// "all" => $this->schema,
-			// "all1" => " select * from ".Run::QUERY_PREFIX.".form1_cadastros"
+			// "all1" => " select * from ".".form1_cadastros"
 		);
 	}
 	//*************************************************************************************************************************

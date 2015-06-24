@@ -39,7 +39,7 @@ class Config{
 	const			 ROUTER_MODE				= "METHODS";											// string 	- "METHODS" para metodos no Control ou "DATABASE" para usar BD
 	const			 ROUTER_DEFAULT_PAGE		= 'home_view';											// string 	- indica qual página dentro da view é a default no load da app
 	const			 ROUTER_START				= 'home';												// string 	- indica a url da página default na aplicação
-	const			 ROUTER_FIXED_START			= false;												// boolean 	- indica se a url deve ter ROUTER_START fixa
+	const			 ROUTER_FIXED_START			= true;												// boolean 	- indica se a url deve ter ROUTER_START fixa
 	const			 ROUTER_FIXED_LANGUAGE		= true;													// boolean 	- indica se a url deve ter a sigla da ligua fixa
 //-  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  
 	const 	 		 LANGUAGE_DEFAULT			= "br";													// string 	- sigla / linguagem padrão usado no framework, para multiplas linguas
@@ -73,12 +73,13 @@ class Config{
 	function onStartConfig(){
 		switch($_SERVER['SERVER_NAME']){
 			case "127.0.0.1":
-				Model::setConnection('default'	,'mysql'	,'192.168.1.248','run_db'	,'run_db'	,'run_db'				);
+				Model::setConnection('default',	'mysql',	'192.168.1.248',	'run_db',	'run_db',	'run_db'		);
 				break;
 			default:
-				Model::setConnection('default'	,'mysql'	,'localhost'	,'run'		,'root'		,'dev123'				);
-				Model::setConnection('runb'		,'mysql'	,'localhost'	,'runb'		,'root'		,'dev123'				);
-				Model::setConnection('postgre'	,'postgre'	,'localhost'	,'run'		,'postgres'	,'dev'		,	true 	);
+				Model::setConnection('default',			'mysql',	'localhost',		'run',				'root',		'dev123'		);
+				Model::setConnection('runb',			'mysql',	'localhost',		'runb',				'root',		'dev123'		);
+				Model::setConnection('postgre',			'postgre',	'localhost',		'run',				'postgres',	'dev',		true);
+				Model::setConnection('postgre_form1',	'postgre',	'localhost',		'run_form1',		'postgres',	'dev',		false);
 				break;
 		}
 		//-  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -
