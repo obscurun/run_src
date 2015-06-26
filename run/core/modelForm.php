@@ -65,7 +65,6 @@ class modelForm{
 
 		//-  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -
 		// Checa se o model foi definido com os arrays corretamente
-		$this->setSchema();
 		$this->check    	= new Check();
 		$checked 			= $this->check->checkModel($this->schema, $this->settings);
 
@@ -234,6 +233,9 @@ class modelForm{
 
 
 
+
+
+
 		//-  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -
 		// Deleta dados automaticamnete do registro, caso não tenha erros do form
 		if(isset($this->dataForm['form_id']) && count($this->dataErrors) <= 0 && $this->settings['auto_delete'] !== false){
@@ -249,7 +251,12 @@ class modelForm{
 
 
 
+
+
+
 		//AUTO SAVE -----------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+
 
 
 
@@ -471,7 +478,7 @@ class modelForm{
 
 
 
-
+	//-------------------------------------------------------------------------------------------------------------------------
 	public function setInstances(){ 		// método chamado para instanciar as classes para usar no model da aplicação		
 		//-  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -
 		// Instancia a sessão usada para gerenciar os dados entre a View e o FormModel
@@ -492,6 +499,14 @@ class modelForm{
 		$this->saveData  	= new SaveData($this, $this->database, $this->query);
 		$this->selectData  	= new selectData($this);
 	}
+	//-------------------------------------------------------------------------------------------------------------------------
+	public function getList(){ 
+		$this->exeBeforeList();
+		$returnDatas = $this->selectData->getList();
+	}
+	//-------------------------------------------------------------------------------------------------------------------------
+	public function exeBeforeList(){} 		// método chamado no model para tratar sql do schema
+	//-------------------------------------------------------------------------------------------------------------------------
 	public function setSchema(){} 			// método chamado nos models da aplicação
 	//-------------------------------------------------------------------------------------------------------------------------
 	public function exeBeforeRequest(){} 	// método chamado antes do parse Post > dataForm

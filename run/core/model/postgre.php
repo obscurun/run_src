@@ -16,15 +16,17 @@ class Postgre extends Database{
 	//*************************************************************************************************************************
 	private function newConnection($id){
 		$connectionData = Model::getConnectionsData();
+		// Run::$DEBUG_PRINT = 1;
 		if(!$id)	foreach($connectionData as $k=>$v){ if($v['type_db'] == "postgre"){ $id = $k; break; }  }
 		if(isset($connectionData[$id])){
 			Debug::log("Iniciando POSTGRE.", __LINE__, __FUNCTION__, __CLASS__, __FILE__);
 			$data = $connectionData[$id] ;
+			Debug::print_r("data", $data);
 			if(self::$active == false){
 				self::$active = $id;
 			}
 			$host = $data["host"];
-			$name = $data["name"];
+			$name = $data["database"];
 			$user = $data["user"];
 			$pass = $data["pass"];
 			$this->schema = $data["schema"];
@@ -47,7 +49,7 @@ class Postgre extends Database{
 				return -2;
 			}
 		}else{
-			Error::show(0, "Dados de conexão não foram definidos ", __FILE__, __LINE__, '');
+			Error::show(0, "Dados de conexão <b>$id</b> não foram definidos ", __FILE__, __LINE__, '');
 			exit;
 		}
 	}

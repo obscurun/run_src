@@ -32,13 +32,14 @@ class Mysql extends Database{
 		$connectionData = Model::getConnectionsData();
 		if(!$id)	foreach($connectionData as $k=>$v){ if($v['type_db'] == "mysql"){ $id = $k; break; } }
 		//Run::$DEBUG_PRINT = 1;
-		Debug::print_r("__construct", $id);
+		//Debug::print_r("__construct", $id);
 		if(isset($connectionData[$id])){
 			$data = $connectionData[$id] ;
+			//Debug::print_r("data ", $data);
 			Debug::log("Iniciando Mysqli.", __LINE__, __FUNCTION__, __CLASS__, __FILE__);
 			self::$active = $id;
 			$host = $data["host"];
-			$name = $data["name"];
+			$name = $data["database"];
 			$user = $data["user"];
 			$pass = $data["pass"];
 			$this->schema = $data["schema"];
@@ -50,15 +51,15 @@ class Mysql extends Database{
 				if(self::$connection[$id]->connect_error){
 					ob_flush();
 			        flush();
-					Error::show(5200, "Erro ao conectar ao Mysqli. Código:". Run::$control->string->encoding(self::$connection[$id]->connect_errno .' -- Mensagem:'. self::$connection[$conn]->connect_error), __FILE__, __LINE__, '' );
+					Error::show(5200, "Erro ao conectar ao Mysqli (<b>$id</b>). Código:". Run::$control->string->encoding(self::$connection[$id]->connect_errno .' -- Mensagem:'. self::$connection[$conn]->connect_error), __FILE__, __LINE__, '' );
 					return -2;
 				} else{ self::$connection[$id]->set_charset("utf8"); }
 			}else{
-				Error::show(5200, "Não conecta no MYSQLI: ".$host ." / ". $name ." / ". $user ." / ", __FILE__, __LINE__, '');
+				Error::show(5200, "Não conecta no MYSQLI (<b>$id</b>): ".$host ." / ". $name ." / ". $user ." / ", __FILE__, __LINE__, '');
 				return -2;
 			}
 		}else{
-			Error::show(0, "Dados de conexão não foram definidos ", __FILE__, __LINE__, '');
+			Error::show(0, "Dados de conexão <b>$id</b> não foram definidos ", __FILE__, __LINE__, '');
 			exit;
 		}
 	}
