@@ -3,7 +3,7 @@
 // guarda tudo o que é impresso na memória para não imprimir na página de processamento
 //ob_start();
 
-
+//Run::$DEBUG_PRINT = true;
 // carrega as dependências
 require_once(RUN_PATH.'core/model/mysql_query.php');
 require_once(RUN_PATH.'core/modelForm/check.php');
@@ -36,6 +36,7 @@ class modelForm{
 	public 			 $database				= "";
 	public  		 $query		 			= false;
 	public 			 $dataIntern			= array(); // dados internos, usados como referência, ID, paginação, ordenação, etc...
+	public 			 $dataList				= array(); // dados recebidos do select->getList
 	public 			 $dataForm				= array(); // dados recebidos do form
 	public 			 $dataFormChecked		= array(); // retorno dos dados convertidos e analisados
 	public 			 $dataFormRecorded		= array(); // retorno dos dados salvos e processados
@@ -50,220 +51,73 @@ class modelForm{
 		Debug::log("Iniciando Core/Form.", __LINE__, __FUNCTION__, __CLASS__, __FILE__);
 		if(function_exists("get_called_class")) Debug::log("Iniciando form pela classe ". get_called_class() , __LINE__, __FUNCTION__, __CLASS__, __FILE__);
 		
-
 		Run::$benchmark->mark("FormModel/Inicio");
-		Debug::print_r("request", $_REQUEST);
-		//-  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  - 
-		// Instancia a sessão usada para gerenciar os dados entre a View e o FormModel
-		$this->session 		= new SessionForm($this);
-		$this->aux 			= new FormAux($this);
-		$this->errors		= new ErrorsForm($this);
 
+		// --------------------------------------------------------------------------
 
+		$this->exeInitial();
 
+		// --------------------------------------------------------------------------
 
+		$this->exeCheckSettings();
 
-		//-  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -
-		// Checa se o model foi definido com os arrays corretamente
-		$this->check    	= new Check();
-		$checked 			= $this->check->checkModel($this->schema, $this->settings);
+		// --------------------------------------------------------------------------
 
-		$this->schema		= $checked["schema"];
-		$this->settings		= $checked["settings"];
+		$this->exeDataRequests();
 
-		foreach($this->schema_unions as $k => $schemaU){
-			if(is_array($schemaU)){
-				$schemaUChecked = $this->check->checkModel($schemaU, $this->settings);
-				$this->schema_unions[$k] = $schemaUChecked["schema"];
-			}
-		}
-		
-		Run::$benchmark->writeMark("FormModel/Inicio", "FormModel/Check/Schema/Settings");
+		// --------------------------------------------------------------------------
 
+		$this->exeCleanData();
 
+		// --------------------------------------------------------------------------
 
+		$this->exeCheckTokenAndValidate();
 
+		// --------------------------------------------------------------------------
 
+		$this->exeDatabaseConnect();
 
+		// --------------------------------------------------------------------------
 
+		$this->exeAutoDelete();
 
-		//INSTANCE DATABASE / SUBCLASSES -----------------------------------------------------------------------------------------------------------------------------------------------------------------
+		// --------------------------------------------------------------------------
 
+		$this->exeSave();
 
+		// --------------------------------------------------------------------------
 
+		$this->exeSelect();
 
+		// --------------------------------------------------------------------------
 
+		$this->exeSetSession();
 
+		// --------------------------------------------------------------------------
 
-		//EXE REQUEST / POST / FILES / REF -----------------------------------------------------------------------------------------------------------------------------------------------------------------
+		$this->exeDelSession();
 
+		// --------------------------------------------------------------------------
 
+		$this->exeGetSession();
 
+		// --------------------------------------------------------------------------
 
+		$this->getDebugs();
 
-		//-  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -
-		// Executa método exeBeforeRequest usando na aplicação, trata os requests e unifica em DataForm e executa exeAfterRequest
-		$this->data  		= new FormModel\Data($this, $this->schema, $this->settings);
-		$this->exeBeforeRequest();
-		$this->dataForm 	= $this->data->getRequests();
-		$this->dataIntern 	= $this->data->getDataInternal();
-		$this->exeAfterRequest();
-		
-		Run::$benchmark->writeMark("FormModel/Instance/Mysql/Validate/SaveData/SelectData", "FormModel/exeBeforeRequest/getRequests/exeAfterRequest");
+		// --------------------------------------------------------------------------
 
-		//Debug::print_r("request", $_REQUEST);
-		//Debug::print_r("dataForm", $this->dataForm);
-		//Debug::print_r("dataFormSequencial", $this->dataFormSequencial);
-		//Debug::print_r("SESSION", $this->session->getDataSession());
-		//
+		$this->exeCheckErrors();
 
+		// --------------------------------------------------------------------------
+	}
 
 
+	//-------------------------------------------------------------------------------------------------------------------------
+	//-------------------------------------------------------------------------------------------------------------------------
 
 
-
-
-
-		$this->validate    	= new Validate();
-		
-		Run::$benchmark->writeMark("FormModel/Check/Schema/Settings", "FormModel/Instance/Mysql/Validate/SaveData/SelectData");
-
-
-
-
-
-
-
-		//CLEAN DATA / AUTO CLEAN IF GET -----------------------------------------------------------------------------------------------------------------------------------------------------------------
-
-
-
-
-
-
-
-		$this->clean		= new cleanData($this);
-
-
-
-
-
-
-
-
-
-		//$this->session->setSettings($this->schema, $this->settings, $this->dataIntern);
-		//-  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -
-		//Valida se existe erro ao configurar o schema e o setting no model da aplicação
-		if(count($this->data->dataErrors) > 0){
-			$this->dataErrors['dadosInternos'] = $this->data->dataErrors;
-			$this->dataErrors['dadosInternos']['label'] = Language::get("form_erro_dados_internos");
-		}
-
-
-
-
-
-
-		//CHECK TOKEN / VALIDATION -----------------------------------------------------------------------------------------------------------------------------------------------------------------
-
-
-
-
-
-
-		//Debug::print_r($this->dataIntern);
-		//-  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -
-		// Checa o token do form e identifica o tipo de operação insert/update e executa Validação
-		$this->token = new Token($this->settings,$this->session->getFormSessionId());
-		if(isset($this->dataForm['form_id']) && ($this->dataForm['form_id'] == $this->settings['form_id']) ){
-			$this->settings['auto_load'] = false;
-			$checkToken = ($this->settings['check_token'] == true) ? $this->token->checkToken($this->dataForm) : true;
-			//-  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -
-			if(!$checkToken){
-				$this->dataErrors['token']['label'] = Language::get("form_token_label");
-				$this->dataErrors['token'][1] = Language::get("form_token_description");
-			}
-			//-  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -
-			Debug::log("Model-> SET auto_load: false; ", __LINE__, __FUNCTION__, __CLASS__, __FILE__);
-			$pk_schema  = (int)$this->dataForm[$this->schema['from'][0]['pk']];
-			if($pk_schema < 1){
-				Debug::log("Model-> dataForm-action =".$this->dataForm['form_action']." / SET auto_save: insert; ", __LINE__, __FUNCTION__, __CLASS__, __FILE__);
-				$this->settings['auto_save_type'] = "insert";
-			}
-			else{
-				Debug::log("Model-> dataForm-action =".$this->dataForm['form_action']." / SET auto_save: update; ", __LINE__, __FUNCTION__, __CLASS__, __FILE__);
-				$this->settings['auto_save_type'] = "update";
-			} 
-			//-  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -
-			if($this->settings['val_server'] === true && $this->settings['auto_save'] == true && count($this->dataErrors) <= 0){
-				$this->dataFormChecked = $this->data->checkData($this->schema, $this->dataForm);
-				$this->dataErrors = $this->validate->validator($this->schema, $this->dataFormChecked, $this->dataForm);
-			}
-			//-  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -
-		} else{
-			$this->settings['auto_save'] = false;
-		}		
-		Run::$benchmark->writeMark("FormModel/exeBeforeRequest/getRequests/exeAfterRequest", "FormModel/checkToken/validator");
-
-
-
-		
-
-
-
-
-		//-  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -
-		// Iniciar banco de dados se houver instancia, inicia classes Token, Data, SaveData e SelectData
-		//Run::$DEBUG_PRINT = 1;
-		Debug::print_r("dataForm", $this->dataForm);
-		if(((int)$this->dataIntern[$this->settings['ref']] > 0) || ( isset($this->dataForm['form_id']) && ($this->dataForm['form_id'] == $this->settings['form_id']) ) && count($this->dataErrors) <= 0 ){
-
-			$this->database = Model::connect($this->settings['database_id']);
-			if(!$this->database){
-				Error::show(5200, "Model-> A conexão com o banco não foi iniciada. ".__FUNCTION__, __FILE__, __LINE__, '');
-				$this->settings['auto_load'] = false;
-				$this->settings['auto_save'] = false;
-			}
-			$this->query 	= Model::$query;
-		}
-		$this->saveData  	= new SaveData($this, $this->database, $this->query);
-		$this->selectData  	= new selectData($this);
-
-
-
-
-
-
-
-		//-  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -
-		// Deleta dados automaticamnete do registro, caso não tenha erros do form
-		if(isset($this->dataForm['form_id']) && count($this->dataErrors) <= 0 && $this->settings['auto_delete'] !== false){
-			$this->saveData->autoDeletePKs($this->dataForm);
-			//echo 123; exit;
-		}
-
-		Run::$benchmark->writeMark("FormModel/checkToken/validator", "FormModel/autoDelete");
-
-
-
-
-
-
-
-
-
-
-		//AUTO SAVE -----------------------------------------------------------------------------------------------------------------------------------------------------------------
-
-
-
-
-
-
-
-
-
+	public function exeSave(){
 		Debug::p("dataFormChecked", $this->dataFormChecked);
 		//-  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -
 		// Salva os dados do formulário caso tenha permissão e não contanha erros e redireciona para o View
@@ -319,19 +173,14 @@ class modelForm{
 		if(isset($this->dataForm['form_id']) && count($this->dataErrors) <= 0 && ($this->settings['permission_'.$this->settings['auto_save_type']] == true) ){
 			$this->exeCustomSave();
 		}
+	}
 
 
+	//-------------------------------------------------------------------------------------------------------------------------
+	//-------------------------------------------------------------------------------------------------------------------------
 
 
-
-
-		//AUTO SELECT -----------------------------------------------------------------------------------------------------------------------------------------------------------------
-
-
-
-
-
-		//-  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -
+	public function exeSelect(){
 		// Seleciona os dados no banco de dados, caso não tenha salvo os dados vindos do form
 		if($this->dataIntern[$this->settings['ref']] > 0 && $this->settings['permission_select'] == true && $this->settings['auto_load'] !== false ){
 			$returnDatas = $this->selectData->select($this->selectType, $this->dataIntern, $this->dataForm, $this->schema, $this->settings, $this->schema_unions);
@@ -357,20 +206,14 @@ class modelForm{
 		Debug::p("PKList", $this->dataFormPKList);
 
 		Run::$benchmark->writeMark("FormModel/autoDelete", "FormModel/selectData/select");
+	}
 
 
+	//-------------------------------------------------------------------------------------------------------------------------
+	//-------------------------------------------------------------------------------------------------------------------------
 
 
-
-
-		//SET SESSION -----------------------------------------------------------------------------------------------------------------------------------------------------------------
-
-
-
-
-
-
-		//-  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -
+	public function exeSetSession(){
 		// Caso receba dados no formulário e tenha erros, retorna os erros no form
 		if(isset($this->dataForm['form_id']) && count($this->dataErrors) >= 1){
 			Debug::p("dataErrors  ", $this->dataErrors);
@@ -380,21 +223,14 @@ class modelForm{
 			////ob_end_flush();
 			//exit;
 		}
+	}
 
 
+	//-------------------------------------------------------------------------------------------------------------------------
+	//-------------------------------------------------------------------------------------------------------------------------
 
 
-
-
-
-		//DEL SESSION -----------------------------------------------------------------------------------------------------------------------------------------------------------------
-
-
-
-
-
-
-
+	public function exeDelSession(){
 		Debug::p("dataFormSequencial"	, $this->dataFormSequencial);
 		Debug::p("dataForm"				, $this->dataForm);
 		//exit;
@@ -406,33 +242,28 @@ class modelForm{
 			View::redirect("back");
 			//ob_end_clean();
 		}
+	}
 
 
+	//-------------------------------------------------------------------------------------------------------------------------
+	//-------------------------------------------------------------------------------------------------------------------------
 
 
-
-		//GET SESSION -----------------------------------------------------------------------------------------------------------------------------------------------------------------
-
-
-
-
-
+	public function exeGetSession(){
 		//-  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -
 		// Na view, caso tenha dados no Session, é recebido os dados para imprimir no formulário
 		if(!isset($this->dataForm['form_id'])){ //&& count($this->dataFormSequencial) == 0
 			if(count($this->session->getDataSession()) > 1) $this->dataFormSequencial = $this->session->getDataSession();
 			//exit;
 		}
+	}
 
 
+	//-------------------------------------------------------------------------------------------------------------------------
+	//-------------------------------------------------------------------------------------------------------------------------
 
 
-
-		//FINISHED -----------------------------------------------------------------------------------------------------------------------------------------------------------------
-
-
-
-
+	public function getDebugs(){
 		// Debugação pronta
 		//-  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -
 		Debug::p("dataForm"				, $this->dataForm);
@@ -446,8 +277,14 @@ class modelForm{
 		//-  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -
 		//Debug::getBacktrace();
 		//Debug::showBacktrace();
+	}
 
 
+	//-------------------------------------------------------------------------------------------------------------------------
+	//-------------------------------------------------------------------------------------------------------------------------
+
+
+	public function exeCheckErrors(){
 		if(Run::$router->getLevel(0, true) == "form"){
 			//Run::$DEBUG_PRINT = 1;
 			//Debug::p($_SERVER);
@@ -473,37 +310,178 @@ class modelForm{
 		// finaliza o flush para exibir tudo que foi impresso ao longo do processamento
 		//ob_end_flush();
 	}
-	//-------------------------------------------------------------------------------------------------------------------------
-
-
 
 
 	//-------------------------------------------------------------------------------------------------------------------------
-	public function setInstances(){ 		// método chamado para instanciar as classes para usar no model da aplicação		
-		//-  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -
-		// Instancia a sessão usada para gerenciar os dados entre a View e o FormModel
-		$this->session 		= new SessionForm($this);
-		$this->aux 			= new FormAux($this);
-		$this->check    	= new Check();
-		//-  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -
-		// Iniciar banco de dados se houver instancia, inicia classes Token, Data, SaveData e SelectData
-		$this->database 	= Model::getInstance();
-		if(!$this->database){
-			Error::show(5200, "Model-> A conexão com o banco não foi iniciada. ".__FUNCTION__, __FILE__, __LINE__, '');
-			$this->settings['auto_load'] = false;
-			$this->settings['auto_save'] = false;
+	//-------------------------------------------------------------------------------------------------------------------------
+
+
+	public function exeAutoDelete(){
+		// Deleta dados automaticamnete do registro, caso não tenha erros do form
+		if(isset($this->dataForm['form_id']) && count($this->dataErrors) <= 0 && $this->settings['auto_delete'] !== false){
+			$this->saveData->autoDeletePKs($this->dataForm);
+			//echo 123; exit;
 		}
-		$this->query 		= new MysqlQuery();
-		$this->validate    	= new Validate();
-		$this->data  		= new FormModel\Data($this->schema, $this->settings);
+		Run::$benchmark->writeMark("FormModel/checkToken/validator", "FormModel/autoDelete");
+	}
+
+
+	//-------------------------------------------------------------------------------------------------------------------------
+	//-------------------------------------------------------------------------------------------------------------------------
+
+
+	public function exeDatabaseConnect(){
+		// Iniciar banco de dados se houver instancia, inicia classes Token, Data, SaveData e SelectData
+		//Run::$DEBUG_PRINT = 1;
+		Debug::print_r("dataForm", $this->dataForm);
+		if(((int)$this->dataIntern[$this->settings['ref']] > 0) || ( isset($this->dataForm['form_id']) && ($this->dataForm['form_id'] == $this->settings['form_id']) ) && count($this->dataErrors) <= 0 ){
+
+			$this->database = Model::connect($this->settings['database_id']);
+			if(!$this->database){
+				Error::show(5200, "Model-> A conexão com o banco não foi iniciada. ".__FUNCTION__, __FILE__, __LINE__, '');
+				$this->settings['auto_load'] = false;
+				$this->settings['auto_save'] = false;
+			}
+			$this->query 	= Model::$query;
+		}
 		$this->saveData  	= new SaveData($this, $this->database, $this->query);
 		$this->selectData  	= new selectData($this);
 	}
+
+
 	//-------------------------------------------------------------------------------------------------------------------------
+	//-------------------------------------------------------------------------------------------------------------------------
+
+
+	public function exeCheckTokenAndValidate(){
+		$this->validate    	= new Validate();		
+		Run::$benchmark->writeMark("FormModel/Check/Schema/Settings", "FormModel/Instance/Mysql/Validate/SaveData/SelectData");
+		//Valida se existe erro ao configurar o schema e o setting no model da aplicação
+		if(count($this->data->dataErrors) > 0){
+			$this->dataErrors['dadosInternos'] = $this->data->dataErrors;
+			$this->dataErrors['dadosInternos']['label'] = Language::get("form_erro_dados_internos");
+		}
+		// Checa o token do form e identifica o tipo de operação insert/update e executa Validação
+		$this->token = new Token($this->settings,$this->session->getFormSessionId());
+		if(isset($this->dataForm['form_id']) && ($this->dataForm['form_id'] == $this->settings['form_id']) ){
+			$this->settings['auto_load'] = false;
+			$checkToken = ($this->settings['check_token'] == true) ? $this->token->checkToken($this->dataForm) : true;
+			//-  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -
+			if(!$checkToken){
+				$this->dataErrors['token']['label'] = Language::get("form_token_label");
+				$this->dataErrors['token'][1] = Language::get("form_token_description");
+			}
+			//-  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -
+			Debug::log("Model-> SET auto_load: false; ", __LINE__, __FUNCTION__, __CLASS__, __FILE__);
+			$pk_schema  = (int)$this->dataForm[$this->schema['from'][0]['pk']];
+			if($pk_schema < 1){
+				Debug::log("Model-> dataForm-action =".$this->dataForm['form_action']." / SET auto_save: insert; ", __LINE__, __FUNCTION__, __CLASS__, __FILE__);
+				$this->settings['auto_save_type'] = "insert";
+			}
+			else{
+				Debug::log("Model-> dataForm-action =".$this->dataForm['form_action']." / SET auto_save: update; ", __LINE__, __FUNCTION__, __CLASS__, __FILE__);
+				$this->settings['auto_save_type'] = "update";
+			} 
+			//-  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -
+			if($this->settings['val_server'] === true && $this->settings['auto_save'] == true && count($this->dataErrors) <= 0){
+				$this->dataFormChecked = $this->data->checkData($this->schema, $this->dataForm);
+				$this->dataErrors = $this->validate->validator($this->schema, $this->dataFormChecked, $this->dataForm);
+			}
+			//-  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -
+		} else{
+			$this->settings['auto_save'] = false;
+		}		
+		Run::$benchmark->writeMark("FormModel/exeBeforeRequest/getRequests/exeAfterRequest", "FormModel/checkToken/validator");
+	}
+
+
+	//-------------------------------------------------------------------------------------------------------------------------
+	//-------------------------------------------------------------------------------------------------------------------------
+
+
+	public function exeCleanData(){
+		$this->clean = new cleanData($this);
+	}
+
+
+	//-------------------------------------------------------------------------------------------------------------------------
+
+
+	public function exeDataRequests(){
+		// Executa método exeBeforeRequest usando na aplicação, trata os requests e unifica em DataForm e executa exeAfterRequest
+		$this->data  		= new FormModel\Data($this, $this->schema, $this->settings);
+		$this->exeBeforeRequest();
+		$this->dataForm 	= $this->data->getRequests();
+		$this->dataIntern 	= $this->data->getDataInternal();
+		$this->exeAfterRequest();
+		
+		Run::$benchmark->writeMark("FormModel/Instance/Mysql/Validate/SaveData/SelectData", "FormModel/exeBeforeRequest/getRequests/exeAfterRequest");
+
+		//Debug::print_r("request", $_REQUEST);
+		//Debug::print_r("dataForm", $this->dataForm);
+		//Debug::print_r("dataFormSequencial", $this->dataFormSequencial);
+		//Debug::print_r("SESSION", $this->session->getDataSession());
+
+	}
+
+
+	//-------------------------------------------------------------------------------------------------------------------------
+	//-------------------------------------------------------------------------------------------------------------------------
+
+
+	public function exeCheckSettings(){
+		// Checa se o model foi definido com os arrays corretamente
+
+		$this->setSchema();
+		
+		$this->check    	= new Check();
+		$checked 			= $this->check->checkModel($this->schema, $this->settings);
+
+		$this->schema		= $checked["schema"];
+		$this->settings		= $checked["settings"];
+
+		foreach($this->schema_unions as $k => $schemaU){
+			if(is_array($schemaU)){
+				$schemaUChecked = $this->check->checkModel($schemaU, $this->settings);
+				$this->schema_unions[$k] = $schemaUChecked["schema"];
+			}
+		}
+
+		Run::$benchmark->writeMark("FormModel/Inicio", "FormModel/Check/Schema/Settings");
+	}
+
+
+	//-------------------------------------------------------------------------------------------------------------------------
+	//-------------------------------------------------------------------------------------------------------------------------
+
+
+	public function exeInitial(){
+		Debug::print_r("request", $_REQUEST);
+		//-  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  - 
+		// Instancia a sessão usada para gerenciar os dados entre a View e o FormModel
+		$this->session 		= new SessionForm($this);
+		$this->aux 			= new FormAux($this);
+		$this->errors		= new ErrorsForm($this);
+	}
+
+
+
+	//-------------------------------------------------------------------------------------------------------------------------
+	//-------------------------------------------------------------------------------------------------------------------------
+
+
+
 	public function getList(){ 
 		$this->exeBeforeList();
 		$returnDatas = $this->selectData->getList();
 	}
+
+
+
+	//-------------------------------------------------------------------------------------------------------------------------
+	//-------------------------------------------------------------------------------------------------------------------------
+
+
 	//-------------------------------------------------------------------------------------------------------------------------
 	public function exeBeforeList(){} 		// método chamado no model para tratar sql do schema
 	//-------------------------------------------------------------------------------------------------------------------------
@@ -516,8 +494,11 @@ class modelForm{
 	public function exeCustomSave(){} 		// método chamado depois do autoSave
 	//-------------------------------------------------------------------------------------------------------------------------
 	public function exeCustomSelect(){} 	// método chamado depois do autoSelect
+	//-------------------------------------------------------------------------------------------------------------------------
 
 
+	//-------------------------------------------------------------------------------------------------------------------------
+	//-------------------------------------------------------------------------------------------------------------------------
 
 
 	

@@ -43,7 +43,7 @@ class check{
 		if(!array_key_exists('sql_table_prefix',		$settings)){ $settings['sql_table_prefix']		= $query_prefix;	}		
 		if(!array_key_exists('sql_from',				$settings)){ $settings['sql_from']				= false;			}
 		if(!array_key_exists('sql_where',				$settings)){ $settings['sql_where']				= false;			}
-		if(!array_key_exists('sql_limit',				$settings)){ $settings['sql_limit']				= false;			}
+		if(!array_key_exists('sql_limit',				$settings)){ $settings['sql_limit']				= array();			}
 		if(!array_key_exists('sql_orderby',				$settings)){ $settings['sql_orderby']			= false;			}
 		if(!array_key_exists('sql_groupby',				$settings)){ $settings['sql_groupby']			= false;			}
 		if(!array_key_exists('sql_having',				$settings)){ $settings['sql_having']			= false;			}
@@ -53,7 +53,7 @@ class check{
 		if(!array_key_exists('select_tabulated',		$settings)){ $settings['select_tabulated']		= false;			}
 		if(!array_key_exists('select_recursive',		$settings)){ $settings['select_recursive']		= false;			}
 		//-  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  - 
-		if(!array_key_exists('paging_num',				$settings)){ $settings['paging_num_registers']	= 15;				}
+		if(!array_key_exists('paging_num_registers',	$settings)){ $settings['paging_num_registers']	= 15;				}
 		if(!array_key_exists('paging_param_ref',		$settings)){ $settings['paging_param_ref']		= 0;				}
 		if(!array_key_exists('paging_items',			$settings)){ $settings['paging_items']			= 5;				}
 		if(!array_key_exists('paging_ref',				$settings)){ $settings['paging_ref']			= '';				}
@@ -108,7 +108,6 @@ class check{
 		foreach($schema['from'] as $k => $table){
 
 			$if0_false = ($k == 0) ? false : true;
-			if(!array_key_exists('table_nick',			$table)){ $schema['from'][$k]['table_nick'] 		= $table['table'];					}
 			if(!array_key_exists('save',				$table)){ $schema['from'][$k]['save'] 				= "";								}
 			if(!array_key_exists('select',				$table)){ $schema['from'][$k]['select'] 			= true;								}
 			if(!array_key_exists('list',				$table)){ $schema['from'][$k]['list'] 				= true;								}
@@ -121,6 +120,8 @@ class check{
 			$checkPos = strpos($schema['from'][$k]['table'], $schema['from'][$k]['table_prefix']);
 	        $schema['from'][$k]['table'] = ( $checkPos  === 0 || $checkPos > 0 ) ? ($schema['from'][$k]['table']) : ($schema['from'][$k]['table_prefix'].$schema['from'][$k]['table']) ;
 			
+			if(!array_key_exists('table_nick',			$table)){ $schema['from'][$k]['table_nick'] 		= $table['table'];					}
+
 			if($settings['check_schema'] === true){
 				$check = false;
 				foreach($schema['fields'] as $key=>$val){
@@ -136,7 +137,6 @@ class check{
 	// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - --
 	// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - --
 		foreach($schema['join'] as $k => $table){
-			if(!array_key_exists('table_nick',			$table)){ $schema['join'][$k]['table_nick'] 		= $table['table'];					}
 			if(!array_key_exists('save',				$table)){ $schema['join'][$k]['save'] 				= true;								}
 			if(!array_key_exists('select',				$table)){ $schema['join'][$k]['select'] 			= true;								}
 			if(!array_key_exists('list',				$table)){ $schema['join'][$k]['list'] 				= true;								}
@@ -149,6 +149,8 @@ class check{
 
 	        $checkPos = strpos($schema['join'][$k]['table'], $schema['join'][$k]['table_prefix']);
 	        $schema['join'][$k]['table'] = ( $checkPos  === 0 || $checkPos > 0 ) ? ($schema['join'][$k]['table']) : ($schema['join'][$k]['table_prefix'].$schema['join'][$k]['table']) ;
+
+			if(!array_key_exists('table_nick',			$table)){ $schema['join'][$k]['table_nick'] 		= $schema['join'][$k]['table'];					}
 
 			if($settings['check_schema'] === true){
 				$check = false;
@@ -177,6 +179,7 @@ class check{
 		}
 	// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - --
 	// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - --
+		//Run::$DEBUG_PRINT = true;
 		foreach($schema['fields'] as $key=>$val){
 			if(!array_key_exists('belongsTo',		$val)){ $schema['fields'][$key]['belongsTo'] 	= false;	}
 			$multiple 	= false;
@@ -188,12 +191,21 @@ class check{
 						$from_index = $k;
 						//Debug::print_r("ACHOU $key / {$schema['fields'][$key]['belongsTo']} :".$from_index);
 						break;
+					}else if($join['table'] == $from['table_prefix'].$schema['fields'][$key]['belongsTo']){
+						$schema['fields'][$key]['belongsTo'] = $from['table_prefix'].$schema['fields'][$key]['belongsTo'];
+						$join_index = $k;
+						break;
 					}
 					$multiple 	= false;
 				}
 				if($from_index == -1){
-					foreach($schema['join'] as $k => $join){ 
+					foreach($schema['join'] as $k => $join){
+						//Debug::p($schema['fields'][$key]['belongsTo'], $join['table']);
 						if($join['table_nick'] == $schema['fields'][$key]['belongsTo'] || $join['table'] == $schema['fields'][$key]['belongsTo']){
+							$join_index = $k;
+							break;
+						}else if($join['table'] == $join['table_prefix'].$schema['fields'][$key]['belongsTo']){
+							$schema['fields'][$key]['belongsTo'] = $join['table_prefix'].$schema['fields'][$key]['belongsTo'];
 							$join_index = $k;
 							break;
 						}

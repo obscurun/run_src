@@ -29,7 +29,10 @@ class SelectData{
 		$dataSelectRecursive 	= array();
 		$dataSelectPKList 		= array();
 
-		//echo $sql; exit;
+		
+		//Run::$DEBUG_PRINT = true;
+		//Debug::p("sql", $sql);
+		//exit;
 
 
 		$this->queryResult = $this->query->execute($sql, false, false, __LINE__, __FUNCTION__, __CLASS__, __FILE__, $settings['database_id']);
@@ -66,6 +69,53 @@ class SelectData{
 			"dataSelectRecursive" 	=> $dataSelectRecursive,
 			"dataSelectPKList" 		=> $dataSelectPKList
 		);
+	}
+	//*************************************************************************************************************************
+	public function getList(){
+		Run::$DEBUG_PRINT = true;
+		$dataList = array();
+		$this->prepareList();
+		$sql = $this->buildSQL("list", $this->model->dataIntern, $this->model->schema, $this->model->schema_unions);
+		Debug::p("sql", $sql);
+		exit;
+	}
+	//*************************************************************************************************************************
+	public function prepareList(){
+		$data_int = array();
+		$sets = $this->model->settings;
+		if(!isset($data_int[$sets['paging_ref'].'busca'])) $data_int[$sets['paging_ref'].'busca'] 	 = "";
+		$data_int[$sets['paging_ref'].'use_default'] = (isset($data_int[$sets['paging_ref'].'ordem'])) ? false : $this->model->schema['orderby'];
+
+		if(!isset($data_int[$sets['paging_ref']."index"])){
+			if((int)Run::$router->getLevel($sets['paging_param_ref'], true) > 0 && $sets['use_url_ref'] === true) $data_int[$sets['paging_ref'].'index'] = (int)Run::$router->getLevel($sets['paging_param_ref'], true);
+			else if(isset($_GET[$sets['ref']]) && (int)$_GET[$sets['ref']] > 0) $data_int[$sets['paging_ref'].'index'] = (int)$_GET[$sets['ref']];
+		}
+		if((int)$data_int[$sets['paging_ref'].'index'] < 1) $data_int[$sets['paging_ref'].'index']	= 1;
+		if(!isset($data_int[$sets['paging_ref'].'ordem'])) 	$data_int[$sets['paging_ref'].'ordem']	= $this->model->schema['from']['pk'];
+		if(!isset($data_int[$sets['paging_ref'].'modo'])) 	$data_int[$sets['paging_ref'].'modo']	= "desc";
+		if(!isset($data_int[$sets['paging_ref'].'num'])) 	$data_int[$sets['paging_ref'].'num']	= $sets['paging_num'];
+		
+		$sets['paging_num'] = $data_int[$sets['paging_ref'].'num'];
+		if($data_int[$sets['paging_ref'].'modo'] == 'asc')		$data_int[$sets['paging_ref'].'contramodo']	= 'desc'; 
+		else $data_int[$sets['paging_ref'].'contramodo'] = 'asc';
+		
+		if(isset($_GET[$sets['ref']])){
+			if((int)$_GET[$sets['ref']] > 0) $data_int[$sets['ref']] = (int)$_GET[$sets['ref']];		
+		}else if(!isset($data_int[$sets['ref']])){
+			if((int)Run::$router->getLevel($sets['paging_param_ref'], true) > 0) $data_int[$sets['ref']] = (int)Run::$router->getLevel($sets['paging_param_ref'], true);		
+		}
+
+
+		if($p_index>0) $item_inicial = (($data_int[$sets['paging_ref'].'index']-1) * $data_int[$sets['paging_ref'].'num']); 
+		else $item_inicial = 0;
+
+		$data_int[$sets['paging_ref'].'limit']	= array($item_inicial, $data_int[$sets['paging_ref'].'num']);
+		if(isset($_GET[$sets['paging_ref'].'export']) == true){	$data_int[$sets['paging_ref'].'limit']	= false;	}
+
+		$this->model->dataIntern = $data_int;
+		Debug::p("data_int", $data_int);
+
+		return $data_int;
 	}
 	//*************************************************************************************************************************
 	public function buildSQLPKList($type, $queryResult, $schema, $settings, $dataIntern, $fkTableID=0){	
@@ -308,6 +358,7 @@ class SelectData{
 
 		$sql .= $this->buildSQLOrder(	$type, $dataIntern, $schema);
 		$sql .= $this->buildSQLLimit(	$type, $dataIntern, $schema);
+
 		return $sql;
 	}
 	//*************************************************************************************************************************
@@ -352,11 +403,11 @@ class SelectData{
 			//Debug::prownt_r($param['name'] ." / ".$param['sqlSelect']);
 			if( ($type == "select" && $table['select'] === true) || ($type == "list" && $table['list'] === true) ){
 				$sql .= "\n\n". Run::$control->string->upper($table['type']) ." JOIN";
+				$table['table'] = $this->database->schema.$table['table'];
 				$sql .= " ". $table['table'];
 				if($table['table'] != $table['table_nick'] ) $sql .= " ".$table['table_nick'];
 				$table_name = $table['table_nick'] != "" ? $table['table_nick'] : $table['table'] ;
-				$table_name = $this->database->schema.$table_name;
-				if(isset($table['table_ref']) || $table['table_ref']!="") $sql .= "\n\tON( ".$table['table_ref'].".".$table['pk_ref']." = ".$table_name.".".$table['fk_ref']." ".$table['on']." ) AND (".$table_name.".". $table['status_name'] ." != '-1')";
+				if(isset($table['table_ref']) || $table['table_ref'] != "") $sql .= "\n\tON( ".$table['table_ref'].".".$table['pk_ref']." = ".$table_name.".".$table['fk_ref']." ".$table['on']." ) AND (".$table_name.".". $table['status_name'] ." != '-1')";
 				else{ $sql .= "\n\tON( ".$table_name.".".$table['pk']." > 0 ".$table['on']." ) AND (".$table_name.".". $table['status_name'] ." != '-1')"; }
 			}
 		}
@@ -407,8 +458,8 @@ class SelectData{
 				}
 			}
 			$order_tables = substr($order_tables, 1, strlen($order_tables));
-			$schema['order'] = Run::$control->string->replace("order_tables_desc", $order_tables, $schema['order']);
-			$schema['order'] = Run::$control->string->replace("order_tables", $order_tables, $schema['order']);
+			$schema['order'] = Run::$control->string->replace("order_tables_desc",  $order_tables, $schema['order']);
+			$schema['order'] = Run::$control->string->replace("order_tables", 		$order_tables, $schema['order']);
 		}
 		if($schema['order'] !== "") $sql .= "\n\nORDER BY ".$schema['order'];
 		foreach($schema['from'] as $k => $table){
@@ -431,6 +482,7 @@ class SelectData{
 	public function buildSQLLimit($type, $dataIntern, $schema){
 		$sql = "";
 		if(count($schema['limit']) == 2) $sql .= "\n LIMIT ".$schema['limit'][0].", ".$schema['limit'][1];
+		else if($type == "list") $sql .= "\n LIMIT ".$this->model->dataIntern[$this->model->settings['paging_ref'].'limit'][0].", ".$this->model->dataIntern[$this->model->settings['paging_ref'].'limit'][1];
 		return $sql;
 	}
 	//*************************************************************************************************************************

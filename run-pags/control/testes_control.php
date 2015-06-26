@@ -92,6 +92,12 @@ class TestesController extends Router{
 		$this->model = new Form1Model("form_cadastro");
 	}
 	//-  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -
+	public function list1(){
+		Run::$router->acceptNextLevels(1);
+		$this->model = new Form1Model("form_cadastro");
+		$this->model->getList();
+	}
+	//-  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -
 }
 //*********************************************************************************************************************************
 ?>

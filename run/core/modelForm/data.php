@@ -23,28 +23,13 @@ class Data{
 	//*************************************************************************************************************************
 	public function getDataInternal(){
 		\Debug::log("Model->getDataInternal:", __LINE__, __FUNCTION__, __CLASS__, __FILE__);
-		if(!isset($dataFormInt[$this->settings['paging_ref'].'busca'])) $dataFormInt[$this->settings['paging_ref'].'busca'] 	 = "";
-		$dataFormInt[$this->settings['paging_ref'].'use_default'] = (isset($dataFormInt[$this->settings['paging_ref'].'ordem'])) ? false : $this->schema['orderby'];
-
-		if(!isset($dataFormInt[$this->settings['paging_ref']."index"])){
-			if((int)\Run::$router->getLevel($this->settings['paging_param_ref'], true) > 0 && $this->settings['use_url_ref'] === true) $dataFormInt[$this->settings['paging_ref'].'index'] = (int)\Run::$router->getLevel($this->settings['paging_param_ref'], true);
-			else if(isset($_GET[$this->settings['ref']]) && (int)$_GET[$this->settings['ref']] > 0) $dataFormInt[$this->settings['paging_ref'].'index'] = (int)$_GET[$this->settings['ref']];
-		}
-		if((int)$dataFormInt[$this->settings['paging_ref'].'index'] < 1) 	$dataFormInt[$this->settings['paging_ref'].'index']	= 1;
-		//echo "???? ".$dataFormInt[$this->settings['paging_ref'].'index'];
-		if(!isset($dataFormInt[$this->settings['paging_ref'].'ordem'])) 	$dataFormInt[$this->settings['paging_ref'].'ordem']	= $this->schema['from']['pk'];
-		if(!isset($dataFormInt[$this->settings['paging_ref'].'modo'])) 		$dataFormInt[$this->settings['paging_ref'].'modo']	= "desc";
-		if(!isset($dataFormInt[$this->settings['paging_ref'].'num'])) 		$dataFormInt[$this->settings['paging_ref'].'num']	= $this->settings['paging_num'];
-		
-		$this->settings['paging_num'] = $dataFormInt[$this->settings['paging_ref'].'num'];
-		if($dataFormInt[$this->settings['paging_ref'].'modo'] == 'asc')		$dataFormInt[$this->settings['paging_ref'].'contramodo']	= 'desc'; 
-		else $dataFormInt[$this->settings['paging_ref'].'contramodo'] = 'asc';
 		
 		if(isset($_GET[$this->settings['ref']])){
 			if((int)$_GET[$this->settings['ref']] > 0) $dataFormInt[$this->settings['ref']] = (int)$_GET[$this->settings['ref']];		
 		}else if(!isset($dataFormInt[$this->settings['ref']])){
 			if((int)\Run::$router->getLevel($this->settings['paging_param_ref'], true) > 0) $dataFormInt[$this->settings['ref']] = (int)\Run::$router->getLevel($this->settings['paging_param_ref'], true);		
 		}
+
 		\Debug::print_r("dataFormInt", $dataFormInt);
 		return $dataFormInt;
 	}
