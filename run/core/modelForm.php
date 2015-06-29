@@ -33,8 +33,8 @@ class modelForm{
 	public 			 $settings 				= array();
 	public 			 $schema				= array();
 	public 			 $schema_unions			= array();
-	public 			 $database				= "";
-	public  		 $query		 			= false;
+	public 			 $database				= NULL;
+	public  		 $query		 			= NULL;
 	public 			 $dataIntern			= array(); // dados internos, usados como referência, ID, paginação, ordenação, etc...
 	public 			 $dataList				= array(); // dados recebidos do select->getList
 	public 			 $dataForm				= array(); // dados recebidos do form
@@ -330,11 +330,11 @@ class modelForm{
 	//-------------------------------------------------------------------------------------------------------------------------
 
 
-	public function exeDatabaseConnect(){
+	public function exeDatabaseConnect($ignoreCheckForm=false){
 		// Iniciar banco de dados se houver instancia, inicia classes Token, Data, SaveData e SelectData
 		//Run::$DEBUG_PRINT = 1;
 		Debug::print_r("dataForm", $this->dataForm);
-		if(((int)$this->dataIntern[$this->settings['ref']] > 0) || ( isset($this->dataForm['form_id']) && ($this->dataForm['form_id'] == $this->settings['form_id']) ) && count($this->dataErrors) <= 0 ){
+		if($ignoreCheckForm === false || (   ((int)$this->dataIntern[$this->settings['ref']] > 0) || ( isset($this->dataForm['form_id']) && ($this->dataForm['form_id'] == $this->settings['form_id']) ) && count($this->dataErrors) <= 0   )   ){
 
 			$this->database = Model::connect($this->settings['database_id']);
 			if(!$this->database){
@@ -343,9 +343,9 @@ class modelForm{
 				$this->settings['auto_save'] = false;
 			}
 			$this->query 	= Model::$query;
+			$this->saveData  	= new SaveData($this, $this->database, $this->query);
+			$this->selectData  	= new selectData($this);
 		}
-		$this->saveData  	= new SaveData($this, $this->database, $this->query);
-		$this->selectData  	= new selectData($this);
 	}
 
 
@@ -472,7 +472,9 @@ class modelForm{
 
 
 	public function getList(){ 
+		if(is_null($this->query)) $this->exeDatabaseConnect(true);
 		$this->exeBeforeList();
+		//Debug::p('query', Run::$control->typeof($this->model->query) );
 		$returnDatas = $this->selectData->getList();
 	}
 

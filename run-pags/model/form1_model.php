@@ -22,7 +22,8 @@ class Form1Model extends modelForm{
 			"encode_utf8" 				=> false,
 			"decode_utf8" 				=> false,
 			"check_token"				=> true,
-			"paging_num"				=> 20
+			//"list_mode"					=> "unique",
+			"paging_num"				=> 10
 		);
 		//--- --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- ---
 		$this->schema					=  array(
@@ -49,6 +50,7 @@ class Form1Model extends modelForm{
 					"table_nick"  		=> "u",
 					"pk"          		=> "pk_uf",
 					"pk_del"      		=> "del_pk_uf",
+					"list"				=> false,
 					"select"			=> false,
 					"save"        		=> false,
 					"multiple"    		=> false
@@ -100,6 +102,8 @@ class Form1Model extends modelForm{
 					"pk_del"      		=> "del_arquivo",
 					"pk_ref"      		=> "pk_endereco",
 					"fk_ref"      		=> "fk_endereco",
+					"list"        		=> true,
+					"list_fields"  		=> false,
 					"save"        		=> true,
 					"multiple"    		=> true,
 					"on"          		=> ""
@@ -107,10 +111,13 @@ class Form1Model extends modelForm{
 			),
 		//--- --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- ---
 		//--- --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- ---
+			"group"						=> "pk_cadastro",
+		//--- --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- ---
+		//--- --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- --- ---
 			"fields"					=> array(
 				'pk_cadastro'			=> array(
 					'list'				=> true,
-					'select'			=> true,
+					'view'				=> true,
 					'export'			=> true,
 					'insert'			=> false,
 					'update'			=> false,
@@ -122,7 +129,7 @@ class Form1Model extends modelForm{
 				'nome_cadastro'			=> array(
 					'name'				=> 'nome',
 					'list'				=> false,
-					'select'			=> true,
+					'view'				=> true,
 					'export'			=> false,
 					'insert'			=> true,
 					'update'			=> TRUE,
@@ -136,7 +143,7 @@ class Form1Model extends modelForm{
 		//- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 				'sobrenome'				=> array(
 					'list'				=> true,
-					'select'			=> true,
+					'view'				=> true,
 					'export'			=> true,
 					'insert'			=> true,
 					'update'			=> true,
@@ -150,7 +157,7 @@ class Form1Model extends modelForm{
 		//- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 				'email'					=> array(
 					'list'				=> false,
-					'select'			=> true,
+					'view'				=> true,
 					'export'			=> true,
 					'insert'			=> true,
 					'update'			=> true,
@@ -163,7 +170,7 @@ class Form1Model extends modelForm{
 		//- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 				'senha'					=> array(
 					'list'				=> false,
-					'select'			=> false,
+					'view'				=> false,
 					'export'			=> true,
 					'insert'			=> true,
 					'update'			=> true,
@@ -180,7 +187,7 @@ class Form1Model extends modelForm{
 		//- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 				'observacoes'			=> array(
 					'list'				=> false,
-					'select'			=> true,
+					'view'				=> true,
 					'export'			=> true,
 					'insert'			=> true,
 					'update'			=> true,
@@ -221,7 +228,7 @@ class Form1Model extends modelForm{
 				'pk_arquivo'			=> array(
 					'belongsTo'			=> 'a',
 					'list'				=> true,
-					'select'			=> true,
+					'view'				=> true,
 					'export'			=> true,
 					'insert'			=> false,
 					'update'			=> false,
@@ -234,7 +241,7 @@ class Form1Model extends modelForm{
 					'name'				=> 'fk_endereco',
 					'belongsTo'			=> 'a',
 					'list'				=> true,
-					'select'			=> true,
+					'view'				=> true,
 					'export'			=> true,
 					'insert'			=> false,
 					'update'			=> false,
@@ -247,7 +254,7 @@ class Form1Model extends modelForm{
 					'fieldRef'			=> 'arquivo',
 					'belongsTo'			=> 'a',
 					'list'				=> true,
-					'select'			=> true,
+					'view'				=> true,
 					'export'			=> true,
 					'insert'			=> true,
 					'update'			=> false,
@@ -267,7 +274,7 @@ class Form1Model extends modelForm{
 					'fieldRef'			=> 'arquivo',
 					'belongsTo'			=> 'a',
 					'list'				=> true,
-					'select'			=> true,
+					'view'				=> true,
 					'export'			=> true,
 					'insert'			=> true,
 					'update'			=> false,
@@ -285,7 +292,7 @@ class Form1Model extends modelForm{
 					'fieldRef'			=> 'arquivo',
 					'belongsTo'			=> 'a',
 					'list'				=> true,
-					'select'			=> true,
+					'view'				=> true,
 					'export'			=> true,
 					'insert'			=> true,
 					'update'			=> false,
@@ -303,7 +310,7 @@ class Form1Model extends modelForm{
 					'fieldRef'			=> 'arquivo',
 					'belongsTo'			=> 'a',
 					'list'				=> true,
-					'select'			=> true,
+					'view'				=> true,
 					'export'			=> true,
 					'insert'			=> true,
 					'update'			=> false,
@@ -321,7 +328,7 @@ class Form1Model extends modelForm{
 					'fieldRef'			=> 'arquivo',
 					'belongsTo'			=> 'a',
 					'list'				=> true,
-					'select'			=> true,
+					'view'				=> true,
 					'export'			=> true,
 					'insert'			=> true,
 					'update'			=> false,
@@ -365,7 +372,7 @@ class Form1Model extends modelForm{
 				'pk_endereco'			=> array(
 					'belongsTo'			=> 'e',
 					'list'				=> true,
-					'select'			=> true,
+					'view'				=> true,
 					'export'			=> true,
 					'insert'			=> false,
 					'update'			=> false,
@@ -378,7 +385,7 @@ class Form1Model extends modelForm{
 					'name'				=> 'fk_cadastro',
 					'belongsTo'			=> 'e',
 					'list'				=> true,
-					'select'			=> true,
+					'view'				=> true,
 					'export'			=> true,
 					'insert'			=> false,
 					'update'			=> false,
@@ -390,7 +397,7 @@ class Form1Model extends modelForm{
 				'rua'					=> array(
 					'belongsTo'			=> 'e',
 					'list'				=> true,
-					'select'			=> true,
+					'view'				=> true,
 					'export'			=> true,
 					'insert'			=> true,
 					'update'			=> true,
@@ -407,7 +414,7 @@ class Form1Model extends modelForm{
 					'belongsTo'			=> 'e',
 					'name'				=> 'fk_uf',
 					'list'				=> true,
-					'select'			=> true,
+					'view'				=> true,
 					'export'			=> true,
 					'insert'			=> true,
 					'update'			=> true,
@@ -454,7 +461,7 @@ class Form1Model extends modelForm{
 				'pk_endereco_tipo'		=> array(
 					'belongsTo'			=> 'form1_enderecos_tipos',
 					'list'				=> true,
-					'select'			=> true,
+					'view'				=> true,
 					'export'			=> true,
 					'insert'			=> false,
 					'update'			=> false,
@@ -467,7 +474,7 @@ class Form1Model extends modelForm{
 					'name'				=> 'fk_endereco',
 					'belongsTo'			=> 'et',
 					'list'				=> true,
-					'select'			=> true,
+					'view'				=> true,
 					'export'			=> true,
 					'insert'			=> false,
 					'update'			=> false,
@@ -480,7 +487,7 @@ class Form1Model extends modelForm{
 					'belongsTo'			=> 'et',
 					'name'				=> 'tipo',
 					'list'				=> true,
-					'select'			=> true,
+					'view'				=> true,
 					'export'			=> true,
 					'insert'			=> true,
 					'update'			=> true,
@@ -517,7 +524,7 @@ class Form1Model extends modelForm{
 				'pk_cor'				=> array(
 					'belongsTo'			=> 'form1_cores',
 					'list'				=> true,
-					'select'			=> true,
+					'view'				=> true,
 					'export'			=> true,
 					'insert'			=> false,
 					'update'			=> false,
@@ -530,7 +537,7 @@ class Form1Model extends modelForm{
 					'name'				=> 'fk_cadastro',
 					'belongsTo'			=> 'form1_cores',
 					'list'				=> true,
-					'select'			=> true,
+					'view'				=> true,
 					'export'			=> true,
 					'insert'			=> false,
 					'update'			=> false,
@@ -543,7 +550,7 @@ class Form1Model extends modelForm{
 					'belongsTo'			=> 'form1_cores',
 					'name'				=> 'nome',
 					'list'				=> true,
-					'select'			=> true,
+					'view'				=> true,
 					'export'			=> true,
 					'insert'			=> true,
 					'update'			=> true,
@@ -580,7 +587,7 @@ class Form1Model extends modelForm{
 				'pk_uf'					=> array(
 					'belongsTo'			=> 'u',
 					'list'				=> true,
-					'select'			=> true,
+					'view'				=> true,
 					'export'			=> true,
 					'insert'			=> false,
 					'update'			=> false,
@@ -596,7 +603,7 @@ class Form1Model extends modelForm{
 					'type' 				=> 'string',
 					'label'				=> 'Nome',
 					'list'				=> true,
-					'select'			=> true,
+					'view'				=> true,
 					'export'			=> true,
 					'insert'			=> true,
 					'update'			=> true,
@@ -609,7 +616,7 @@ class Form1Model extends modelForm{
 					'type' 				=> 'string',
 					'label'				=> 'UF',
 					'list'				=> true,
-					'select'			=> true,
+					'view'				=> true,
 					'export'			=> true,
 					'insert'			=> true,
 					'update'			=> true,
@@ -635,6 +642,10 @@ class Form1Model extends modelForm{
 	}
 	//*************************************************************************************************************************
 	public function setRequest(){
+	}
+	//*************************************************************************************************************************
+	public function exeBeforeList(){
+		$this->selectData->addOnWhere(" c.nome like '%a%' ");
 	}
 	//- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 }

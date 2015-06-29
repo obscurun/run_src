@@ -18,6 +18,9 @@ class SelectData{
 		$this->model 		= $model;
 		$this->database 	= $this->model->database;
 		$this->query 		= $this->model->query;
+		//Run::$DEBUG_PRINT = true;
+		//Debug::p('query', Run::$control->typeof($this->model->database) );
+		//Run::$DEBUG_PRINT = false;
 	}
 	//*************************************************************************************************************************
 	public function select($type, $dataIntern, $dataForm, $schema, $settings, $schema_unions){
@@ -60,9 +63,9 @@ class SelectData{
 
 			Run::$benchmark->writeMark("SelectData/select/Inicio", "SelectData/select/Final");
 		}
-		//Debug::prownt_r($dataSelectSequencial);
-		//Debug::prownt_r($dataSelectTabulated);
-		//Debug::prownt_r($dataSelectRecursive);
+		//Debug::p($dataSelectSequencial);
+		//Debug::p($dataSelectTabulated);
+		//Debug::p($dataSelectRecursive);
 		return array(
 			"dataSelectSequencial" 	=> $dataSelectSequencial,
 			"dataSelectTabulated" 	=> $dataSelectTabulated,
@@ -76,8 +79,52 @@ class SelectData{
 		$dataList = array();
 		$this->prepareList();
 		$sql = $this->buildSQL("list", $this->model->dataIntern, $this->model->schema, $this->model->schema_unions);
-		Debug::p("sql", $sql);
-		exit;
+
+
+		$this->queryResult = $this->query->execute($sql, false, false, false, __LINE__, __FUNCTION__, __CLASS__, __FILE__, $this->model->settings['database_id']);
+		//$this->fetchData = $this->queryResult; //$this->query->returnFetchAssoc($this->queryResult);
+		Run::$benchmark->writeMark("SelectData/select/buildSQL", "SelectData/select/database->query(sql)");
+		if(!$this->queryResult){
+			Error::show(0, "MODEL:: Houve um erro ao executar o select query automaticamente: ".$sql);
+		}
+
+
+		if($this->queryResult === -2) Error::show(0, "MODEL:: Houve um erro ao executar o select query automaticamente: ".$sql);
+		else if($this->query->returnNumRows($this->queryResult) > 0){
+			$dataSelectSequencial 	= $this->buildSQLDataSequencial('list', $this->queryResult, $this->model->schema, $this->model->settings, $this->model->dataIntern);
+			Run::$benchmark->writeMark("SelectData/select/buildSQL", "SelectData/select/buildSQLDataSequencial");
+			if($settings['select_tabulated'] === true){
+				$dataSelectTabulated 	= $this->buildSQLData('list', $this->queryResult, $this->model->schema, $this->model->settings, $this->model->dataIntern);
+				Run::$benchmark->writeMark("SelectData/select/buildSQL", "SelectData/select/buildSQLDataTabulated");
+			}
+			if($settings['select_recursive'] === true){
+				$orderTables 			= $this->orderData->getOrderedTables($data, $this->model->schema);
+				$dataSelectRecursive 	= $this->buildSQLDataRecursive('list', $orderTables, $this->queryResult, $this->model->schema, $this->model->settings, $$this->model->dataIntern);
+				Run::$benchmark->writeMark("SelectData/select/buildSQL", "SelectData/select/buildSQLDataRecursive");
+			}
+			$dataSelectPKList			= $this->buildSQLPKList('list', $this->queryResult, $this->model->schema, $this->model->settings, $this->model->dataIntern);
+
+			Run::$benchmark->writeMark("SelectData/select/Inicio", "SelectData/select/Final");
+		}
+
+
+		$sql_total = $this->buildSQLTotal("list", $this->model->dataIntern, $this->model->schema);
+		$this->queryResult = $this->query->execute($sql_total, false, false, __LINE__, __FUNCTION__, __CLASS__, __FILE__, $this->model->settings['database_id'])->getUniqueResult();
+		//$this->queryResult = $this->query->execute($sql, false, false, __LINE__, __FUNCTION__, __CLASS__, __FILE__, $this->model->settings['database_id']);
+		Debug::p($sql);
+		Debug::p($sql_total);
+		Debug::p($this->queryResult);
+		Debug::p($dataSelectSequencial);
+		//Debug::p($dataSelectTabulated);
+		//Debug::p($dataSelectRecursive);
+		return array(
+			"dataSelectSequencial" 	=> $dataSelectSequencial,
+			"dataSelectTabulated" 	=> $dataSelectTabulated,
+			"dataSelectRecursive" 	=> $dataSelectRecursive,
+			"dataSelectPKList" 		=> $dataSelectPKList
+		);
+		//Debug::p("sql", $sql);
+		//exit;
 	}
 	//*************************************************************************************************************************
 	public function prepareList(){
@@ -113,14 +160,14 @@ class SelectData{
 		if(isset($_GET[$sets['paging_ref'].'export']) == true){	$data_int[$sets['paging_ref'].'limit']	= false;	}
 
 		$this->model->dataIntern = $data_int;
-		Debug::p("data_int", $data_int);
+		//Debug::p("data_int", $data_int);
 
 		return $data_int;
 	}
 	//*************************************************************************************************************************
 	public function buildSQLPKList($type, $queryResult, $schema, $settings, $dataIntern, $fkTableID=0){	
 		Run::$benchmark->mark("SelectData/buildSQLPKList/Inicio");
-		//Debug::prownt_r($orderTables);	
+		//Debug::p($orderTables);	
 		//$queryResult->data_seek(0);
 		$dataTable = array();
 		foreach($schema['from'] as $index => $paramTable){
@@ -136,7 +183,7 @@ class SelectData{
 	//*************************************************************************************************************************
 	public function buildSQLDataSequencial($type, $queryResult, $schema, $settings, $dataIntern, $fkTableID=0){	
 		Run::$benchmark->mark("SelectData/buildSQLDataSequencial/Inicio");
-		//Debug::prownt_r($orderTables);	
+		//Debug::p($orderTables);	
 		//$queryResult->data_seek(0);
 		$dataTable = array();
 		foreach($schema['from'] as $index => $paramTable){
@@ -222,7 +269,7 @@ class SelectData{
 						}
 						else{
 							$table_ref = $this->findTableByParams($tableParams, $schema);
-							//Debug::prownt_r($tableParams['fk_ref']." / ".$this->findFieldByName($table_ref['pk'], $table_ref['table_nick'], $schema), $row[ $this->findFieldByName($table_ref['pk'], $table_ref['table_nick'], $schema) ]);
+							//Debug::p($tableParams['fk_ref']." / ".$this->findFieldByName($table_ref['pk'], $table_ref['table_nick'], $schema), $row[ $this->findFieldByName($table_ref['pk'], $table_ref['table_nick'], $schema) ]);
 							$dataTable[$field][$row[ $this->findFieldByName($table_ref['pk'], $table_ref['table_nick'], $schema) ]][$row[$tableParams['pk']]] = $row[$field];
 						}
 					}
@@ -269,7 +316,7 @@ class SelectData{
 	}
 	//*************************************************************************************************************************
 	public function buildSQLData($type, $queryResult, $schema, $settings, $dataIntern, $fkTableID=0){	
-		//Debug::prownt_r($orderTables);	
+		//Debug::p($orderTables);	
 		$queryResult->data_seek(0);
 		$dataTable = array();
 		foreach($schema['from'] as $index => $paramTable){
@@ -289,7 +336,6 @@ class SelectData{
 				$fieldsTable[$field] = $params;
 			}
 		}
-			echo "123 ";
 
 		while($row = $this->fetchData){			if((int)$row[$tableParams['pk']] > 0){
 				foreach($fieldsTable as $field => $params){
@@ -309,7 +355,7 @@ class SelectData{
 	}
 	//*************************************************************************************************************************
 	public function buildSQLDataRecursive($type, $orderTables, $queryResult, $schema, $settings, $dataIntern, $fkTableID=0){	
-		//Debug::prownt_r($orderTables);	
+		//Debug::p($orderTables);	
 		$queryResult->data_seek(0);
 		$dataTable = array();
 		$fieldsTable = array();
@@ -341,34 +387,41 @@ class SelectData{
 	}
 	//*************************************************************************************************************************
 	public function buildSQL($type, $dataIntern, $schema, $schema_unions){
-		//Debug::prownt_r($schema);
+		//Debug::p($schema);
 		//if($schema_unions == false) return "teste"; 
 		if(is_string($schema)) return $schema;
 		$sql  = "";
 		$sql .= "SELECT";
-		$sql .= $this->buildSQLFields(	$type, $dataIntern, $schema);
+		$sql .= $this->buildSQLFields(		$type, $dataIntern, $this->model->schema);
 		$sql .= "\nFROM";
-		$sql .= $this->buildSQLFrom(	$type, $dataIntern, $schema);
-		$sql .= $this->buildSQLJoins(	$type, $dataIntern, $schema);
-		$sql .= $this->buildSQLWhere(	$type, $dataIntern, $schema);
-		$sql .= $this->buildSQLHaving(	$type, $dataIntern, $schema);
-		$sql .= $this->buildSQLUnion(	$type, $dataIntern, $schema, $schema_unions);
+		$sql .= $this->buildSQLFrom(		$type, $dataIntern, $this->model->schema);
+		$sql .= $this->buildSQLJoins(		$type, $dataIntern, $this->model->schema);
+		$sql .= $this->buildSQLJoinLimit(	$type, $dataIntern, $this->model->schema);
+
+		$sql .= $this->buildSQLWhere(		$type, $dataIntern, $this->model->schema);
+		$sql .= $this->buildSQLGroupBy(		$type, $dataIntern, $this->model->schema);
+		$sql .= $this->buildSQLHaving(		$type, $dataIntern, $this->model->schema);
+		$sql .= $this->buildSQLUnion(		$type, $dataIntern, $this->model->schema, $schema_unions);
 
 		if($schema_unions === true) return $sql;
 
-		$sql .= $this->buildSQLOrder(	$type, $dataIntern, $schema);
-		$sql .= $this->buildSQLLimit(	$type, $dataIntern, $schema);
+		$sql .= $this->buildSQLOrder(	$type, $dataIntern, $this->model->schema);
+		if(! ($type == "list" && $this->getHasMultiple() && $this->model->settings['list_mode'] == "multiple" )){
+			$sql .= $this->buildSQLLimit(	$type, $dataIntern, $this->model->schema);
+		}
 
 		return $sql;
 	}
 	//*************************************************************************************************************************
 	public function buildSQLFields($type, $dataIntern, $schema){
 		$sql = "";
+		$typeTable = ($type == "list") ? "list_fields" : $type;
+		$tableParams = array();
 		foreach($schema['fields'] as $field => $param){
-			//Debug::prownt_r($param['name'] ." / ".$param['sqlSelect']);
-			$tableParams = $this->getTableParams($param['belongsTo'], $schema);
-			//Debug::prownt_r($tableParams);
-			if( $param[$type] === true && $tableParams[$type] !== false ){
+			//Debug::p($param['name'] ." / ".$param['sqlSelect']);
+			if(!isset($tableParams[$param['belongsTo']])) $tableParams[$param['belongsTo']] = $this->getTableParams($param['belongsTo'], $schema);
+			//Debug::p($field."/".Run::$control->typeof($tableParams[$type]), $tableParams[$param['belongsTo']]);
+			if( $param[$type] === true && $tableParams[$param['belongsTo']][$typeTable] !== false && isset($tableParams[$param['belongsTo']]) ){
 				if(!$param['sqlSelect']) $sql .= ",\n\t". $this->findTableNick($param['belongsTo'], $schema) .".".$param['name'];
 				else{
 					$param['sqlSelect'] = Run::$control->string->replace("COLUMN", $this->findTableNick($param['belongsTo'], $schema).".".$param['name'], $param['sqlSelect']);
@@ -382,13 +435,13 @@ class SelectData{
 		return $sql;
 	}
 	//*************************************************************************************************************************
-	public function buildSQLFrom($type, $dataIntern, $schema){
-		//Debug::prownt_r($type);
+	public function buildSQLFrom($type, $dataIntern, $schema, $preStr=""){
+		//Debug::p($type);
 		$sql = "";
 		foreach($schema['from'] as $k => $table){
-			if( ($type == "select" && $table['select'] === true) || ($type == "list" && $table['list'] === true) ){
-				//Debug::prownt_r($table['table']);
-				$sql .= ",\n\t". $this->database->schema.$table['table'];
+			if( ($type == "view" && $table['view'] === true) || ($type == "inner" && $table['list_inner'] === true)  || ($type == "list" && $table['list_fields'] === true) ){
+				//Debug::p($table['table']);
+				$sql .= ",\n\t$preStr". $this->database->schema.$table['table'];
 				if($table['table'] != $table['table_nick'] ) $sql .= " AS ".$table['table_nick'];
 			}
 		}
@@ -396,19 +449,19 @@ class SelectData{
 		return $sql;
 	}
 	//*************************************************************************************************************************
-	public function buildSQLJoins($type, $dataIntern, $schema){
+	public function buildSQLJoins($type, $dataIntern, $schema, $preStr=""){
 		$sql = "";
-		Debug::p($schema['join']);
+		//Debug::p($schema['join']);
 		foreach($schema['join'] as $k => $table){
-			//Debug::prownt_r($param['name'] ." / ".$param['sqlSelect']);
-			if( ($type == "select" && $table['select'] === true) || ($type == "list" && $table['list'] === true) ){
-				$sql .= "\n\n". Run::$control->string->upper($table['type']) ." JOIN";
+			//Debug::p($param['name'] ." / ".$param['sqlSelect']);
+			if( ($type == "view" && $table['view'] === true) || ($type == "inner" && $table['list_inner'] === true)  || ($type == "list" && $table['list_fields'] === true) ){
+				$sql .= "\n\n$preStr ". Run::$control->string->upper($table['type']) ." JOIN";
 				$table['table'] = $this->database->schema.$table['table'];
 				$sql .= " ". $table['table'];
 				if($table['table'] != $table['table_nick'] ) $sql .= " ".$table['table_nick'];
 				$table_name = $table['table_nick'] != "" ? $table['table_nick'] : $table['table'] ;
-				if(isset($table['table_ref']) || $table['table_ref'] != "") $sql .= "\n\tON( ".$table['table_ref'].".".$table['pk_ref']." = ".$table_name.".".$table['fk_ref']." ".$table['on']." ) AND (".$table_name.".". $table['status_name'] ." != '-1')";
-				else{ $sql .= "\n\tON( ".$table_name.".".$table['pk']." > 0 ".$table['on']." ) AND (".$table_name.".". $table['status_name'] ." != '-1')"; }
+				if(isset($table['table_ref']) || $table['table_ref'] != "") $sql .= "\n\t$preStr ON(( ".$table['table_ref'].".".$table['pk_ref']." = ".$table_name.".".$table['fk_ref']." ".$table['on']." ) AND (".$table_name.".". $table['status_name'] ." != '-1'))";
+				else{ $sql .= "\n\t$preStr ON(( ".$table_name.".".$table['pk']." > 0 ".$table['on']." ) AND (".$table_name.".". $table['status_name'] ." != '-1'))"; }
 			}
 		}
 		return $sql;
@@ -416,18 +469,20 @@ class SelectData{
 	//*************************************************************************************************************************
 	public function buildSQLWhere($type, $dataIntern, $schema){
 		$sql = "";
-		if($type == "select"){
+		if($type == "view"){
 			$sql .= "\nWHERE ";
 			$table_from = $schema['from'][0];
 			$table_name = $table_from['table_nick'] != "" ? $table_from['table_nick'] : $table_from['table'] ;
 
 			$schema['where'] = $this->addWhere($schema['where'], $table_name.".". $table_from['pk'] ." = ".$dataIntern['ref']);
-			$schema['where'] = $this->addWhere($schema['where'], $table_name.".". $table_from['status_name'] ." != '-1'");
+			if($this->model->settings['select_use_status']) $schema['where'] = $this->addWhere($schema['where'], $table_name.".". $table_from['status_name'] ." != '-1'");
 			$sql .= $schema['where'];
 		}else{
 			if(trim($schema['where']) != ""){
-				$sql .= "\nWHERE ";
-				$sql .= $schema['where'];
+				if( !($type == "list" && $this->getHasMultiple() && $this->model->settings['list_mode'] == "multiple") ){
+					$sql .= "\nWHERE ";
+					$sql .= $schema['where'];
+				}
 			}
 		}
 		return $sql;
@@ -448,12 +503,12 @@ class SelectData{
 			$order_tables = "";
 			$mode = (strrpos($schema['order'], "order_tables_desc") != "") ? "DESC":"ASC";
 			foreach($schema['from'] as $k => $table){
-				if( ($type == "select" && $table['select'] === true) || ($type == "list" && $table['list'] === true) ){
+				if( ($type == "view" && $table['view'] === true) || ($type == "list" && $table['list_fields'] === true) ){
 					$order_tables .= ", ".$table['pk']." ".$mode." ";
 				}
 			}
 			foreach($schema['join'] as $k => $table){
-				if( ($type == "select" && $table['select'] === true) || ($type == "list" && $table['list'] === true) ){
+				if( ($type == "view" && $table['view'] === true) || ($type == "list" && $table['list_fields'] === true) ){
 					$order_tables .= ", ".$table['pk']." ".$mode." ";
 				}
 			}
@@ -479,6 +534,57 @@ class SelectData{
 		return $sql;
 	}
 	//*************************************************************************************************************************
+	public function buildSQLGroupBy($type, $dataIntern, $schema){
+		$sql = "";
+		if(trim($schema['group']) != "") $sql .= "\nGROUP BY ".$schema['group'];
+		else if($type == "list" && trim($schema['group']) != ""){
+			if( !($type == "list" && $this->getHasMultiple() && $this->model->settings['list_mode'] == "multiple") ){
+				$sql .= "\nGROUP BY ".$schema['group'];
+			}
+		}
+		return $sql;
+	}
+	//*************************************************************************************************************************
+	public function buildSQLJoinLimit($type, $dataIntern, $schema){
+		$sql = "";
+		$table_from = $schema['from'][0];
+		$table_name = $table_from['table_nick'] != "" ? $table_from['table_nick'] : $table_from['table'] ;
+
+		if($type == "list" && $this->getHasMultiple() && $this->model->settings['list_mode'] == "multiple"){
+			$ws = ($this->model->settings['select_use_status']) ? $this->addWhere($schema['where'],  $table_name.".".$table_from['status_name'] ." != '-1'") : "";
+			$sql = "\n\nINNER JOIN( SELECT DISTINCT(". $table_from['pk'] .") FROM ";				
+			$sql .= $this->buildSQLFrom(		"inner", $dataIntern, $this->model->schema, " ");
+			$sql .= $this->buildSQLJoins(		"inner", $dataIntern, $this->model->schema, "\t");
+			$sql .=	"\n\t WHERE ". preg_replace('/\s/',' ', $ws) . str_replace("\n", '', $this->buildSQLLimit($type, $dataIntern, $schema)) .")";
+			$sql .= " AS ".$table_name."_l ";
+			$sql .= "\n\t ON( ".$table_name."_l.".$table_from['pk']." = ".$table_name.".".$table_from['pk']." ) ";
+		}else{
+			$this->addOnWhere($table_name.".". $table_from['status_name'] ." != '-1'");
+			Debug::p($this->model->schema['where']);
+		}
+
+		return $sql;
+	}
+	//*************************************************************************************************************************
+	public function buildSQLTotal($type, $dataIntern, $schema){
+		$sql = "";
+		$table_from = $schema['from'][0];
+		$table_name = $table_from['table_nick'] != "" ? $table_from['table_nick'] : $table_from['table'] ;
+
+		if($type == "list" && $this->getHasMultiple() && $this->model->settings['list_mode'] == "multiple"){
+			$ws = ($this->model->settings['select_use_status']) ? $this->addWhere($schema['where'],  $table_name.".".$table_from['status_name'] ." != '-1'") : "";
+			$sql = "\n\nSELECT count(DISTINCT(". $table_from['pk'] .")) as total FROM ";				
+			$sql .= $this->buildSQLFrom(		"inner", $dataIntern, $this->model->schema, " ");
+			$sql .= $this->buildSQLJoins(		"inner", $dataIntern, $this->model->schema, "\t");
+			$sql .=	"\n\t WHERE ". preg_replace('/\s/',' ', $ws) ;
+		}else{
+			$this->addOnWhere($table_name.".". $table_from['status_name'] ." != '-1'");
+			Debug::p($this->model->schema['where']);
+		}
+
+		return $sql;
+	}
+	//*************************************************************************************************************************
 	public function buildSQLLimit($type, $dataIntern, $schema){
 		$sql = "";
 		if(count($schema['limit']) == 2) $sql .= "\n LIMIT ".$schema['limit'][0].", ".$schema['limit'][1];
@@ -489,7 +595,7 @@ class SelectData{
 	public function buildSQLUnion($type, $dataIntern, $schema, $schema_unions){
 		$sql = "";
 		if(!is_array($schema_unions)) return;
-		//Debug::prownt_r($schema_unions['all']);
+		//Debug::p($schema_unions['all']);
 		foreach($schema_unions as $k => $schemaU){
 			$typeUnion = (strrpos($k, "all") >= 0) ? "ALL": "";
 			$sql .= "\n\nUNION $typeUnion (\n";
@@ -506,9 +612,17 @@ class SelectData{
 			}
 		}
 		foreach($schema['join'] as $k => $table){
-			//Debug::prownt_r("{$table['table']} == $table_name");
 			if($table['table'] == $table_name || $table['table_nick'] == $table_name){
+				//Debug::p("{$table['table']} == $table_name", $table);
 				return $table;
+			}
+		}
+	}
+	//*************************************************************************************************************************
+	public function getHasMultiple(){
+		foreach($this->model->schema['join'] as $k => $table){
+			if($table['multiple'] === true){
+				return true;
 			}
 		}
 	}
@@ -522,9 +636,9 @@ class SelectData{
 			}
 		}
 		if($nick == $table_name){
-				//Debug::prownt_r("$table_name");
+				//Debug::p("$table_name");
 			foreach($schema['join'] as $k => $table){
-				//Debug::prownt_r("{$table['table']} == $table_name");
+				//Debug::p("{$table['table']} == $table_name");
 				if($table['table'] == $table_name && $table['table_nick'] != ""){
 					$nick = $table['table_nick'];
 					break;

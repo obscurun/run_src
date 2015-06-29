@@ -10,7 +10,7 @@ class MysqlQuery{
 	private $_class			="";
 	private $_file			="";
 	public $mysql			="";
-	public static $sql		="";
+	public $sql				="";
 	//*************************************************************************************************************************
 	function MysqlQuery($id){
 		$this->query_string = "";
@@ -29,15 +29,15 @@ class MysqlQuery{
 		return $this;
 	}
 	//*************************************************************************************************************************
-	function execute($sql="", $conn=false, $returnId=false, $_line=__LINE__, $_function=__FUNCTION__, $_class=__CLASS__, $_file=__FILE__){
+	function execute($sql="", $conn=false, $returnId=false, $returnObj=true, $_line=__LINE__, $_function=__FUNCTION__, $_class=__CLASS__, $_file=__FILE__){
 		if($sql == "") $sql = $this->query_string;
-		self::$sql = $sql;
+		$this->sql = $sql;
 		$this->query_result = $this->mysql->query($sql, $returnId, $_line, $_function, $_class, $_file, $conn);
 		if(is_integer($this->query_result)){ 
 			Debug::log("Query->execute: ".mysqli_error($conn), $this->_line, $this->_function, $this->_class, $this->_file);
 			Error::show(5200, "Model-> Erro no Query->Result ".__FUNCTION__, __FILE__, __LINE__, '');
 		}
-		if($sql != "") return $this->query_result;
+		if(!$returnObj) return $this->query_result;
 		else return $this;
 	}
 	//*************************************************************************************************************************
@@ -106,8 +106,9 @@ class MysqlQuery{
 		else $mysqli_result = $query_obj;
 		if(!is_object($mysqli_result)){ Error::show(5200, "Model-> Erro no Query->Result /".__FUNCTION__, __FILE__, __LINE__, ''); }
 		else{
-			$mysqli_result->resultSeek($row);
+			//$mysqli_result->resultSeek($row);
 			$mysqli_result = $mysqli_result->fetch_row();
+			//Debug::p($this->sql, $mysqli_result);
 			$mysqli_result = $mysqli_result[$index];
 			Debug::log("Query->getUniqueResult: ", $this->_line, $this->_function, $this->_class, $this->_file);
 			return $mysqli_result;

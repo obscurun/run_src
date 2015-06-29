@@ -7,13 +7,13 @@ require(RUN_PATH. "core/log/benchmark.php");
 require(RUN_PATH. "core/control.php");
 require(RUN_PATH. "libraries/router/router.php");
 require(RUN_PATH. "core/log/action_log.php");
+require(RUN_PATH. "core/js/ajaxMethod.php");
 require(RUN_PATH. "core/model.php");
 require(RUN_PATH. "core/view.php");
 require(RUN_PATH. "core/session.php");
 require(RUN_PATH. "core/properties.php");
 require(RUN_PATH. "core/language.php");
 require(RUN_PATH. "core/cookie.php");
-require(RUN_PATH. "core/js/ajaxMethod.php");
 require(RUN_PATH. "core/js/json.php");/**/
 //*********************************************************************************************************************************
 class Run extends Config{
@@ -38,8 +38,10 @@ class Run extends Config{
 		//-  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -
 		self::$debug 			= new Debug(); 
 		self::$benchmark 		= new Benchmark();
+
 		self::$benchmark->mark("Run/Inicio");
 		$this->startBasicConfig();
+		
 		self::$control 			= new Control(); 
 		self::$model 			= new Model();
 		self::$view 			= new View();

@@ -56,6 +56,8 @@ class Control{
 		else if(is_int($var)) 	return "int";
 		else if(is_object($var))return "object";
 		else if(is_bool($var))	return "boolean";
+		else if(is_null($var))	return "null";
+		else if(!isset($var))	return "NULL";
 		else return "unknown";
 	}
 	//*************************************************************************************************************************

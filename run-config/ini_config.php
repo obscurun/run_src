@@ -78,7 +78,7 @@ class Config{
 				break;
 			default:
 									 //type			//id 				//host 				//database 			//schema		//user 			//password
-				Model::setConnection('mysql',		'default',			'localhost',		'run',				'', 			'root', 			'dev123'		);
+				Model::setConnection('mysql',		'default',			'localhost',		'run',				'', 			'root', 		'dev123'		);
 				Model::setConnection('mysql',		'runb',				'localhost',		'runb',				'', 			'root',			'dev123'		);
 				Model::setConnection('postgre',		'postgre',			'localhost',		'run',				'run', 			'postgres',		'dev'			);
 				Model::setConnection('postgre',		'postgre_form1',	'localhost',		'run_form1',		'public', 		'postgres',		'dev'			);

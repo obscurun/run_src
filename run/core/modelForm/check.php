@@ -17,7 +17,7 @@ class check{
 		if(!array_key_exists('ref',						$settings) || $settings['ref'] == ""){ $settings['ref'] = "ref";	}
 		if(!array_key_exists('nick_name',				$settings)){ $settings['nick_name']				= "Registro";		}
 		if(!array_key_exists('debug',					$settings)){ $settings['debug'] 				= false;			}
-		if(!array_key_exists('data_mode',				$settings)){ $settings['data_mode']				= "multiple";		}
+		if(!array_key_exists('list_mode',				$settings)){ $settings['list_mode']				= "multiple";		}
 		if(!array_key_exists('unique_index',			$settings)){ $settings['unique_index'] 			= false;			}
 		if(!array_key_exists('val_server',				$settings)){ $settings['val_server'] 			= true;				}
 		if(!array_key_exists('val_client',				$settings)){ $settings['val_client'] 			= true;				}
@@ -52,6 +52,7 @@ class check{
 		if(!array_key_exists('select_groupby',			$settings)){ $settings['select_groupby']		= false;			}
 		if(!array_key_exists('select_tabulated',		$settings)){ $settings['select_tabulated']		= false;			}
 		if(!array_key_exists('select_recursive',		$settings)){ $settings['select_recursive']		= false;			}
+		if(!array_key_exists('select_use_status',		$settings)){ $settings['select_use_status']		= true;				}
 		//-  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  - 
 		if(!array_key_exists('paging_num_registers',	$settings)){ $settings['paging_num_registers']	= 15;				}
 		if(!array_key_exists('paging_param_ref',		$settings)){ $settings['paging_param_ref']		= 0;				}
@@ -101,6 +102,7 @@ class check{
 		if(!array_key_exists('where',				$schema)){ $schema['where'] 	= "";								}
 		if(!array_key_exists('having',				$schema)){ $schema['having'] 	= "";								}
 		if(!array_key_exists('order',				$schema)){ $schema['order'] 	= "";								}
+		if(!array_key_exists('group',				$schema)){ $schema['group'] 	= array();							}
 		if(!array_key_exists('limit',				$schema)){ $schema['limit'] 	= array();							}
 	// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - --
 	//	LEMBRAR DE ATUALIZAR A CLASSE OrderTables->recursiveOrderJoinCheck
@@ -109,8 +111,10 @@ class check{
 
 			$if0_false = ($k == 0) ? false : true;
 			if(!array_key_exists('save',				$table)){ $schema['from'][$k]['save'] 				= "";								}
-			if(!array_key_exists('select',				$table)){ $schema['from'][$k]['select'] 			= true;								}
+			if(!array_key_exists('view',				$table)){ $schema['from'][$k]['view'] 				= true;								}
 			if(!array_key_exists('list',				$table)){ $schema['from'][$k]['list'] 				= true;								}
+			if(!array_key_exists('list_fields',			$table)){ $schema['from'][$k]['list_fields']		= $schema['from'][$k]['list'];		}
+			if(!array_key_exists('list_inner',			$table)){ $schema['from'][$k]['list_inner']			= $schema['from'][$k]['list'];		}
 			if(!array_key_exists('export',				$table)){ $schema['from'][$k]['export'] 			= true;								}
 			if(!array_key_exists('order',				$table)){ $schema['from'][$k]['order'] 				= "";								}
 			if(!array_key_exists('status_name',			$table)){ $schema['from'][$k]['status_name']		= 'status_int';						}
@@ -138,8 +142,10 @@ class check{
 	// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - --
 		foreach($schema['join'] as $k => $table){
 			if(!array_key_exists('save',				$table)){ $schema['join'][$k]['save'] 				= true;								}
-			if(!array_key_exists('select',				$table)){ $schema['join'][$k]['select'] 			= true;								}
+			if(!array_key_exists('view',				$table)){ $schema['join'][$k]['view'] 				= true;								}
 			if(!array_key_exists('list',				$table)){ $schema['join'][$k]['list'] 				= true;								}
+			if(!array_key_exists('list_fields',			$table)){ $schema['join'][$k]['list_fields']		= $schema['join'][$k]['list'];		}
+			if(!array_key_exists('list_inner',			$table)){ $schema['join'][$k]['list_inner']			= $schema['join'][$k]['list'];		}
 			if(!array_key_exists('export',				$table)){ $schema['join'][$k]['export'] 			= true;								}
 			if(!array_key_exists('delete_pk_empties',	$table)){ $schema['join'][$k]['delete_pk_empties'] 	= true;								}
 			if(!array_key_exists('on',					$table)){ $schema['join'][$k]['on'] 				= "";								}
@@ -218,12 +224,12 @@ class check{
 			}		
 			if(!array_key_exists('belongsTo',		$val)){ $schema['fields'][$key]['belongsTo'] 		= $schema['from'][0]['table_nick'] != "" ? $schema['from'][0]['table_nick'] : $schema['from'][0]['table'];	}
 			if(!array_key_exists('fieldRef',		$val)){ $schema['fields'][$key]['fieldRef'] 		= $key;			}
+			if(!array_key_exists('view',			$val)){ $schema['fields'][$key]['view'] 			= true;			}
 			if(!array_key_exists('list',			$val)){ $schema['fields'][$key]['list'] 			= true;			}
 			if(!array_key_exists('skipRecEmpty',	$val)){ $schema['fields'][$key]['skipRecEmpty'] 	= false;		} // retira todos os campos do registro para o insert/update se for vazio
 			if(!array_key_exists('skipFieldEmpty',	$val)){ $schema['fields'][$key]['skipFieldEmpty'] 	= false;		} // retira apenas o campo vazio para o insert/update
 			if(!array_key_exists('type',			$val)){ $schema['fields'][$key]['type'] 			= "string";		}
 			if(!array_key_exists('export',			$val)){ $schema['fields'][$key]['export'] 			= true;			}
-			if(!array_key_exists('select',			$val)){ $schema['fields'][$key]['select'] 			= true;			}
 			if(!array_key_exists('insert',			$val)){ $schema['fields'][$key]['insert'] 			= true;			}
 			if(!array_key_exists('update',			$val)){ $schema['fields'][$key]['update'] 			= false;		}
 			if(!array_key_exists('multiple',		$val)){ $schema['fields'][$key]['multiple'] 		= $multiple;	}
