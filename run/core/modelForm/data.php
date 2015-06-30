@@ -74,7 +74,7 @@ class Data{
 	//-  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -
 		if($paramField['type'] == "file_type"){
 			$isFile = true;
-			if(isset($value['size'])) $value = $value['type'];
+			if(isset($value['type'])) $value = $value['type'];
 			else $value = "";
 		}
 	//-  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -

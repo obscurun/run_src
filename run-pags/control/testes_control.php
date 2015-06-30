@@ -96,6 +96,7 @@ class TestesController extends Router{
 		Run::$router->acceptNextLevels(1);
 		$this->model = new Form1Model("form_cadastro");
 		$this->model->getList();
+		$this->loadView("list1");
 	}
 	//-  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -
 }

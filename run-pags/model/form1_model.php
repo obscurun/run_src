@@ -66,7 +66,9 @@ class Form1Model extends modelForm{
 					"fk_ref"      		=> "fk_cadastro",
 					"save"        		=> true,
 					"multiple"    		=> true,
-					"on"          		=> ""
+					"on"          		=> "",
+					"list"				=> true,
+					"listAsColumn"		=> true
 				),
 				array(
 					"type"        		=> "left",
@@ -123,7 +125,7 @@ class Form1Model extends modelForm{
 					'update'			=> false,
 					'type' 				=> 'int',
 					'label'				=> 'ID',
-					'size'				=> '60'
+					'listWidth'			=> '60'
 				),
 		//- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 				'nome_cadastro'			=> array(
@@ -149,14 +151,14 @@ class Form1Model extends modelForm{
 					'update'			=> true,
 					'type' 				=> 'string',
 					'label'				=> 'Sobrenome',
-					'size'				=> '100',
+					'listWidth'			=> '100',
 					'validation1'		=> array(
 						'required'		=> array(true, true, 'Preencha o sobrenome.')
 					)
 				),
 		//- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 				'email'					=> array(
-					'list'				=> false,
+					'list'				=> true,
 					'view'				=> true,
 					'export'			=> true,
 					'insert'			=> true,
@@ -221,7 +223,8 @@ class Form1Model extends modelForm{
 					'label'				=> 'Status',
 					'name' 				=> 'status',
 					'type' 				=> 'int',
-					'list' 				=> true
+					'list' 				=> true,
+					'listOrder'			=> '23s'
 				),
 		//- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 		//- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
@@ -233,8 +236,8 @@ class Form1Model extends modelForm{
 					'insert'			=> false,
 					'update'			=> false,
 					'type' 				=> 'int',
-					'label'				=> 'ID',
-					'size'				=> '60'
+					'label'				=> 'ID Arquivo',
+					'listWidth'			=> '60'
 				),
 		//- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 				'fk_endereco_a'			=> array(
@@ -246,8 +249,8 @@ class Form1Model extends modelForm{
 					'insert'			=> false,
 					'update'			=> false,
 					'type' 				=> 'int',
-					'label'				=> 'ID',
-					'size'				=> '60'
+					'label'				=> 'ID Ref / Endereço',
+					'listWidth'			=> '60'
 				),
 		//- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 				'arquivo'				=> array(
@@ -263,7 +266,7 @@ class Form1Model extends modelForm{
 					'maxLength'			=> 45,
 					'type' 				=> 'file_name',
 					'label'				=> 'ID',
-					'size'				=> '60',
+					'listWidth'			=> '60',
 					'validation1'		=> array(
 						'required'		=> array(true, true, 'Insira um arquivo.')
 					)
@@ -281,8 +284,8 @@ class Form1Model extends modelForm{
 					'addSlashe'			=> true,
 					'skipRecEmpty'		=> true,
 					'type' 				=> 'file_type',
-					'label'				=> 'ID',
-					'size'				=> '60',
+					'label'				=> 'Tipo',
+					'listWidth'			=> '60',
 					'validation'		=> array(
 						'required'		=> array(true, true, 'Insira um arquivo.')
 					)
@@ -300,7 +303,7 @@ class Form1Model extends modelForm{
 					'value'				=> 'default/', 
 					'type' 				=> 'file_path',
 					'label'				=> 'ID',
-					'size'				=> '60',
+					'listWidth'			=> '60',
 					'validation'		=> array(
 						'required'		=> array(true, true, 'Insira um arquivo.')
 					)
@@ -317,7 +320,7 @@ class Form1Model extends modelForm{
 					'addSlashe'			=> true,
 					'type' 				=> 'file_size',
 					'label'				=> 'Tamanho do arquivo',
-					'size'				=> '60',
+					'listWidth'			=> '60',
 					'validation'		=> array(
 						'required'		=> array(true, true, 'Insira um arquivo.'),
 						'maxfilesize'	=> array(array(1, "MB"), true)
@@ -335,7 +338,7 @@ class Form1Model extends modelForm{
 					'addSlashe'			=> true,
 					'type' 				=> 'file_extension',
 					'label'				=> 'ID',
-					'size'				=> '60',
+					'listWidth'			=> '60',
 					'validation'		=> array(
 						'required'		=> array(true, true, 'Insira um arquivo.')
 					)
@@ -378,7 +381,7 @@ class Form1Model extends modelForm{
 					'update'			=> false,
 					'type' 				=> 'int',
 					'label'				=> 'ID',
-					'size'				=> '60'
+					'listWidth'			=> '60'
 				),
 		//- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 				'fk_cadastro_e'			=> array(
@@ -391,11 +394,12 @@ class Form1Model extends modelForm{
 					'update'			=> false,
 					'type' 				=> 'int',
 					'label'				=> 'ID',
-					'size'				=> '60'
+					'listWidth'			=> '60'
 				),
 		//- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 				'rua'					=> array(
 					'belongsTo'			=> 'e',
+					'listOrder'			=> 23,
 					'list'				=> true,
 					'view'				=> true,
 					'export'			=> true,
@@ -403,8 +407,8 @@ class Form1Model extends modelForm{
 					'update'			=> true,
 					'addSlashe'			=> true,
 					'type' 				=> 'string',
-					'label'				=> 'ID',
-					'size'				=> '60',
+					'label'				=> 'Rua',
+					'listWidth'			=> '60',
 					'validation'		=> array(
 						'required'		=> array(true, true, 'Insira uma rua.')
 					)
@@ -413,15 +417,16 @@ class Form1Model extends modelForm{
 				'fk_uf'					=> array(
 					'belongsTo'			=> 'e',
 					'name'				=> 'fk_uf',
-					'list'				=> false,
+					'listOrder'			=> '23a',
+					'list'				=> true,
 					'view'				=> true,
 					'export'			=> true,
 					'insert'			=> true,
 					'update'			=> true,
 					'addSlashe'			=> true,
 					'type' 				=> 'int',
-					'label'				=> 'ID',
-					'size'				=> '60',
+					'label'				=> 'UF',
+					'listWidth'			=> '60',
 					'labelList'			=> array(
 									"" 	=> "Escolha uma opção",
 									"1" => "SP",
@@ -450,11 +455,12 @@ class Form1Model extends modelForm{
 		//- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 				'status_e'				=> array(
 					'belongsTo'			=> 'e',
+					'listOrder'			=> '23b',
 					'update'			=> true,
 					'label'				=> 'Status',
 					'name' 				=> 'status',
 					'type' 				=> 'int',
-					'list' 				=> true
+					'list' 				=> false
 				),
 		//- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 		//- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
@@ -467,7 +473,7 @@ class Form1Model extends modelForm{
 					'update'			=> false,
 					'type' 				=> 'int',
 					'label'				=> 'ID - Cor',
-					'size'				=> '60'
+					'listWidth'			=> '60'
 				),
 		//- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 				'fk_cadastro_et'		=> array(
@@ -480,7 +486,7 @@ class Form1Model extends modelForm{
 					'update'			=> false,
 					'type' 				=> 'int',
 					'label'				=> 'ID',
-					'size'				=> '60'
+					'listWidth'			=> '60'
 				),
 		//- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 				'tipo'					=> array(
@@ -494,7 +500,7 @@ class Form1Model extends modelForm{
 					'addSlashe'			=> true,
 					'type' 				=> 'string',
 					'label'				=> 'Tipo de residência',
-					'size'				=> '60',
+					'listWidth'			=> '60',
 					'validation1'		=> array(
 						'required'		=> array(true, true, 'Preencha as cores.'),
 						'minlength'		=> array(2, true),
@@ -530,7 +536,7 @@ class Form1Model extends modelForm{
 					'update'			=> false,
 					'type' 				=> 'int',
 					'label'				=> 'ID - Cor',
-					'size'				=> '60'
+					'listWidth'			=> '60'
 				),
 		//- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 				'fk_cadastro_c'			=> array(
@@ -543,7 +549,7 @@ class Form1Model extends modelForm{
 					'update'			=> false,
 					'type' 				=> 'int',
 					'label'				=> 'ID',
-					'size'				=> '60'
+					'listWidth'			=> '60'
 				),
 		//- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 				'nome_cor'				=> array(
@@ -557,7 +563,7 @@ class Form1Model extends modelForm{
 					'addSlashe'			=> true,
 					'type' 				=> 'string',
 					'label'				=> 'Nome da Cor',
-					'size'				=> '60',
+					'listWidth'			=> '60',
 					'validation'		=> array(
 						'required'		=> array(true, true, 'Preencha as cores.'),
 						'minlength'		=> array(2, true),
@@ -594,7 +600,7 @@ class Form1Model extends modelForm{
 					'sqlSelect'			=> 'DISTINCT()',
 					'type' 				=> 'int',
 					'label'				=> 'ID',
-					'size'				=> '60'
+					'listWidth'			=> '60'
 				),
 		//- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 				'nome_uf'				=> array(
@@ -608,7 +614,7 @@ class Form1Model extends modelForm{
 					'insert'			=> true,
 					'update'			=> true,
 					'addSlashe'			=> true,
-					'size'				=> '60'
+					'listWidth'			=> '60'
 				),
 		//- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 				'uf'					=> array(
@@ -621,7 +627,7 @@ class Form1Model extends modelForm{
 					'insert'			=> true,
 					'update'			=> true,
 					'addSlashe'			=> true,
-					'size'				=> '60'
+					'listWidth'			=> '60'
 				)
 		//- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 			)

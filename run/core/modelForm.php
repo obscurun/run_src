@@ -10,6 +10,7 @@ require_once(RUN_PATH.'core/modelForm/check.php');
 require_once(RUN_PATH.'core/modelForm/token.php');
 require_once(RUN_PATH.'core/modelForm/data.php');
 require_once(RUN_PATH.'core/modelForm/form_aux.php');
+require_once(RUN_PATH.'core/modelForm/list_aux.php');
 require_once(RUN_PATH.'core/modelForm/session.php');
 require_once(RUN_PATH.'core/modelForm/select_data.php');
 require_once(RUN_PATH.'core/modelForm/clean_data.php');
@@ -475,7 +476,8 @@ class modelForm{
 		if(is_null($this->query)) $this->exeDatabaseConnect(true);
 		$this->exeBeforeList();
 		//Debug::p('query', Run::$control->typeof($this->model->query) );
-		$returnDatas = $this->selectData->getList();
+		$this->dataList = $this->selectData->getList();
+		$this->list 	= new ListAux($this); 
 	}
 
 

@@ -77,7 +77,7 @@ class SelectData{
 	}
 	//*************************************************************************************************************************
 	public function getList(){
-		Run::$DEBUG_PRINT = true;
+		//Run::$DEBUG_PRINT = true;
 		$dataList = array();
 		$this->prepareList();
 		$sql = $this->buildSQL("list", $this->model->dataIntern, $this->model->schema, $this->model->schema_unions);
@@ -101,9 +101,9 @@ class SelectData{
 		$sql_total = $this->buildSQLTotal("list", $this->model->dataIntern, $this->model->schema);
 		$this->queryResult = $this->query->setLog(__LINE__, __FUNCTION__, __CLASS__, __FILE__)->setConnection($this->model->settings['database_id'])->setReturnId()->execute($sql_total)->getResult();
 		//$this->queryResult = $this->query->execute($sql, false, false, __LINE__, __FUNCTION__, __CLASS__, __FILE__, $this->model->settings['database_id']);
-		Debug::p($sql);
+		//Debug::p($sql);
 		//Debug::p($sql_total);
-		Debug::p($dataSelectSequencial);
+		//Debug::p($dataSelectSequencial);
 		//Debug::p($dataSelectTabulated);
 		//Debug::p($dataSelectRecursive);
 		return array(

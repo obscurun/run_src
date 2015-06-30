@@ -90,7 +90,7 @@ class Form2Model extends modelForm{
 					'update'			=> false,
 					'type' 				=> 'int',
 					'label'				=> 'ID',
-					'size'				=> '60'
+					'listWidth'			=> '60'
 				),
 		//- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 				'nome_cadastro'			=> array(
@@ -116,7 +116,7 @@ class Form2Model extends modelForm{
 					'update'			=> true,
 					'type' 				=> 'string',
 					'label'				=> 'Sobrenome',
-					'size'				=> '100',
+					'listWidth'			=> '100',
 					'validation1'		=> array(
 						'required'		=> array(true, true, 'Preencha o sobrenome.'),
 						'maxcaracters'	=> array(10, true),
@@ -200,7 +200,7 @@ class Form2Model extends modelForm{
 					'update'			=> false,
 					'type' 				=> 'int',
 					'label'				=> 'ID - Cor',
-					'size'				=> '60'
+					'listWidth'			=> '60'
 				),
 		//- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 				'fk_cadastro_c'			=> array(
@@ -213,7 +213,7 @@ class Form2Model extends modelForm{
 					'update'			=> false,
 					'type' 				=> 'int',
 					'label'				=> 'ID',
-					'size'				=> '60'
+					'listWidth'			=> '60'
 				),
 		//- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 				'nome_cor'				=> array(
@@ -227,7 +227,7 @@ class Form2Model extends modelForm{
 					'addSlashe'			=> true,
 					'type' 				=> 'string',
 					'label'				=> 'Nome da Cor',
-					'size'				=> '60',
+					'listWidth'			=> '60',
 					'validation'		=> array(
 						'required'		=> array(true, true, 'Preencha as cores.'),
 						'minlength'		=> array(2, true),
@@ -263,7 +263,7 @@ class Form2Model extends modelForm{
 					'update'			=> false,
 					'type' 				=> 'int',
 					'label'				=> 'ID',
-					'size'				=> '60'
+					'listWidth'			=> '60'
 				),
 		//- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 				'fk_endereco_a'			=> array(
@@ -276,7 +276,7 @@ class Form2Model extends modelForm{
 					'update'			=> false,
 					'type' 				=> 'int',
 					'label'				=> 'ID',
-					'size'				=> '60'
+					'listWidth'			=> '60'
 				),
 		//- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 				'arquivo'				=> array(
@@ -292,7 +292,7 @@ class Form2Model extends modelForm{
 					'maxLength'			=> 45,
 					'type' 				=> 'file_name',
 					'label'				=> 'ID',
-					'size'				=> '60',
+					'listWidth'			=> '60',
 					'validation1'		=> array(
 						'required'		=> array(true, true, 'Insira um arquivo.')
 					)
@@ -311,7 +311,7 @@ class Form2Model extends modelForm{
 					'skipRecEmpty'		=> true,
 					'type' 				=> 'file_type',
 					'label'				=> 'ID',
-					'size'				=> '60',
+					'listWidth'			=> '60',
 					'validation'		=> array(
 						'required'		=> array(true, true, 'Insira um arquivo.')
 					)
@@ -329,7 +329,7 @@ class Form2Model extends modelForm{
 					'value'				=> 'default/', 
 					'type' 				=> 'file_path',
 					'label'				=> 'ID',
-					'size'				=> '60',
+					'listWidth'			=> '60',
 					'validation'		=> array(
 						'required'		=> array(true, true, 'Insira um arquivo.')
 					)
@@ -346,7 +346,7 @@ class Form2Model extends modelForm{
 					'addSlashe'			=> true,
 					'type' 				=> 'file_size',
 					'label'				=> 'Tamanho do arquivo',
-					'size'				=> '60',
+					'listWidth'			=> '60',
 					'validation'		=> array(
 						'required'		=> array(true, true, 'Insira um arquivo.'),
 						'maxfilesize'	=> array(array(500, "KB"), true, 'O arquivo [name] é maior que o permitido')
@@ -364,7 +364,7 @@ class Form2Model extends modelForm{
 					'addSlashe'			=> true,
 					'type' 				=> 'file_extension',
 					'label'				=> 'ID',
-					'size'				=> '60',
+					'listWidth'			=> '60',
 					'validation'		=> array(
 						'required'		=> array(true, true, 'Insira um arquivo.')
 					)
