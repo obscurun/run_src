@@ -49,7 +49,7 @@ class Form2Model extends modelForm{
 					"table_nick"  		=> "u",
 					"pk"          		=> "pk_uf",
 					"pk_del"      		=> "del_pk_uf",
-					"select"			=> false,
+					"view"				=> false,
 					"save"        		=> false,
 					"multiple"    		=> false
 				),
@@ -84,7 +84,7 @@ class Form2Model extends modelForm{
 			"fields"					=> array(
 				'pk_cadastro'			=> array(
 					'list'				=> true,
-					'select'			=> true,
+					'view'				=> true,
 					'export'			=> true,
 					'insert'			=> false,
 					'update'			=> false,
@@ -95,11 +95,11 @@ class Form2Model extends modelForm{
 		//- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 				'nome_cadastro'			=> array(
 					'name'				=> 'nome',
-					'list'				=> false,
-					'select'			=> true,
+					'list'				=> true,
+					'view'				=> true,
 					'export'			=> false,
 					'insert'			=> true,
-					'update'			=> TRUE,
+					'update'			=> true,
 					'type' 				=> 'string',
 					'maxSize'			=> 10,
 					'label'				=> 'Nome',
@@ -110,7 +110,7 @@ class Form2Model extends modelForm{
 		//- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 				'sobrenome'				=> array(
 					'list'				=> true,
-					'select'			=> true,
+					'view'				=> true,
 					'export'			=> true,
 					'insert'			=> true,
 					'update'			=> true,
@@ -126,8 +126,8 @@ class Form2Model extends modelForm{
 				),
 		//- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 				'email'					=> array(
-					'list'				=> false,
-					'select'			=> true,
+					'list'				=> true,
+					'view'				=> true,
 					'export'			=> true,
 					'insert'			=> true,
 					'update'			=> false,
@@ -140,7 +140,7 @@ class Form2Model extends modelForm{
 		//- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 				'senha'					=> array(
 					'list'				=> false,
-					'select'			=> false,
+					'view'				=> false,
 					'export'			=> true,
 					'insert'			=> true,
 					'update'			=> false,
@@ -153,7 +153,7 @@ class Form2Model extends modelForm{
 		//- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 				'observacoes'			=> array(
 					'list'				=> false,
-					'select'			=> true,
+					'view'				=> true,
 					'export'			=> true,
 					'insert'			=> true,
 					'update'			=> true,
@@ -169,7 +169,7 @@ class Form2Model extends modelForm{
 					'label'				=> 'Data de Inserção',
 					'type' 				=> 'date_insert',
 					'name' 				=> 'date_insert',
-					'list' 				=> true
+					'list' 				=> false
 				),
 		//- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 				'date_update'			=> array(
@@ -178,7 +178,7 @@ class Form2Model extends modelForm{
 					'label'				=> 'Data de Atualização',
 					'type' 				=> 'date_update',
 					'name' 				=> 'date_update',
-					'list' 				=> true
+					'list' 				=> false
 				),
 		//- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 				'status'				=> array(
@@ -187,14 +187,14 @@ class Form2Model extends modelForm{
 					'label'				=> 'Status',
 					'name' 				=> 'status',
 					'type' 				=> 'int',
-					'list' 				=> true
+					'list' 				=> false
 				),
 		//- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 		//- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 				'pk_cor'				=> array(
 					'belongsTo'			=> 'form1_cores',
 					'list'				=> true,
-					'select'			=> true,
+					'view'				=> true,
 					'export'			=> true,
 					'insert'			=> false,
 					'update'			=> false,
@@ -207,7 +207,7 @@ class Form2Model extends modelForm{
 					'name'				=> 'fk_cadastro',
 					'belongsTo'			=> 'form1_cores',
 					'list'				=> true,
-					'select'			=> true,
+					'view'				=> true,
 					'export'			=> true,
 					'insert'			=> false,
 					'update'			=> false,
@@ -220,7 +220,7 @@ class Form2Model extends modelForm{
 					'belongsTo'			=> 'form1_cores',
 					'name'				=> 'nome',
 					'list'				=> true,
-					'select'			=> true,
+					'view'				=> true,
 					'export'			=> true,
 					'insert'			=> true,
 					'update'			=> true,
@@ -241,7 +241,7 @@ class Form2Model extends modelForm{
 					'name' 				=> 'date_insert',
 					'update'			=> false,
 					'label'				=> 'Data de Inserção',
-					'list' 				=> true
+					'list' 				=> false
 				),
 		//- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 				'date_update_cor'		=> array(
@@ -250,14 +250,14 @@ class Form2Model extends modelForm{
 					'name' 				=> 'date_update',
 					'update'			=> true,
 					'label'				=> 'Data de Atualização',
-					'list' 				=> true
+					'list' 				=> false
 				),
 		//- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 		//- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 				'pk_arquivo'			=> array(
 					'belongsTo'			=> 'a',
 					'list'				=> true,
-					'select'			=> true,
+					'view'				=> true,
 					'export'			=> true,
 					'insert'			=> false,
 					'update'			=> false,
@@ -270,7 +270,7 @@ class Form2Model extends modelForm{
 					'name'				=> 'fk_cadastro',
 					'belongsTo'			=> 'a',
 					'list'				=> true,
-					'select'			=> true,
+					'view'				=> true,
 					'export'			=> true,
 					'insert'			=> false,
 					'update'			=> false,
@@ -283,7 +283,7 @@ class Form2Model extends modelForm{
 					'fieldRef'			=> 'arquivo',
 					'belongsTo'			=> 'a',
 					'list'				=> true,
-					'select'			=> true,
+					'view'				=> true,
 					'export'			=> true,
 					'insert'			=> true,
 					'update'			=> false,
@@ -303,7 +303,7 @@ class Form2Model extends modelForm{
 					'fieldRef'			=> 'arquivo',
 					'belongsTo'			=> 'a',
 					'list'				=> true,
-					'select'			=> true,
+					'view'				=> true,
 					'export'			=> true,
 					'insert'			=> true,
 					'update'			=> false,
@@ -321,7 +321,7 @@ class Form2Model extends modelForm{
 					'fieldRef'			=> 'arquivo',
 					'belongsTo'			=> 'a',
 					'list'				=> true,
-					'select'			=> true,
+					'view'				=> true,
 					'export'			=> true,
 					'insert'			=> true,
 					'update'			=> false,
@@ -339,7 +339,7 @@ class Form2Model extends modelForm{
 					'fieldRef'			=> 'arquivo',
 					'belongsTo'			=> 'a',
 					'list'				=> true,
-					'select'			=> true,
+					'view'				=> true,
 					'export'			=> true,
 					'insert'			=> true,
 					'update'			=> false,
@@ -357,7 +357,7 @@ class Form2Model extends modelForm{
 					'fieldRef'			=> 'arquivo',
 					'belongsTo'			=> 'a',
 					'list'				=> true,
-					'select'			=> true,
+					'view'				=> true,
 					'export'			=> true,
 					'insert'			=> true,
 					'update'			=> false,
@@ -376,7 +376,7 @@ class Form2Model extends modelForm{
 					'label'				=> 'Data de Inserção',
 					'type' 				=> 'date_insert',
 					'name' 				=> 'date_insert',
-					'list' 				=> true
+					'list' 				=> false
 				),
 		//- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 				'date_update_a'			=> array(
@@ -385,7 +385,7 @@ class Form2Model extends modelForm{
 					'label'				=> 'Data de Atualização',
 					'type' 				=> 'date_update',
 					'name' 				=> 'date_update',
-					'list' 				=> true
+					'list' 				=> false
 				),
 		//- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 				'status_a'				=> array(
@@ -394,7 +394,7 @@ class Form2Model extends modelForm{
 					'label'				=> 'Status',
 					'name' 				=> 'status',
 					'type' 				=> 'int',
-					'list' 				=> true
+					'list' 				=> false
 				),
 		//- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 			)

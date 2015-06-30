@@ -9,6 +9,8 @@ class PostgreQuery{
 	private $_function		="";
 	private $_class			="";
 	private $_file			="";
+	private $connection		=false;
+	private $returnID		=false;
 	public $postgre			="";
 	public static $sql		="";
 	//*************************************************************************************************************************
@@ -29,16 +31,25 @@ class PostgreQuery{
 		return $this;
 	}
 	//*************************************************************************************************************************
-	function execute($sql="", $conn=false, $returnId=false, $_line=__LINE__, $_function=__FUNCTION__, $_class=__CLASS__, $_file=__FILE__){
+	function setConnection($connection){
+		$this->connection 		= $connection;
+		return $this;
+	}
+	//*************************************************************************************************************************
+	function setReturnId(){
+		$this->returnID 		= true;
+		return $this;
+	}
+	//*************************************************************************************************************************
+	function execute($sql=""){
 		if($sql == "") $sql = $this->query_string;
 		self::$sql = $sql;
-		$this->query_result = $this->postgre->query($sql, $returnId, $_line, $_function, $_class, $_file, $conn);
+		$this->query_result = $this->postgre->query($sql, $this->returnID, $this->_line, $this->_function, $this->_class, $this->_file, $this->connection);
 		if(pg_last_error($this->query_result)){ 
 			Debug::log("Query->execute: ".pg_last_error($this->query_result), $this->_line, $this->_function, $this->_class, $this->_file);
 			Error::show(5200, "Model-> Erro no Query->Result ".__FUNCTION__, __FILE__, __LINE__, '');
 		}
-		if($sql != "") return $this->query_result;
-		else return $this;
+		return $this;
 	}
 	//*************************************************************************************************************************
 	function returnFetchAssoc($resultObj=false, $_line=__LINE__, $_function=__FUNCTION__, $_class=__CLASS__, $_file=__FILE__){

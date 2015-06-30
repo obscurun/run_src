@@ -102,7 +102,9 @@ class check{
 		if(!array_key_exists('where',				$schema)){ $schema['where'] 	= "";								}
 		if(!array_key_exists('having',				$schema)){ $schema['having'] 	= "";								}
 		if(!array_key_exists('order',				$schema)){ $schema['order'] 	= "";								}
-		if(!array_key_exists('group',				$schema)){ $schema['group'] 	= array();							}
+		if(!array_key_exists('group',				$schema)){ $schema['group'] 	= "";								}
+		if(!array_key_exists('group_list',			$schema)){ $schema['group_list']= $schema['group'];					}
+		if(!array_key_exists('group_view',			$schema)){ $schema['group_view']= $schema['group'];					}
 		if(!array_key_exists('limit',				$schema)){ $schema['limit'] 	= array();							}
 	// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - --
 	//	LEMBRAR DE ATUALIZAR A CLASSE OrderTables->recursiveOrderJoinCheck
@@ -225,7 +227,7 @@ class check{
 			if(!array_key_exists('belongsTo',		$val)){ $schema['fields'][$key]['belongsTo'] 		= $schema['from'][0]['table_nick'] != "" ? $schema['from'][0]['table_nick'] : $schema['from'][0]['table'];	}
 			if(!array_key_exists('fieldRef',		$val)){ $schema['fields'][$key]['fieldRef'] 		= $key;			}
 			if(!array_key_exists('view',			$val)){ $schema['fields'][$key]['view'] 			= true;			}
-			if(!array_key_exists('list',			$val)){ $schema['fields'][$key]['list'] 			= true;			}
+			if(!array_key_exists('list',			$val)){ $schema['fields'][$key]['list'] 			= false;		}
 			if(!array_key_exists('skipRecEmpty',	$val)){ $schema['fields'][$key]['skipRecEmpty'] 	= false;		} // retira todos os campos do registro para o insert/update se for vazio
 			if(!array_key_exists('skipFieldEmpty',	$val)){ $schema['fields'][$key]['skipFieldEmpty'] 	= false;		} // retira apenas o campo vazio para o insert/update
 			if(!array_key_exists('type',			$val)){ $schema['fields'][$key]['type'] 			= "string";		}

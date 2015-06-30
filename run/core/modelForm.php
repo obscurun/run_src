@@ -45,7 +45,7 @@ class modelForm{
 	public 			 $dataFormRecursive		= array(); // deprecated - não usado no momento
 	public 			 $dataFormPKList		= array(); // dados recebidos no select, apenas PKs como referência para autoDelete
 	public 			 $dataErrors			= array(); // apenas dados que geraram erros no validate ou no save
-	public 			 $selectType			= "select";
+	public 			 $selectType			= "view";
 	//*************************************************************************************************************************
 	function modelForm(){
 		Debug::log("Iniciando Core/Form.", __LINE__, __FUNCTION__, __CLASS__, __FILE__);

@@ -34,11 +34,11 @@ class SelectData{
 
 		
 		//Run::$DEBUG_PRINT = true;
-		//Debug::p("sql", $sql);
+		Debug::p("sql", $sql);
 		//exit;
 
 
-		$this->queryResult = $this->query->execute($sql, false, false, __LINE__, __FUNCTION__, __CLASS__, __FILE__, $settings['database_id']);
+		$this->queryResult = $this->query->setLog(__LINE__, __FUNCTION__, __CLASS__, __FILE__)->setConnection($this->model->settings['database_id'])->setReturnId()->execute($sql)->getResult();
 		//$this->fetchData = $this->queryResult; //$this->query->returnFetchAssoc($this->queryResult);
 		Run::$benchmark->writeMark("SelectData/select/buildSQL", "SelectData/select/database->query(sql)");
 		if(!$this->queryResult){
@@ -46,6 +46,7 @@ class SelectData{
 		}
 
 
+		//Debug::p( $this->query->returnNumRows($this->queryResult) );
 		if($this->queryResult === -2) Error::show(0, "MODEL:: Houve um erro ao executar o select query automaticamente: ".$sql);
 		else if($this->query->returnNumRows($this->queryResult) > 0){
 			$dataSelectSequencial 	= $this->buildSQLDataSequencial($type, $this->queryResult, $schema, $settings, $dataIntern);
@@ -63,7 +64,8 @@ class SelectData{
 
 			Run::$benchmark->writeMark("SelectData/select/Inicio", "SelectData/select/Final");
 		}
-		//Debug::p($dataSelectSequencial);
+		//Debug::p( $this->query->returnNumRows($this->queryResult) );
+		Debug::p( $dataSelectSequencial );
 		//Debug::p($dataSelectTabulated);
 		//Debug::p($dataSelectRecursive);
 		return array(
@@ -81,7 +83,7 @@ class SelectData{
 		$sql = $this->buildSQL("list", $this->model->dataIntern, $this->model->schema, $this->model->schema_unions);
 
 
-		$this->queryResult = $this->query->execute($sql, false, false, false, __LINE__, __FUNCTION__, __CLASS__, __FILE__, $this->model->settings['database_id']);
+		$this->queryResult = $this->query->setLog(__LINE__, __FUNCTION__, __CLASS__, __FILE__)->setConnection($this->model->settings['database_id'])->setReturnId()->execute($sql)->getResult();
 		//$this->fetchData = $this->queryResult; //$this->query->returnFetchAssoc($this->queryResult);
 		Run::$benchmark->writeMark("SelectData/select/buildSQL", "SelectData/select/database->query(sql)");
 		if(!$this->queryResult){
@@ -91,29 +93,16 @@ class SelectData{
 
 		if($this->queryResult === -2) Error::show(0, "MODEL:: Houve um erro ao executar o select query automaticamente: ".$sql);
 		else if($this->query->returnNumRows($this->queryResult) > 0){
-			$dataSelectSequencial 	= $this->buildSQLDataSequencial('list', $this->queryResult, $this->model->schema, $this->model->settings, $this->model->dataIntern);
-			Run::$benchmark->writeMark("SelectData/select/buildSQL", "SelectData/select/buildSQLDataSequencial");
-			if($settings['select_tabulated'] === true){
-				$dataSelectTabulated 	= $this->buildSQLData('list', $this->queryResult, $this->model->schema, $this->model->settings, $this->model->dataIntern);
-				Run::$benchmark->writeMark("SelectData/select/buildSQL", "SelectData/select/buildSQLDataTabulated");
-			}
-			if($settings['select_recursive'] === true){
-				$orderTables 			= $this->orderData->getOrderedTables($data, $this->model->schema);
-				$dataSelectRecursive 	= $this->buildSQLDataRecursive('list', $orderTables, $this->queryResult, $this->model->schema, $this->model->settings, $$this->model->dataIntern);
-				Run::$benchmark->writeMark("SelectData/select/buildSQL", "SelectData/select/buildSQLDataRecursive");
-			}
-			$dataSelectPKList			= $this->buildSQLPKList('list', $this->queryResult, $this->model->schema, $this->model->settings, $this->model->dataIntern);
-
+			$dataSelectSequencial 	= $this->buildSQLDataList('list', $this->queryResult, $this->model->schema, $this->model->settings, $this->model->dataIntern);
 			Run::$benchmark->writeMark("SelectData/select/Inicio", "SelectData/select/Final");
 		}
 
 
 		$sql_total = $this->buildSQLTotal("list", $this->model->dataIntern, $this->model->schema);
-		$this->queryResult = $this->query->execute($sql_total, false, false, __LINE__, __FUNCTION__, __CLASS__, __FILE__, $this->model->settings['database_id'])->getUniqueResult();
+		$this->queryResult = $this->query->setLog(__LINE__, __FUNCTION__, __CLASS__, __FILE__)->setConnection($this->model->settings['database_id'])->setReturnId()->execute($sql_total)->getResult();
 		//$this->queryResult = $this->query->execute($sql, false, false, __LINE__, __FUNCTION__, __CLASS__, __FILE__, $this->model->settings['database_id']);
 		Debug::p($sql);
-		Debug::p($sql_total);
-		Debug::p($this->queryResult);
+		//Debug::p($sql_total);
 		Debug::p($dataSelectSequencial);
 		//Debug::p($dataSelectTabulated);
 		//Debug::p($dataSelectRecursive);
@@ -152,7 +141,6 @@ class SelectData{
 			if((int)Run::$router->getLevel($sets['paging_param_ref'], true) > 0) $data_int[$sets['ref']] = (int)Run::$router->getLevel($sets['paging_param_ref'], true);		
 		}
 
-
 		if($p_index>0) $item_inicial = (($data_int[$sets['paging_ref'].'index']-1) * $data_int[$sets['paging_ref'].'num']); 
 		else $item_inicial = 0;
 
@@ -181,9 +169,24 @@ class SelectData{
 		return $dataTable;
 	}
 	//*************************************************************************************************************************
-	public function buildSQLDataSequencial($type, $queryResult, $schema, $settings, $dataIntern, $fkTableID=0){	
+	public function buildSQLDataList($type, $queryResult, $schema, $settings, $dataIntern, $fkTableID=0){	
 		Run::$benchmark->mark("SelectData/buildSQLDataSequencial/Inicio");
 		//Debug::p($orderTables);	
+		//$queryResult->data_seek(0);
+		$dataTable = array();
+		foreach($schema['from'] as $index => $paramTable){
+			$dataTable = $this->fetchSQLDataList($type, $paramTable, $dataTable, $queryResult, $schema, $settings, $dataIntern);
+		}
+		Run::$benchmark->writeMark("SelectData/buildSQLDataSequencial/Inicio", "SelectData/buildSQLDataSequencial/schema[from]");
+		foreach($schema['join'] as $index => $paramTable){
+			$dataTable = $this->fetchSQLDataList($type, $paramTable, $dataTable, $queryResult, $schema, $settings, $dataIntern);
+		}
+		Run::$benchmark->writeMark("SelectData/buildSQLDataSequencial/schema[from]", "SelectData/buildSQLDataSequencial/schema[joins]");
+		return $dataTable;
+	}
+	//*************************************************************************************************************************
+	public function buildSQLDataSequencial($type, $queryResult, $schema, $settings, $dataIntern, $fkTableID=0){	
+		Run::$benchmark->mark("SelectData/buildSQLDataSequencial/Inicio");
 		//$queryResult->data_seek(0);
 		$dataTable = array();
 		foreach($schema['from'] as $index => $paramTable){
@@ -193,6 +196,7 @@ class SelectData{
 		foreach($schema['join'] as $index => $paramTable){
 			$dataTable = $this->fetchSQLDataSequencial($type, $paramTable, $dataTable, $queryResult, $schema, $settings, $dataIntern);
 		}
+		//Debug::p($dataTable);	
 		Run::$benchmark->writeMark("SelectData/buildSQLDataSequencial/schema[from]", "SelectData/buildSQLDataSequencial/schema[joins]");
 		return $dataTable;
 	}
@@ -208,6 +212,45 @@ class SelectData{
 			}
 		}
 		Run::$benchmark->writeMark("fetchSQLPKList/".$tableParams['table_nick']."/Inicio", "fetchSQLPKList/".$tableParams['table_nick']."/fetch_assoc");
+		return $dataTable;
+	}
+	//*************************************************************************************************************************
+	private function fetchSQLDataList($type, $tableParams, $dataTable, $queryResult, $schema, $settings, $dataIntern){
+		Run::$benchmark->mark("fetchSQLDataSequencial/".$tableParams['table_nick']."/Inicio");
+		//$queryResult->data_seek(0);
+		$this->queryResult = $this->query->resultSeek($this->queryResult, 0);
+		$table_ref = $this->findTableByParams($tableParams, $schema);
+		//Debug::p($tableParams, $table_ref);
+		$fieldsTable = array();
+		foreach($schema['fields'] as $field => $params){
+			if($params[$type] == true && ($params['belongsTo'] == $tableParams['table_nick'] || $params['belongsTo'] == $tableParams['table']) ){
+				$fieldsTable[$field] = $params;
+			}
+		}
+		while( $row = $this->query->returnFetchAssoc($this->queryResult) ){
+			if((int)$row[$tableParams['pk']] > 0){
+				$pk = (int)$row[$this->model->schema['from'][0]['pk']];				
+				foreach($fieldsTable as $field => $params){
+					if(
+						$params['type'] == "datetime" || $params['type'] == "date_insert" || $params['type'] == "date_update"
+					){
+						$row[$field] = Run::$control->date->convertMysqltoBr($row[$field]);
+					}
+					if($tableParams['pk'] == $schema['from'][0]['pk']) $dataTable[$pk][$field] = $row[$field];
+					else if($tableParams['table_ref'] == $schema['from'][0]['table'] || $tableParams['table_ref'] == $schema['from'][0]['table_nick']){
+						$dataTable[$pk][$field][$row[$tableParams['pk']]] = $row[$field];
+					}
+					else{
+						//Debug::p($table_ref['pk'], $this->findFieldByNameSchema($table_ref['pk'], $table_ref['table_nick'], $schema));
+						//$dataTable[$field][$row[ $this->findFieldByNameSchema($table_ref['pk'], $table_ref['table_nick'], $schema) ]][$row[$tableParams['pk']]] = $row[$field];
+						$dataTable[$pk][$field][$row[ $table_ref['pk'] ]][$row[$tableParams['pk']]] = $row[$field];
+					}
+				}
+				
+			}
+		}
+		unset($fieldsTable);
+		Run::$benchmark->writeMark("fetchSQLDataSequencial/".$tableParams['table_nick']."/Inicio", "fetchSQLDataSequencial/".$tableParams['table_nick']."/fetch_assoc");
 		return $dataTable;
 	}
 	//*************************************************************************************************************************
@@ -405,8 +448,8 @@ class SelectData{
 
 		if($schema_unions === true) return $sql;
 
-		$sql .= $this->buildSQLOrder(	$type, $dataIntern, $this->model->schema);
 		if(! ($type == "list" && $this->getHasMultiple() && $this->model->settings['list_mode'] == "multiple" )){
+			$sql .= $this->buildSQLOrder(	$type, $dataIntern, $this->model->schema);
 			$sql .= $this->buildSQLLimit(	$type, $dataIntern, $this->model->schema);
 		}
 
@@ -497,7 +540,7 @@ class SelectData{
 		return $sql;
 	}
 	//*************************************************************************************************************************
-	public function buildSQLOrder($type, $dataIntern, $schema){
+	public function buildSQLOrder($type, $dataIntern, $schema, $preStr=""){
 		$sql = "";
 		if(strrpos($schema['order'], "order_tables") >=0){
 			$order_tables = "";
@@ -516,17 +559,17 @@ class SelectData{
 			$schema['order'] = Run::$control->string->replace("order_tables_desc",  $order_tables, $schema['order']);
 			$schema['order'] = Run::$control->string->replace("order_tables", 		$order_tables, $schema['order']);
 		}
-		if($schema['order'] !== "") $sql .= "\n\nORDER BY ".$schema['order'];
+		if($schema['order'] !== "") $sql .= "\n\n$preStr ORDER BY ".$schema['order'];
 		foreach($schema['from'] as $k => $table){
 			if($table['order'] !== ""){
-				if(trim($sql) == "")	$sql .= "\n\n ORDER BY ";
+				if(trim($sql) == "")	$sql .= "\n\n$preStr ORDER BY ";
 				else $sql .= ", ";
 				$sql .= " ".$schema['order'];
 			}
 		}
 		foreach($schema['join'] as $k => $table){
 			if($table['order'] !== ""){
-				if(trim($sql) == "")	$sql .= "\n\n ORDER BY ";
+				if(trim($sql) == "")	$sql .= "\n\n$preStr ORDER BY ";
 				else $sql .= ", ";
 				$sql .= " ".$schema['order'];
 			}
@@ -536,10 +579,10 @@ class SelectData{
 	//*************************************************************************************************************************
 	public function buildSQLGroupBy($type, $dataIntern, $schema){
 		$sql = "";
-		if(trim($schema['group']) != "") $sql .= "\nGROUP BY ".$schema['group'];
-		else if($type == "list" && trim($schema['group']) != ""){
+		if(trim($schema['group_view']) != "") $sql .= "\nGROUP BY ".$schema['group_view'];
+		else if($type == "list" && trim($schema['group_list']) != ""){
 			if( !($type == "list" && $this->getHasMultiple() && $this->model->settings['list_mode'] == "multiple") ){
-				$sql .= "\nGROUP BY ".$schema['group'];
+				$sql .= "\nGROUP BY ".$schema['group_list'];
 			}
 		}
 		return $sql;
@@ -555,7 +598,10 @@ class SelectData{
 			$sql = "\n\nINNER JOIN( SELECT DISTINCT(". $table_from['pk'] .") FROM ";				
 			$sql .= $this->buildSQLFrom(		"inner", $dataIntern, $this->model->schema, " ");
 			$sql .= $this->buildSQLJoins(		"inner", $dataIntern, $this->model->schema, "\t");
-			$sql .=	"\n\t WHERE ". preg_replace('/\s/',' ', $ws) . str_replace("\n", '', $this->buildSQLLimit($type, $dataIntern, $schema)) .")";
+			$sql .=	"\n\t WHERE ". preg_replace('/\s/',' ', $ws);
+			$sql .= $this->buildSQLOrder(	$type, $dataIntern, $this->model->schema, "\t");
+			$sql .=	$this->buildSQLLimit($type, $dataIntern, $schema, "\t");
+			$sql .= ")";
 			$sql .= " AS ".$table_name."_l ";
 			$sql .= "\n\t ON( ".$table_name."_l.".$table_from['pk']." = ".$table_name.".".$table_from['pk']." ) ";
 		}else{
@@ -585,10 +631,10 @@ class SelectData{
 		return $sql;
 	}
 	//*************************************************************************************************************************
-	public function buildSQLLimit($type, $dataIntern, $schema){
+	public function buildSQLLimit($type, $dataIntern, $schema, $preStr=""){
 		$sql = "";
-		if(count($schema['limit']) == 2) $sql .= "\n LIMIT ".$schema['limit'][0].", ".$schema['limit'][1];
-		else if($type == "list") $sql .= "\n LIMIT ".$this->model->dataIntern[$this->model->settings['paging_ref'].'limit'][0].", ".$this->model->dataIntern[$this->model->settings['paging_ref'].'limit'][1];
+		if(count($schema['limit']) == 2) $sql .= "\n$preStr LIMIT ".$schema['limit'][0].", ".$schema['limit'][1];
+		else if($type == "list") $sql .= "\n$preStr LIMIT ".$this->model->dataIntern[$this->model->settings['paging_ref'].'limit'][0].", ".$this->model->dataIntern[$this->model->settings['paging_ref'].'limit'][1];
 		return $sql;
 	}
 	//*************************************************************************************************************************
