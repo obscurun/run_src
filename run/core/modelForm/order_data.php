@@ -1,10 +1,63 @@
 <?php
 // ****************************************************************************************************************************
-class OrderData{
+class OrderData{	
+	public  $model 			= NULL;
 	//*************************************************************************************************************************
-	function OrderData(){
+	function OrderData($model){
 		Debug::log("Iniciando Core/Form/OrderTables.", __LINE__, __FUNCTION__, __CLASS__, __FILE__);
+		$this->model 	= $model;
 	}
+
+
+
+
+
+	//*************************************************************************************************************************
+	public function getOrderedListTables(){
+		$tables_order_ref = $this->prepareOrderListTables($this->model->schema);
+		//-  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -
+		if(count($tables_order_ref ) < 1){
+			Error::show(0, "tables_order_ref:: Não foram geradas ordens a serem listadas");
+		}
+		//-  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -
+		return $tables_order_ref ;
+	}
+	//*************************************************************************************************************************
+	private function prepareOrderListTables($schema){
+		$orderTables = array();
+		foreach($schema['from'] as $k => $table){
+			if($table['list'] !== false){
+				$refTable = $table['table_nick'] != "" ? $table['table_nick'] : $table['table'] ;
+				$orderTables[$refTable]["pk"] 	 = $table['pk'];
+				$orderTables[$refTable]["table"] = $table['table'];
+				$orderTables[$refTable]["joineds"] = $this->recursiveOrderListJoinCheck($schema['join'], $table['table'], $table['table_nick']);
+			}
+		}
+		return $orderTables;
+	}
+	//*************************************************************************************************************************
+	private function recursiveOrderListJoinCheck($joins, $table, $table_nick){
+		$orderTables = array();
+		foreach($joins as $k => $joinTable){
+			if($joinTable['list'] !== false){
+				if($joinTable['table_ref'] == $table || $joinTable['table_ref'] == $table_nick){
+					$nameTable = $joinTable['table_nick'] != "" ? $joinTable['table_nick'] : $joinTable['table'];
+					$orderTables[$nameTable]["pk"] 	  		= $joinTable['pk'];
+					$orderTables[$nameTable]["pk_ref"] 		= $joinTable['pk_ref'];
+					$orderTables[$nameTable]["fk_ref"] 		= $joinTable['fk_ref'];
+					$orderTables[$nameTable]["table"] 		= $joinTable['table'];
+					$orderTables[$nameTable]["multiple"]	= $joinTable['multiple'];
+					$orderTables[$nameTable]["status_name"] = $joinTable['status_name'];
+					$orderTables[$nameTable]["joineds"] 	= $this->recursiveOrderListJoinCheck($joins, $joinTable['table'], $joinTable['table_nick']);
+				}
+			}
+		}
+		return $orderTables;
+	}
+
+
+
+
 
 	//*************************************************************************************************************************
 	public function getOrderedTables($data, $schema){

@@ -9,6 +9,7 @@ require_once(RUN_PATH.'core/model/mysql_query.php');
 require_once(RUN_PATH.'core/modelForm/check.php');
 require_once(RUN_PATH.'core/modelForm/token.php');
 require_once(RUN_PATH.'core/modelForm/data.php');
+require_once(RUN_PATH."core/modelForm/order_data.php");
 require_once(RUN_PATH.'core/modelForm/form_aux.php');
 require_once(RUN_PATH.'core/modelForm/list_aux.php');
 require_once(RUN_PATH.'core/modelForm/session.php');
@@ -28,6 +29,7 @@ class modelForm{
 	public 			 $token					= NULL;
 	public 			 $validate				= NULL;
 	public 			 $errors				= NULL;
+	public 			 $orderData				= NULL;
 	public 			 $saveData				= NULL;
 	public 			 $selectData			= NULL;
 	public 			 $cleanData				= NULL;
@@ -38,6 +40,7 @@ class modelForm{
 	public  		 $query		 			= NULL;
 	public 			 $dataIntern			= array(); // dados internos, usados como referência, ID, paginação, ordenação, etc...
 	public 			 $dataList				= array(); // dados recebidos do select->getList
+	public 			 $dataListTotal			= 0; // dados recebidos do select->getList
 	public 			 $dataForm				= array(); // dados recebidos do form
 	public 			 $dataFormChecked		= array(); // retorno dos dados convertidos e analisados
 	public 			 $dataFormRecorded		= array(); // retorno dos dados salvos e processados
@@ -344,6 +347,7 @@ class modelForm{
 				$this->settings['auto_save'] = false;
 			}
 			$this->query 	= Model::$query;
+			$this->orderData  	= new orderData($this);
 			$this->saveData  	= new SaveData($this, $this->database, $this->query);
 			$this->selectData  	= new selectData($this);
 		}
@@ -476,8 +480,13 @@ class modelForm{
 		if(is_null($this->query)) $this->exeDatabaseConnect(true);
 		$this->exeBeforeList();
 		//Debug::p('query', Run::$control->typeof($this->model->query) );
-		$this->dataList = $this->selectData->getList();
-		$this->list 	= new ListAux($this); 
+		$listResult 		 = $this->selectData->getList();
+		$this->dataList 	 = $listResult['list'];
+		$this->dataListTotal = $listResult['total'];
+		$this->exeAfterList();
+		$this->list 		 = new ListAux($this); 
+		//Debug::p($this->dataList);
+		//Debug::p($this->list->orderedTables);
 	}
 
 
@@ -487,7 +496,30 @@ class modelForm{
 
 
 	//-------------------------------------------------------------------------------------------------------------------------
-	public function exeBeforeList(){} 		// método chamado no model para tratar sql do schema
+	public function exeDetailsList($tables, $register, $level=0){	// método chamado no ListAux->getTableBody para dados que não estão em colunas
+		//return false;
+		$html = "";
+		foreach($this->list->listOrderFields as $order => $field){
+			$html .= "<dl class=\"int_".$field."\">";
+			foreach($tables as $nick => $table){
+				if($this->schema['fields'][$field]['belongsTo'] == $nick ){
+					//$html .= "$nick / $field / ";
+					$detail = $this->list->getDetailData($register, $field);
+					if($detail === NULL) continue;
+					$html .= "<dt>".$this->schema['fields'][$field]['listLabel'].":</dt>";
+					$html .= "<dd>".$detail['value']."</dd>";
+				}
+			}
+			$html .= "</dl>";
+			$level++;
+			if(isset($table['joineds']) && count($table['joineds']) > 0) $html .= $this->exeDetailsList($table['joineds'], $register, $level);
+		}
+		return $html;
+	}
+	//-------------------------------------------------------------------------------------------------------------------------
+	public function exeBeforeList(){} 		// método chamado no model para tratar schema
+	//-------------------------------------------------------------------------------------------------------------------------
+	public function exeAfterList(){} 		// método chamado no model para tratar dataList
 	//-------------------------------------------------------------------------------------------------------------------------
 	public function setSchema(){} 			// método chamado nos models da aplicação
 	//-------------------------------------------------------------------------------------------------------------------------

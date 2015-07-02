@@ -66,6 +66,8 @@ class check{
 		if(!array_key_exists('redirect_update',			$settings)){ $settings['redirect_update']		= false;			}
 		if(!array_key_exists('redirect_delete',			$settings)){ $settings['redirect_delete']		= false;			}
 		//-  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  - 
+		if(!array_key_exists('list_edit_show',			$settings)){ $settings['list_edit_show']		= true;				}
+		if(!array_key_exists('list_edit_label',			$settings)){ $settings['list_edit_label']		= "Ações";			}
 		if(!array_key_exists('order_fields_index',		$settings)){ $settings['order_fields_index']	= 20;				}
 		if(!array_key_exists('check_schema',			$settings)){ $settings['check_schema']			= false;			}
 		if(!array_key_exists('default_pad',				$settings)){ $settings['default_pad']			= 6;				}
@@ -115,6 +117,7 @@ class check{
 			$if0_false = ($k == 0) ? false : true;
 			if(!array_key_exists('save',				$table)){ $schema['from'][$k]['save'] 				= "";								}
 			if(!array_key_exists('view',				$table)){ $schema['from'][$k]['view'] 				= true;								}
+			if(!array_key_exists('idPad',				$table)){ $schema['from'][$k]['idPad'] 				= 4;								}
 			if(!array_key_exists('list',				$table)){ $schema['from'][$k]['list'] 				= true;								}
 			if(!array_key_exists('listAsColumn',		$table)){ $schema['from'][$k]['listAsColumn']		= true;								}
 			if(!array_key_exists('list_fields',			$table)){ $schema['from'][$k]['list_fields']		= $schema['from'][$k]['list'];		}
@@ -147,6 +150,7 @@ class check{
 		foreach($schema['join'] as $k => $table){
 			if(!array_key_exists('save',				$table)){ $schema['join'][$k]['save'] 				= true;								}
 			if(!array_key_exists('view',				$table)){ $schema['join'][$k]['view'] 				= true;								}
+			if(!array_key_exists('idPad',				$table)){ $schema['join'][$k]['idPad'] 				= 4;								}
 			if(!array_key_exists('list',				$table)){ $schema['join'][$k]['list'] 				= true;								}
 			if(!array_key_exists('listAsColumn',		$table)){ $schema['join'][$k]['listAsColumn']		= false;							}
 			if(!array_key_exists('list_fields',			$table)){ $schema['join'][$k]['list_fields']		= $schema['join'][$k]['list'];		}
@@ -195,6 +199,7 @@ class check{
 		foreach($schema['fields'] as $key=>$val){
 			$multiple 	  = false;
 			$listAsColumn = true;
+			$idPad		  = 4; 
 			if(!array_key_exists('belongsTo',		$val)){ $schema['fields'][$key]['belongsTo'] 	= false;	}
 			if($schema['fields'][$key]['belongsTo'] !== false){/**/
 				$from_index = -1;
@@ -203,6 +208,7 @@ class check{
 					if($from['table_nick'] == $schema['fields'][$key]['belongsTo'] || $from['table'] == $schema['fields'][$key]['belongsTo']){
 						$from_index = $k;
 						$listAsColumn = $from['listAsColumn'];
+						$idPad		  = $from['idPad'];
 						//Debug::print_r("ACHOU $key / {$schema['fields'][$key]['belongsTo']} :".$from_index);
 						break;
 					}else if($join['table'] == $from['table_prefix'].$schema['fields'][$key]['belongsTo']){
@@ -218,6 +224,7 @@ class check{
 						if($join['table_nick'] == $schema['fields'][$key]['belongsTo'] || $join['table'] == $schema['fields'][$key]['belongsTo']){
 							$join_index = $k;
 							$listAsColumn = $join['listAsColumn'];
+							$idPad		  = $join['idPad'];
 							break;
 						}else if($join['table'] == $join['table_prefix'].$schema['fields'][$key]['belongsTo']){
 							$schema['fields'][$key]['belongsTo'] = $join['table_prefix'].$schema['fields'][$key]['belongsTo'];
@@ -231,20 +238,26 @@ class check{
 					Error::show(0, "MODEL:: O campo <b>". $key ."</b> possui uma referência belongsTo <b>".$schema['fields'][$key]['belongsTo'] ."</b> não encontrada em from ou em join no schema.");
 				} 
 			}
+			//Debug::print_r("ACHOU $key / {$schema['fields'][$key]['belongsTo']} :");
 
 			if(!array_key_exists('name',			$val)){ $schema['fields'][$key]['name'] 			= $key;			}
+			if(!array_key_exists('label',			$val)){ $schema['fields'][$key]['label'] 			= $key;			}
 			if(!array_key_exists('belongsTo',		$val)){ $schema['fields'][$key]['belongsTo'] 		= $schema['from'][0]['table_nick'] != "" ? $schema['from'][0]['table_nick'] : $schema['from'][0]['table'];	}
 			if(!array_key_exists('fieldRef',		$val)){ $schema['fields'][$key]['fieldRef'] 		= $key;			}
 			if(!array_key_exists('view',			$val)){ $schema['fields'][$key]['view'] 			= true;			}
 			if(!array_key_exists('list',			$val)){ $schema['fields'][$key]['list'] 			= false;		}
+			if(!array_key_exists('listLabel',		$val)){ $schema['fields'][$key]['listLabel'] 		= $schema['fields'][$key]['label'];		}
 			if(!array_key_exists('listOrder',		$val)){ $schema['fields'][$key]['listOrder'] 		= $order++;		}
 			if(!array_key_exists('listInClass',		$val)){ $schema['fields'][$key]['listInClass'] 		= false;		}
-			if(!array_key_exists('listAsColumn',	$val)){
-				if($this->checkPkInTable($schema, 	$schema['fields'][$key]['name']) === true){
-															$schema['fields'][$key]['listAsColumn'] 	= false;		}
-				else{ 										$schema['fields'][$key]['listAsColumn'] 	= $listAsColumn ;							}
-			}
+			if(!array_key_exists('listImplode',		$val)){ $schema['fields'][$key]['listImplode'] 		= ", ";			}
 			if(!array_key_exists('listWidth',		$val)){ $schema['fields'][$key]['listWidth'] 		= false;		}
+			if($this->checkPkInTable($schema, 	$schema['fields'][$key]['name']) === true){
+				if(!array_key_exists('listAsColumn',	$val))	$schema['fields'][$key]['listAsColumn'] = false;
+																$schema['fields'][$key]['idPad'] 		= $idPad;
+																$schema['fields'][$key]['isKey'] 		= true;
+																														}
+			else{ 	
+				if(!array_key_exists('listAsColumn',	$val))	$schema['fields'][$key]['listAsColumn'] = $listAsColumn ;							}
 			if(!array_key_exists('exportWidth',		$val)){ $schema['fields'][$key]['exportWidth'] 		= $schema['fields'][$key]['listWidth'];		}
 			if(!array_key_exists('export',			$val)){ $schema['fields'][$key]['export'] 			= true;			}
 			if(!array_key_exists('skipRecEmpty',	$val)){ $schema['fields'][$key]['skipRecEmpty'] 	= false;		} // retira todos os campos do registro para o insert/update se for vazio
@@ -263,10 +276,10 @@ class check{
 			if(!array_key_exists('addSlashe',		$val)){ $schema['fields'][$key]['addSlashe'] 		= true;			}
 			if(!array_key_exists('convertValue',	$val)){ $schema['fields'][$key]['convertValue'] 	= false;		}
 			if(!array_key_exists('sqlSelect',		$val)){ $schema['fields'][$key]['sqlSelect']		= false;		} // 'select_as'   => 'CONVERT(INT, COLUMN)', // COLUMN = NOME DA COLUNA
-			if(!array_key_exists('label',			$val)){ $schema['fields'][$key]['label'] 			= $key;			}
 			if(!array_key_exists('value',			$val)){ $schema['fields'][$key]['value'] 			= false;		}
 			if(!array_key_exists('mask',			$val)){ $schema['fields'][$key]['mask'] 			= "";			}
 			if(!array_key_exists('validation',		$val)){ $schema['fields'][$key]['validation']		= array();		}
+			if(!array_key_exists('labelEmpty',		$val)){ $schema['fields'][$key]['labelEmpty']		= "";			}
 			if(!array_key_exists('labelList',		$val)){ $schema['fields'][$key]['labelList']		= array();		}
 
 			if(	
@@ -297,13 +310,15 @@ class check{
 	}
 	//-------------------------------------------------------------------------------------------------------------------------
 	public function checkPkInTable($schema, $pk=""){
+		//Run::$DEBUG_PRINT = true;
+		//Debug::p("comparando1 ".$pk, $table['pk']);
 		foreach($schema['join'] as $k => $table){
-			Debug::p("comparando ".$pk, $table['pk']);
 			if($table['pk'] === $pk) return true;
 			else if($table['pk_ref'] === $pk) return true;
 			else if($table['fk_ref'] === $pk) return true;
 		}
 		foreach($schema['from'] as $k => $table){
+		//	Debug::p("comparando ".$pk, $table['pk']);
 			if($table['pk'] === $pk) return true;
 		}
 		return false;

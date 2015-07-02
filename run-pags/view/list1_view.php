@@ -27,5 +27,11 @@
 	<script type="text/javascript" src="<? echo Run::$router->path['base']; ?>js/jquery.gridster-apart.js<? echo Run::$view->writeVersion(); ?>"></script>
 	<script type="text/javascript" src="<? echo Run::$router->path['base']; ?>js/jquery.mousewheel-apart.js<? echo Run::$view->writeVersion(); ?>"></script>
 	<script type="text/javascript" src="<? echo Run::$router->path['base']; ?>js/jquery.jscrollpane-apart.js<? echo Run::$view->writeVersion(); ?>"></script>
-	</body>
+	<script>
+    $(".col_pk_cadastro").hover(
+        function(){ $(this).parent("tr").find(".infos_extras").show() },
+        function(){ $(this).parent("tr").find(".infos_extras").hide() }
+    );
+    </script>
+    </body>
 </html>

@@ -119,6 +119,7 @@ class Form1Model extends modelForm{
 			"fields"					=> array(
 				'pk_cadastro'			=> array(
 					'list'				=> true,
+					'listAsColumn'		=> true,
 					'view'				=> true,
 					'export'			=> true,
 					'insert'			=> false,
@@ -134,9 +135,10 @@ class Form1Model extends modelForm{
 					'view'				=> true,
 					'export'			=> false,
 					'insert'			=> true,
-					'update'			=> TRUE,
+					'update'			=> true,
 					'type' 				=> 'string',
 					'maxSize'			=> 10,
+					'listWidth'			=> '150',
 					'label'				=> 'Nome',
 					'validation'		=> array(
 						'required'		=> array(true, true, 'Escreva um nome.')
@@ -151,19 +153,20 @@ class Form1Model extends modelForm{
 					'update'			=> true,
 					'type' 				=> 'string',
 					'label'				=> 'Sobrenome',
-					'listWidth'			=> '100',
+					'listWidth'			=> '150',
 					'validation1'		=> array(
 						'required'		=> array(true, true, 'Preencha o sobrenome.')
 					)
 				),
 		//- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 				'email'					=> array(
-					'list'				=> true,
 					'view'				=> true,
+					'list'				=> true,
 					'export'			=> true,
 					'insert'			=> true,
 					'update'			=> true,
 					'type' 				=> 'email',
+					'listWidth'			=> '150',
 					'validation1'		=> array(
 						'required'		=> array(true, true, 'Preencha o email.'),
 						'email'			=> array(true, true)
@@ -265,7 +268,6 @@ class Form1Model extends modelForm{
 					'skipRecEmpty'		=> true,
 					'maxLength'			=> 45,
 					'type' 				=> 'file_name',
-					'label'				=> 'ID',
 					'listWidth'			=> '60',
 					'validation1'		=> array(
 						'required'		=> array(true, true, 'Insira um arquivo.')
@@ -302,7 +304,6 @@ class Form1Model extends modelForm{
 					'addSlashe'			=> true,
 					'value'				=> 'default/', 
 					'type' 				=> 'file_path',
-					'label'				=> 'ID',
 					'listWidth'			=> '60',
 					'validation'		=> array(
 						'required'		=> array(true, true, 'Insira um arquivo.')
@@ -337,7 +338,6 @@ class Form1Model extends modelForm{
 					'update'			=> false,
 					'addSlashe'			=> true,
 					'type' 				=> 'file_extension',
-					'label'				=> 'ID',
 					'listWidth'			=> '60',
 					'validation'		=> array(
 						'required'		=> array(true, true, 'Insira um arquivo.')
@@ -380,7 +380,6 @@ class Form1Model extends modelForm{
 					'insert'			=> false,
 					'update'			=> false,
 					'type' 				=> 'int',
-					'label'				=> 'ID',
 					'listWidth'			=> '60'
 				),
 		//- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
@@ -393,7 +392,6 @@ class Form1Model extends modelForm{
 					'insert'			=> false,
 					'update'			=> false,
 					'type' 				=> 'int',
-					'label'				=> 'ID',
 					'listWidth'			=> '60'
 				),
 		//- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
@@ -401,6 +399,7 @@ class Form1Model extends modelForm{
 					'belongsTo'			=> 'e',
 					'listOrder'			=> 23,
 					'list'				=> true,
+					'listAsColumn'		=> false,
 					'view'				=> true,
 					'export'			=> true,
 					'insert'			=> true,
@@ -419,6 +418,7 @@ class Form1Model extends modelForm{
 					'name'				=> 'fk_uf',
 					'listOrder'			=> '23a',
 					'list'				=> true,
+					'listAsColumn'		=> false,
 					'view'				=> true,
 					'export'			=> true,
 					'insert'			=> true,
@@ -427,6 +427,7 @@ class Form1Model extends modelForm{
 					'type' 				=> 'int',
 					'label'				=> 'UF',
 					'listWidth'			=> '60',
+					'labelEmpty'		=> "Não preenchido",
 					'labelList'			=> array(
 									"" 	=> "Escolha uma opção",
 									"1" => "SP",
@@ -472,7 +473,7 @@ class Form1Model extends modelForm{
 					'insert'			=> false,
 					'update'			=> false,
 					'type' 				=> 'int',
-					'label'				=> 'ID - Cor',
+					'label'				=> 'ID - End',
 					'listWidth'			=> '60'
 				),
 		//- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
@@ -485,7 +486,6 @@ class Form1Model extends modelForm{
 					'insert'			=> false,
 					'update'			=> false,
 					'type' 				=> 'int',
-					'label'				=> 'ID',
 					'listWidth'			=> '60'
 				),
 		//- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
@@ -548,7 +548,6 @@ class Form1Model extends modelForm{
 					'insert'			=> false,
 					'update'			=> false,
 					'type' 				=> 'int',
-					'label'				=> 'ID',
 					'listWidth'			=> '60'
 				),
 		//- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
@@ -556,6 +555,9 @@ class Form1Model extends modelForm{
 					'belongsTo'			=> 'form1_cores',
 					'name'				=> 'nome',
 					'list'				=> true,
+					'listOrder'			=> "23g",
+					'listAsColumn'		=> true,
+					'listWidth'			=> 150,
 					'view'				=> true,
 					'export'			=> true,
 					'insert'			=> true,
@@ -563,7 +565,7 @@ class Form1Model extends modelForm{
 					'addSlashe'			=> true,
 					'type' 				=> 'string',
 					'label'				=> 'Nome da Cor',
-					'listWidth'			=> '60',
+					'listLabel'			=> 'Cores selecionadas',
 					'validation'		=> array(
 						'required'		=> array(true, true, 'Preencha as cores.'),
 						'minlength'		=> array(2, true),
@@ -599,7 +601,6 @@ class Form1Model extends modelForm{
 					'update'			=> false,
 					'sqlSelect'			=> 'DISTINCT()',
 					'type' 				=> 'int',
-					'label'				=> 'ID',
 					'listWidth'			=> '60'
 				),
 		//- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -

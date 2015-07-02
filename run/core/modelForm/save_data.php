@@ -1,9 +1,8 @@
 <?php
 //Run::$DEBUG_PRINT = 1;
-require_once(RUN_PATH."core/modelForm/order_data.php");
 // ****************************************************************************************************************************
 class SaveData{
-	private $model 			= NULL;
+	private $model 				= NULL;
 	private $settings 			= NULL;
 	private $dataInt 			= array();
 	private $schema_pk_list 	= array();
@@ -18,10 +17,10 @@ class SaveData{
 	function saveData($model, $database, $query){
 		//Debug::log("Iniciando Core/Form/Save.", __LINE__, __FUNCTION__, __CLASS__, __FILE__);
 		$this->query_errors = 0;
+		$this->model 		= $model;
 		$this->database 	= $database;
 		$this->query 		= $query;
-		$this->orderData 	= new OrderData();
-		$this->model 		= $model;
+		$this->orderData 	= $this->model->orderData;
 	}
 	//*************************************************************************************************************************
 	public function save($data, $dataIntern, $schema, $settings){

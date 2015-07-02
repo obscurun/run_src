@@ -1,12 +1,11 @@
 <?php
-require_once(RUN_PATH."core/modelForm/order_data.php");
 // ****************************************************************************************************************************
 class SelectData{
 	private $checkBuildFirst 	= false;
 	private $query_errors 		= 0;
 	private $database 			= NULL;
 	private $query 				= NULL;
-	private $orderData 			= NULL;
+	public  $orderData 			= NULL;
 	private $model 				= NULL;
 	private $fetchData			= NULL;
 	private $queryResult		= NULL;
@@ -14,8 +13,8 @@ class SelectData{
 	function SelectData($model){
 		Debug::log("Iniciando Core/Form/Select.", __LINE__, __FUNCTION__, __CLASS__, __FILE__);
 		$this->query_errors = 0;
-		$this->orderData 	= new OrderData();
 		$this->model 		= $model;
+		$this->orderData 	= $this->model->orderData;
 		$this->database 	= $this->model->database;
 		$this->query 		= $this->model->query;
 		//Run::$DEBUG_PRINT = true;
@@ -99,7 +98,7 @@ class SelectData{
 
 
 		$sql_total = $this->buildSQLTotal("list", $this->model->dataIntern, $this->model->schema);
-		$this->queryResult = $this->query->setLog(__LINE__, __FUNCTION__, __CLASS__, __FILE__)->setConnection($this->model->settings['database_id'])->setReturnId()->execute($sql_total)->getResult();
+		$total = $this->query->setLog(__LINE__, __FUNCTION__, __CLASS__, __FILE__)->setConnection($this->model->settings['database_id'])->setReturnId()->execute($sql_total)->getResult();
 		//$this->queryResult = $this->query->execute($sql, false, false, __LINE__, __FUNCTION__, __CLASS__, __FILE__, $this->model->settings['database_id']);
 		//Debug::p($sql);
 		//Debug::p($sql_total);
@@ -107,10 +106,8 @@ class SelectData{
 		//Debug::p($dataSelectTabulated);
 		//Debug::p($dataSelectRecursive);
 		return array(
-			"dataSelectSequencial" 	=> $dataSelectSequencial,
-			"dataSelectTabulated" 	=> $dataSelectTabulated,
-			"dataSelectRecursive" 	=> $dataSelectRecursive,
-			"dataSelectPKList" 		=> $dataSelectPKList
+			"list" 	=> $dataSelectSequencial,
+			"total" 	=> $total
 		);
 		//Debug::p("sql", $sql);
 		//exit;
