@@ -166,8 +166,8 @@ class Error{
 				//TODO: Usar classe smtp mail para enviar.
 				//TODO: Criar linha no config para enviar os erros
 				//mail("dev@rafaelteixeira.com", "Erro no site", $msgRec);
-				Run::loadLibrary('mail');
-				$email 		= new Mail();
+				Run::loadHelper("mailManager/mailSender");
+				$email 		= new MailManager();
 				$de 		= array(Run::$control->string->mixed_to_latin1(self::$ERROR_EMAIL), Run::$control->string->mixed_to_latin1(self::$ERROR_PROJECT));
 				$para 		= array(Run::$control->string->mixed_to_latin1(self::$ERROR_EMAIL), Run::$control->string->mixed_to_latin1(self::$ERROR_PROJECT));
 				ob_flush();
@@ -192,7 +192,8 @@ class Error{
 						}
 					};
 				}*/
-				$result = $email->sendMail($de, $para, Run::$control->string->mixed_to_latin1("Erro: ".self::$ERROR_PROJECT), Run::$control->string->mixed_to_latin1($msgEmail));
+				//$result = $email->sendMail($de, $para, Run::$control->string->mixed_to_latin1("Erro: ".self::$ERROR_PROJECT), Run::$control->string->mixed_to_latin1($msgEmail));
+			//	$result = $send->setFrom(self::$ERROR_EMAIL, self::$ERROR_PROJECT)->setTo(self::$ERROR_EMAIL, self::$ERROR_PROJECT)->setMessage($msgEmail)->setSubject("Erro: ".self::$ERROR_PROJECT)->send();
 				if($result) echo "<p>Não se preocupe, um e-mail foi enviado para o administrador do sistema informando o problema.</p>";
 				ob_flush();
 	        	flush();

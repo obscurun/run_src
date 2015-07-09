@@ -39,7 +39,7 @@ class Model{
 		else $idC = $id;
 		$connection = Model::getConnectionData($idC);
 		$database 	= NULL;
-		Debug::print_r("getInstance $id ", $connection);
+		// Debug::print_r("getInstance $id ", $connection);
 		if(Run::MYSQL === true && $connection['type_db'] == "mysql"){
 			$database = Mysql::getInstance($id);
 			if($id) Mysql::setActive($id);

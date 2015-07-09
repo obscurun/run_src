@@ -163,7 +163,7 @@ class PostgreQuery{
 	//*************************************************************************************************************************
 	function fields($fields=""){
 		Debug::log("Query->insert", $this->_line, $this->_function, $this->_class, $this->_file);
-		if(is_array($fields)) $fields = implode(',\r\n ', $fields);
+		if(is_array($fields)) $fields = implode(",\r\n ", $fields);
 		if($fields == "") Error::show(0, "Query:: Não foi declarado os FIELDS para o query em {$this->_file} na linha: {$this->_line}.");
 		$this->query_string .= " ($fields) \r\n";
 		return $this;
@@ -171,7 +171,7 @@ class PostgreQuery{
 	//*************************************************************************************************************************
 	function values($values=""){
 		Debug::log("Query->insert", $this->_line, $this->_function, $this->_class, $this->_file);
-		if(is_array($values)) $values = implode(', ', $values);
+		if(is_array($values)) $values = implode(",\r\n ",  $values);
 		if(!$values) Error::show(0, "Query:: Não foi declarado os VALUES para o query em {$this->_file} na linha: {$this->_line}.");
 		$this->query_string .= " VALUES(".$values.") \r\n";
 		return $this;

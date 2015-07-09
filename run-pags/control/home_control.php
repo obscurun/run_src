@@ -34,8 +34,9 @@ class HomeController extends Router{
 		echo "<br clear='all' /><br clear='all' /> <br clear='all' /> -------------------------------------- <br clear='all' /> ";
 		
 		Debug::print_r(Language::$phrases);
-		Debug::print_r($_SESSION);
-		Debug::print_r($_SERVER);
+		Debug::print_r("_SESSION", $_SESSION);
+		Debug::print_r("_SERVER", $_SERVER);
+		Debug::print_r("path", Run::$router->path);
 	}
 	//-  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -
 	public function dev__teste__teste2(){	

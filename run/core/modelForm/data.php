@@ -14,7 +14,7 @@ class Data{
 		//\Run::$DEBUG_PRINT = 1;
 		\Debug::log("Iniciando Core/Form/Data.", __LINE__, __FUNCTION__, __CLASS__, __FILE__);
 		$this->settings = $settings;
-		//\Debug::print_r($settings);
+		// \Debug::print_r($settings);
 		//$dataFormInt 	= $this->getRequests();
 		$this->model 	= $model;
 		$this->formId 	= $formSessionId;
@@ -30,7 +30,7 @@ class Data{
 			if((int)\Run::$router->getLevel($this->settings['paging_param_ref'], true) > 0) $dataFormInt[$this->settings['ref']] = (int)\Run::$router->getLevel($this->settings['paging_param_ref'], true);		
 		}
 
-		\Debug::print_r("dataFormInt", $dataFormInt);
+		// \Debug::print_r("dataFormInt", $dataFormInt);
 		return $dataFormInt;
 	}
 	//*************************************************************************************************************************
@@ -60,8 +60,8 @@ class Data{
 	//-  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -
 		if($paramField['type'] == "file_size"){
 			$isFile = true;
-			//\Debug::print_r($paramField['name']);
-			//\Debug::print_r($value);
+			// \Debug::print_r($paramField['name']);
+			// \Debug::print_r($value);
 			if(isset($value['size'])) $value = $value['size'];
 			else $value = "";
 		}
@@ -185,13 +185,13 @@ class Data{
 				|| $fieldParams['type'] == "date_update"
 				|| strpos($fieldParams['type'], "file") === 0
 			){
-				//\Debug::p($fieldParams['fieldRef'] ." TYPE: ".$fieldParams['type']);
+				// \Debug::p($fieldParams['fieldRef'] ." TYPE: ".$fieldParams['type']);
 				$dataFormCheck[ $key ] = $this->getValueCheckedArray($dataForm[ $fieldParams['fieldRef'] ], $fieldParams);
 			}
 		}
-		//\Debug::print_r($dataFormCheck);
+		// \Debug::print_r($dataFormCheck);
 		//$dataFormCheck = $this->checkEmptyDataMulti($schema_fields, $dataForm);
-		//\Debug::print_r($dataFormCheck);
+		// \Debug::print_r($dataFormCheck);
 
 		return $dataFormCheck;
 	}
@@ -205,19 +205,19 @@ class Data{
 						foreach($value as $k => $v){
 							if(is_array($v)){
 								foreach($v as $ki => $vi){
-									//\Debug::print_r($keyField ."/".$ki ."/". (int)$vi);
+									// \Debug::print_r($keyField ."/".$ki ."/". (int)$vi);
 									if($vi === 0 || $vi == "") unset($dataForm[$keyField][$k][$ki]);
 								}
 								if(count($dataForm[$keyField]) == 0){
 									unset($dataForm[$keyField]);
 								}
 							}else{
-								//\Debug::print_r($keyField ."/".$ki ."/".$vi);
+								// \Debug::print_r($keyField ."/".$ki ."/".$vi);
 								if($v === 0 || $v == "") unset($dataForm[$keyField][$k]); 
 							}
 						}
 					}else{
-						//\Debug::print_r($keyField ."/".$value);
+						// \Debug::print_r($keyField ."/".$value);
 						if($value === 0 || $value == "") unset($dataForm[$keyField]);
 					}
 				}
@@ -245,7 +245,7 @@ class Data{
 				}
 			}
 		}
-		//\Debug::p($dataForm);
+		// \Debug::p($dataForm);
 		return $dataForm;
 	}
 	//*************************************************************************************************************************
@@ -268,15 +268,15 @@ class Data{
 		if(is_array($value)){
 			foreach($value as $k=> $val){
 				if(is_array($val) && strpos($paramField['type'], "file") === ""){
-					//\Debug::print_r($paramField['type'] ."|if ".strpos($paramField['type'], "file"));
-					//\Debug::print_r($val);
+					// \Debug::print_r($paramField['type'] ."|if ".strpos($paramField['type'], "file"));
+					// \Debug::print_r($val);
 					foreach($value as $k2=> $val2){
 						$value[$k][$k2] = $this->checkSettingsValue($val2, $paramField);
 					}
 				}
 				else{
-				//	\Debug::print_r($paramField['type'] ."|else ".strpos($paramField['type'], "file"));
-				//	\Debug::print_r($val);
+				//	// \Debug::print_r($paramField['type'] ."|else ".strpos($paramField['type'], "file"));
+				//	// \Debug::print_r($val);
 					$value[$k] = $this->checkSettingsValue($val, $paramField);
 				}
 			}
@@ -295,7 +295,7 @@ class Data{
 				if(isset($val['tmp_name']) && strpos($paramField['type'], "file") !== ""){
 					if(isset($val['tmp_name'][0]) && is_array($val['tmp_name'][0])){
 						foreach($val as $kF=> $valF){
-							//\\Debug::p($k ." // ".$kF." // ".$valF);
+							//\// \Debug::p($k ." // ".$kF." // ".$valF);
 							$value[$k][$kF] = $this->checkSettingsValue($valF, $paramField);
 						}
 					}
@@ -348,7 +348,7 @@ class Data{
 		//-------------------------------------------------------------------------------------------
 		// jogando arquivos para pasta tmp e array _POST_FILES
 		$_POST_FILES = array();
-		//\Debug::p($requests);
+		// \Debug::p($requests);
 		foreach($_FILES as $key => $val){
 			foreach($val as $keyParam => $valParam){
 				if(is_array($valParam)){
@@ -376,7 +376,7 @@ class Data{
 			}
 		}
 		$_FILES = $_POST_FILES;
-		\Debug::p($_FILES);
+		// \Debug::p($_FILES);
 
 
 		//-------------------------------------------------------------------------------------------
@@ -384,7 +384,7 @@ class Data{
 		$this->formId = $this->settings['form_id']."_". $this->getFormId($requests);
 		$tmp_files = \Run::$session->get(array("forms", $this->formId, "dataFiles"));
 
-		//\Debug::p($this->schema['from'][0]['pk'],$this->formId);
+		// \Debug::p($this->schema['from'][0]['pk'],$this->formId);
 		
 		foreach($tmp_files as $key => $params){
 			if(isset($params['name'])){
@@ -408,7 +408,7 @@ class Data{
 				// contando arquivos _referenciados para os arquivos reais em tmp serem contados de forma correta
 				$n = 0;
 				$nnRef = array();
-				//\Debug::p($_REQUEST[$key.'_ref']);
+				// \Debug::p($_REQUEST[$key.'_ref']);
 				foreach($_REQUEST[$key.'_ref'] as $keyRef => $valRef){
 					if(is_array($valRef)){
 						foreach($valRef as $keyRefInt => $valRefInt){
@@ -421,9 +421,9 @@ class Data{
 				}
 				//$n++;
 				//$nnRef++;
-				//\Debug::p($params);
-				//\Debug::p($n, $nnRef);
-				//\Debug::p($tmp_files[$key]);
+				// \Debug::p($params);
+				// \Debug::p($n, $nnRef);
+				// \Debug::p($tmp_files[$key]);
 				//- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 				// foreach para verificar consistencia dos arquivos
 				// Verificando se o arquivo na session foi apagado no form
@@ -436,7 +436,7 @@ class Data{
 								if(file_exists($tmp_files[$key][$keyParam]['tmp_name'])){
 									if($nn != "") $_POST_FILES[$key][$keyParam][$nn] = $tmp_files[$key][$keyParam];
 									else $_POST_FILES[$key][$keyParam]= $tmp_files[$key][$keyParam];
-									\Debug::p("adicionando FILE / $key / $keyParam / $nn ", $_POST_FILES[$key] );
+									// \Debug::p("adicionando FILE / $key / $keyParam / $nn ", $_POST_FILES[$key] );
 								}else{									
 									\Run::$session->del(array("forms", $this->formId, "dataForm", $key, $keyParam));
 									array_push($this->dataErrors, "O arquivo <b>". $tmp_files[$key][$keyParam]['name'] ."</b> não está salvo no servidor.");
@@ -453,13 +453,13 @@ class Data{
 						foreach($valParam as $keyParam2 => $valParam2){
 							if(isset($valParam2['name'])){
 								if($_POST_FILES[$key][$keyParam][$nn]['name'] == ""){
-									\Debug::p(basename($tmp_files[$key][$keyParam][$keyParam2]['tmp_name'], ".tmp"), $requests['tmpf']);
+									// \Debug::p(basename($tmp_files[$key][$keyParam][$keyParam2]['tmp_name'], ".tmp"), $requests['tmpf']);
 									if(count($requests) > 2 && in_array(basename($tmp_files[$key][$keyParam][$keyParam2]['tmp_name'], ".tmp"), $requests['tmpf'])){
 										if(file_exists($tmp_files[$key][$keyParam][$keyParam2]['tmp_name'])){
-											\Debug::p("caiu ali");
+											// \Debug::p("caiu ali");
 											$_POST_FILES[$key][$keyParam][$nn] = $tmp_files[$key][$keyParam][$keyParam2];
 										}else{
-											\Debug::p("caiu aqui");
+											// \Debug::p("caiu aqui");
 											\Run::$session->del(array("forms", $this->formId, "dataForm", $key, $keyParam, $keyParam2));
 											array_push($this->dataErrors, "O arquivo <b>". $tmp_files[$key][$keyParam][$keyParam2]['name'] ."</b> não está salvo no servidor.");
 										}
@@ -474,7 +474,7 @@ class Data{
 				}
 			}
 		}
-		\Debug::p($_POST_FILES);
+		// \Debug::p($_POST_FILES);
 		//exit;
 		$this->_POST_FILES = array();
 		$_FILES = $_POST_FILES;
@@ -487,7 +487,7 @@ class Data{
 				if(is_array($valParam)){
 					foreach($valParam as $keyIndex => $valIndex){
 						if(is_array($valIndex)){
-							\Debug::p("AAA", $valIndex);
+							// \Debug::p("AAA", $valIndex);
 							foreach($valIndex as $keyIndexs => $valIndexs){
 								if($keyIndexs == "name" && $valIndexs == ""){
 									continue 2;
@@ -497,7 +497,7 @@ class Data{
 								}
 							}
 						}else{
-							\Debug::p("BBB", $valParam);
+							// \Debug::p("BBB", $valParam);
 							if($valParam['name'] == ""){
 								continue;
 							}else{
@@ -507,28 +507,28 @@ class Data{
 						}
 					}
 				}else{
-					\Debug::p("CCC", $valParam);
+					// \Debug::p("CCC", $valParam);
 					if($val['name'] == ""){
 						continue;
 					}else{
-					\Debug::p("CCC", $valParam);
+					// \Debug::p("CCC", $valParam);
 						$this->_POST_FILES[$key][$keyParam] = $valParam;
 						$requests[$key][$keyParam] = $valParam;
 					}
 				}
 			}
 		}
-		\Debug::p($this->_POST_FILES);
+		// \Debug::p($this->_POST_FILES);
 		//exit;
 		//-------------------------------------------------------------------------------------------
-		//\Debug::p($requests);
+		// \Debug::p($requests);
 		if($this->settings['decode_utf8'] === true) $requests = $this->decodeUTF8($requests);
 
 		//\Run::$DEBUG_PRINT = 1;
-		\Debug::p("REQUESTS ", $requests);
-		\Debug::p("_POST_FILES ", $this->_POST_FILES);
-		\Debug::p("FILES ", $_FILES);
-		\Debug::p($tmp_files);
+		// \Debug::p("REQUESTS ", $requests);
+		// \Debug::p("_POST_FILES ", $this->_POST_FILES);
+		// \Debug::p("FILES ", $_FILES);
+		// \Debug::p($tmp_files);
 		//exit;
 		return $requests;
 	}

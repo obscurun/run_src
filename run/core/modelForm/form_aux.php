@@ -94,7 +94,7 @@ class FormAux{
 		//return;
 		$valueData = $this->getData($field, $i1, $i2, $i3);
 		$valueLabel = $this->getLabelValue($field, $value);
-		if(count($labelList) == 0 || $v == false) $labelList = $this->getLabelsList($field);
+		if(count($labelList) == 0 || $labelList == false) $labelList = $this->getLabelsList($field);
 		foreach($labelList as $k => $val){
 			if(isset($val["value"])) $val = $val["value"];
 			if($useIndexValue) $selected = ($k == $valueData) ? "selected=\"selected\" " : " $valueData";

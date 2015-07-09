@@ -5,6 +5,7 @@ require(RUN_PATH."core/view/paging.php");
 require(RUN_PATH."core/view/render.php");
 //*****************************************************************************************************************************
 class View{
+	public 		  $render				= ""; // Object/Classe Render;
 	public 		  $write				= ""; // Object/Classe Write;
 	public 		  $form					= ""; // Object/Classe Form;
 	public 		  $paging				= ""; // Object/Classe Paging;
@@ -15,6 +16,7 @@ class View{
 		$this->write 	= new Write();
 		$this->form 	= new Form();
 		$this->paging 	= new Paging();
+		$this->render 	= new Render();
 	}
 	//*************************************************************************************************************************
 	public static function includeContent($page, $line=__LINE__, $function=__FUNCTION__, $class=__CLASS__, $file=__FILE__){

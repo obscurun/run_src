@@ -46,7 +46,7 @@ class Language{
 		if( count($propertieSession) > 0 ){
 			self::$phrase[$acronym] = $propertieSession;
 		}else{
-			$phrases = Run::$properties->getProperties("languages/".$acronym);		
+			$phrases = Run::$properties->getProperties("languages/".$acronym);
 			Run::$session->set(array('Language', 'properties', $acronym), $phrases);
 			self::$phrase[$acronym] = $phrases;
 		}

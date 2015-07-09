@@ -11,10 +11,12 @@ class AjaxMethod{
 		if($method_request){
 		//	@header("Content-Type: text/html;  charset=ISO-8859-1",true);
 			@header("Content-Type: text/html; charset=ISO-8859-1",true);
-			$__obj = (Router::$content);
-			if(method_exists(get_class(Router::$content), $method_request)) $__obj = Router::$controller;
-			else if(method_exists(get_class(Router::$content->model), $method_request)) $__obj = Router::$controller->model;
-			else{ Error::show(0, "O método $method_request não foi encontrado: ".get_class(Router::$controller) ); exit; }
+			//$__obj = (Run::$router->content);
+			//echo $method_request ." // ".get_class(Router::$controller->model);exit;
+			//echo (int)method_exists(get_class(Router::$controller->model), $method_request);exit;
+			if(method_exists(get_class(Router::$controller), $method_request)) $__obj = Router::$controller;
+			else if(method_exists(get_class(Router::$controller->model), $method_request)) $__obj = Router::$controller->model;
+			else{ Error::show(0, "O método $method_request não foi encontrado: ".get_class(Run::$router->controller) ); exit; }
 
 			try{
 				if(isset($_GET["ajax_value1"]) && !(isset($_GET["ajax_value2"]))) $str = $__obj->$method_request($_GET["ajax_value1"]);
@@ -27,7 +29,9 @@ class AjaxMethod{
 				else if(isset($_GET["ajax_value8"]) && !(isset($_GET["ajax_value9"]))) $str = $__obj->$method_request($_GET["ajax_value1"],$_GET["ajax_value2"],$_GET["ajax_value3"],$_GET["ajax_value4"],$_GET["ajax_value5"],$_GET["ajax_value6"],$_GET["ajax_value7"],$_GET["ajax_value8"]);
 				else if(isset($_GET["ajax_value9"]) && !(isset($_GET["ajax_value10"]))) $str = $__obj->$method_request($_GET["ajax_value1"],$_GET["ajax_value2"],$_GET["ajax_value3"],$_GET["ajax_value4"],$_GET["ajax_value5"],$_GET["ajax_value6"],$_GET["ajax_value7"],$_GET["ajax_value8"],$_GET["ajax_value9"]);
 				else $str = $__obj->$method_request($_GET["ajax_value1"],$_GET["ajax_value2"],$_GET["ajax_value3"],$_GET["ajax_value4"],$_GET["ajax_value5"],$_GET["ajax_value6"],$_GET["ajax_value7"],$_GET["ajax_value8"],$_GET["ajax_value9"],$_GET["ajax_value10"]);
-				echo $str;
+				
+				if(is_array($str)) echo Run::$json->encode($str); //json_encode($str, JSON_UNESCAPED_UNICODE);
+				else echo $str;
 				exit;
 			}
 			catch(Exception $e){ echo "<div class='error'> Função $method_request (ajax) não executada. </div>";exit; }

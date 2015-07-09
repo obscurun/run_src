@@ -13,7 +13,6 @@ class Levels{
 		Debug::log("Iniciando libraries/router/Levels.", __LINE__, __FUNCTION__, __CLASS__, __FILE__);
 		self::$levels 	= $this->getParameterLevels();
 		Run::$benchmark->writeMark("Router/Levels/Inicio", "Router/Levels/getParameterLevels");
-		$this->applyLanguageByUrl();
 		Run::$benchmark->writeMark("Router/Levels/Inicio", "Router/Levels/Final");
 		/*
 		echo "<br /> ";
@@ -48,6 +47,14 @@ class Levels{
 		if($request_last == "" ) unset($levels[count($levels)-1]);
 		if(strrpos($request_last, "?") === 0) unset($levels[count($levels)-1]);
 
+		if(isset($_SERVER['HTTPS'])){
+	        $protocol = ($_SERVER['HTTPS'] && $_SERVER['HTTPS'] != "off") ? "https" : "http";
+	    }
+	    else{
+	        $protocol = 'http';
+	    }
+	    $this->path['host'] 	= $protocol . "://" . $_SERVER['HTTP_HOST'];
+
 		$request 				= $request."/";
 		$request_relative 		= $request_relative."/";
 		$request 				= str_replace("//","/",$request);
@@ -69,9 +76,9 @@ class Levels{
 		if(!isset($_SERVER['RUN_MOD_REWRITE'])){
 			$this->path['files'] 	= $request_relative.Run::FILES_BASE."";
 			$this->path['src'] 	= $request_relative.Run::PATH_PAG."view/";
-			$this->path['url'] 		= $_SERVER['SCRIPT_NAME']."/";
+			$this->path['url'] 		= $this->path['host'].$_SERVER['SCRIPT_NAME']."/";
 		}
-		else $this->path['url'] 	= $request_relative;
+		else $this->path['url'] 	= $this->path['host'].$request_relative;
 		//Debug::p("path", $this->path);
 
 		return $levels;

@@ -15,6 +15,7 @@ require(RUN_PATH. "core/properties.php");
 require(RUN_PATH. "core/language.php");
 require(RUN_PATH. "core/cookie.php");
 require(RUN_PATH. "core/js/json.php");/**/
+require(RUN_PATH. "core/js/fastjson.php");/**/
 //*********************************************************************************************************************************
 class Run extends Config{
 
@@ -49,7 +50,7 @@ class Run extends Config{
 		self::$cookie 			= new Cookie();
 		self::$properties 		= new Properties();
 		self::$language 		= new Language();
-		self::$json 			= new JSON();
+		self::$json 			= new FastJSON();
 		self::$ajaxMethod 		= new AjaxMethod();
 		self::$action 			= new Action();
 		self::$benchmark->writeMark("Run/Inicio", "Run/Classes Instanciadas");
@@ -59,8 +60,12 @@ class Run extends Config{
 		if(Run::USE_ROUTER){
 			self::$benchmark->mark("USE_ROUTER/Inicio");
 			self::$router 	= new Router();
-			self::$router->startRouter();
+			self::$router->startRouter();			
+			$this->autoExecute();
+			self::$router->startLoadContent();
 			self::$benchmark->mark("USE_ROUTER/Final");
+		}else{
+			$this->autoExecute();
 		}
 		self::$benchmark->writeMark("Run/Inicio", "Run/Final");
 	}
@@ -123,6 +128,29 @@ class Run extends Config{
 	// -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -
 	public function startConfig(){
 		$this->onStartConfig();
+	}
+	// -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -
+	public function autoExecute(){
+		$this->checkReadMail();
+		$this->periodicAutoSendMail();
+	}
+	// -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -
+	public function checkReadMail(){
+		if(isset($_GET['checkReadMail'])){
+			Run::loadHelper("mailManager/mailManager");
+			$mailM = new MailManager();
+			$mailM->checkReadMail($_GET['checkReadMail']);
+			exit;
+		}
+	}
+	// -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -
+	public function periodicAutoSendMail(){
+		if(isset($_GET['periodicAutoSendMail'])){
+			Run::loadHelper("mailManager/mailManager");
+			$mailM = new MailManager();
+			$mailM->periodicAutoSendMail($_GET['periodicAutoSendMail']);
+			exit;
+		}
 	}
 	// -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -
 	public function configLocation($cod="ptb", $state="BR", $timezone="America/Sao_Paulo"){

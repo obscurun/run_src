@@ -56,6 +56,8 @@ class Config{
 	const 			 SESSION_TIMEOUT			= 1800; 												// int 		- [segundos] 300 = 5 minutos
 	const 			 LOGIN_TIMEOUT				= 1800; 												// int 		- [segundos] 300 = 5 minutos
 //-  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  
+	const			 MAIL_TRY_SEND_SERVER		= true;													// boolean 	- tenta disparar e-mail pela função mail do servidor, caso SMTP falhe
+	const			 MAIL_AUTO_SEND_LIMIT		= 5;													// boolean 	- limite do select para enviar em sequencia em periodicAutoSendMail
 //-  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  
 	const			 USE_LOGIN					= true;													// boolean 	- usa a classe login para gerenciar acesso
 	const			 LOGIN_TABLE				= "admins"; 											// string 	- tabela de usuarios usada

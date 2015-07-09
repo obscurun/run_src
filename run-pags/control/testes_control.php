@@ -21,6 +21,15 @@ class TestesController extends Router{
 	//	Debug::print_r($_FILES);
 	}
 	//-  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -
+	public function envio(){
+		Run::$router->acceptNextLevels(0);
+		Run::$router->setTemplateData("title", "Envio Teste");
+		Run::loadHelper("mailManager/mailManager");
+		$send = new mailManager();
+		$send->setTo("rafael.teixeira@sccon.com.br")->setMessage("Mensagem de <b>teste</b>")->setSubject("Teste e-mail 10")->addMailList();//->send();
+		//$this->loadView("form1");
+	}
+	//-  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -
 	public function form1(){
 		Run::$benchmark->mark("Form1Controller/Inicio");
 		Run::$router->acceptNextLevels(1);

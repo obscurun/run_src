@@ -9,13 +9,13 @@ class Render{
 	}
 	
 	//*************************************************************************************************************************
-	public static function setResponse($message="", $type="info", $idAlert="default", $class=""){
+	public function setResponse($message="", $type="info", $idAlert="default", $class=""){
 		Debug::log("Render->setResponse:".$message, __LINE__, __FUNCTION__, __CLASS__, __FILE__);
 		//Debug::p("response_".$type, $textType);
 		Run::$session->set(array("render", "response", $idAlert), array("type"=>$type, "message"=>$message, "class"=>$class));
 	}
 	//*************************************************************************************************************************
-	public static function getResponse($idAlert="", $delete=true){
+	public function getResponse($idAlert="", $delete=true){
 		Debug::log("Render->getResponse:".$alert, __LINE__, __FUNCTION__, __CLASS__, __FILE__);
 		//Debug::p($_SESSION);
 		$response = "";
@@ -30,7 +30,7 @@ class Render{
 		else return array();
 	}
 	//*************************************************************************************************************************
-	public static function echoResponse($idAlert="", $close=true, $delete=true){
+	public function echoResponse($idAlert="", $close=true, $delete=true){
 		$messages = self::getResponse($idAlert, $delete);
 
 		$alert = "\n<div class=\"render-response bs-component\">\n";
@@ -52,7 +52,7 @@ class Render{
 		echo $alert;
 	}
 	//*************************************************************************************************************************
-	public static function getModelResponse($type="", $message=true, $class="", $close=true){
+	public function getModelResponse($type="", $message=true, $class="", $close=true){
 		$textType = Language::get("response_".$type);
 	    $alert .= 	"    \t	<div class=\"alert alert-dismissible alert-$type $class\">\n";
 	    if($close === true) $alert .= 	"    \t\t    <button type=\"button\" class=\"close\" data-dismiss=\"alert\">×</button>\n";
@@ -62,13 +62,13 @@ class Render{
 		return $alert;
 	}
 	//-------------------------------------------------------------------------------------------------------------------------
-	public static function html($str){
+	public function html($str){
 		//Debug::log("View->html: $str", __LINE__, __FUNCTION__, __CLASS__, __FILE__);
 		if(Config::VIEW_HTML_ENTITIES == true) $str = htmlentities($str);
 		return $str;
 	}
 	//-------------------------------------------------------------------------------------------------------------------------
-	public static function htmlHeader(){
+	public function htmlHeader(){
 		Debug::log("View->renderHeader:", __LINE__, __FUNCTION__, __CLASS__, __FILE__);
 		Config::$PATH_LINK 	= (UrlController::$useLanguage == true) ? Config::$PATH.Config::$LANGUAGE_ACTIVE."/" : Config::$PATH;
 		$headerHTML = "";
@@ -89,7 +89,7 @@ class Render{
 		echo self::$header_default;
 	}
 	//-------------------------------------------------------------------------------------------------------------------------
-	public static function applyPaging($obj="", $url_index=false, $link="?", $gets="", $name="items"){
+	public function applyPaging($obj="", $url_index=false, $link="?", $gets="", $name="items"){
 		if(!isset($obj->PAGING_TOTAL) || !isset($obj->PAGING)) Error::show(0, "Query:: Há um erro na classe, não será possivel renderizar a paginação corretamente.");
 
 		$html = "";
@@ -104,7 +104,7 @@ class Render{
 		echo Paging::get($obj->PAGING, $html, $name);
 	}
 	//-------------------------------------------------------------------------------------------------------------------------
-	public static function renderReporting($obj="", $url_index=false, $link="?", $gets="", $name="items"){
+	public function renderReporting($obj="", $url_index=false, $link="?", $gets="", $name="items"){
 		if(!isset($obj->PAGING_TOTAL) || !isset($obj->PAGING)) Error::show(0, "Query:: Há um erro na classe, não será possivel renderizar a paginação corretamente.");
 
 		$html = "";
@@ -118,7 +118,25 @@ class Render{
 //		echo "<div class=\"getExcel\"><a href='?".$html."&". $obj->SETTINGS['REF'] ."export=excel' title='Gerar Relatório em Excel'><img src='". Config::$PATH ."cms/img/themes/default/logo_excel.gif' alt='relatório' /></a></div>";
 	}
 	//-------------------------------------------------------------------------------------------------------------------------
-	public static function googleAnalytics(){
+	public function getJSPath(){
+		$js = "";
+		$js .= "\r\n\t\t<script type='text/javascript'> ";
+		$js .= "\r\n\t\t\twindow.path = {";
+
+		$c =0;
+
+		foreach(Run::$router->path as $type => $value){
+			if($c != 0) $js .= ", ";
+			$js .= "\r\n\t\t\t\t'$type'	:'$value'";
+			$c++;
+		}
+
+		$js .= "\r\n\t\t\t}; \r\n\t\t</script>\r\n";
+
+		return $js;
+	}
+	//-------------------------------------------------------------------------------------------------------------------------
+	public function getGoogleAnalytics(){
 		$js_ana = "";
 		//echo ">>>>>>>>>>>>>>>>>>>>>> ".Run::$session->get(array('CONFIG', 0, 'id_analytics'));
 		if(strlen(Run::$session->get(array('CONFIG', 0, 'id_analytics'))) >=3){

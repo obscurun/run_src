@@ -21,7 +21,7 @@ class CleanData{
 				//Run::$DEBUG_PRINT = 1;
 			if(count($this->model->session->getDataSession()) == 1 && count($this->model->session->getRecoverSession()) == 1){
 				//$this->model->dataFormSequencial 	= $this->model->dataForm;
-				Debug::p($this->model->dataFormSequencial);
+				//Debug::p($this->model->dataFormSequencial);
 				$this->model->session->setDataFormSession();
 			}
 				//Run::$DEBUG_PRINT = 0;
@@ -39,8 +39,8 @@ class CleanData{
 	//*************************************************************************************************************************
 	private function checkRecoverData(){
 		//Run::$DEBUG_PRINT = 1;
-		Debug::p($this->model->dataIntern);
-		Debug::p($this->model->session->getFormSessionId());
+		//Debug::p($this->model->dataIntern);
+		//Debug::p($this->model->session->getFormSessionId());
 		if(isset($_GET['recoverForm']) && $_GET['recoverForm'] === $this->model->settings['form_id'] ){
 			
 			$dataRecovered = $this->model->session->getRecoverSession();

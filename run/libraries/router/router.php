@@ -33,12 +33,12 @@ class Router extends RouterBase{
 		Run::$benchmark->mark("startRouter/Inicio");
 		parent::__construct();
 		Debug::log('Classe Router criada.');
-		$this->checkUrl();
 		Run::$benchmark->writeMark("startRouter/Inicio", "startRouter/Final");
 	}
 	//-  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -
 	//-  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -
-	private function checkUrl(){
+	public function startLoadContent(){
+		$this->applyLanguageByUrl();
 		$pag = isset(self::$levels[self::$levelRef]) ? (self::$levels[self::$levelRef]) : Run::ROUTER_START;
 		$this->level_to_load_method = self::$levelRef+1;
 		
