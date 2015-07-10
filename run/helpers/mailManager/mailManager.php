@@ -145,6 +145,16 @@ class MailManager{
 	}
 	//-------------------------------------------------------------------------------------------------------------------------
 	public function periodicAutoSendMail(){
+		$t = (int)Run::CRON_JOB_TIME;
+		set_time_limit(($t*60)+30+Run::MAIL_AUTO_SEND_LIMIT);
+		for( $n=0 ; $n<=$t ; $n++ ){
+			$this->triggerPeriodicAutoSendMail();
+			sleep(60-Run::MAIL_AUTO_SEND_LIMIT);
+		}
+		exit;
+	}
+	//-------------------------------------------------------------------------------------------------------------------------
+	public function triggerPeriodicAutoSendMail(){
 		ob_clean();
 		ob_flush();
 		flush();
@@ -206,7 +216,6 @@ class MailManager{
 				sleep(1);
 			}
 		}
-		exit;
 	}
 	//-------------------------------------------------------------------------------------------------------------------------
 	public function checkReadMail($pk=0){
