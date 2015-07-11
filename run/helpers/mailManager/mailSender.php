@@ -19,14 +19,16 @@ class MailSender {
 		flush();
 		ob_start();
 
+		//Debug::p("CONTEUDO", Run::$control->string->encodeFixUtf8($this->mailManager->content_html));
+		//exit;
 		//$mail->IsSendmail(); // telling the class to use SendMail transport
 		$mail->IsSMTP(); // usando função padrão de email php
 		//$mail->Debugoutput = 'html';
-		$mail->Subject		= Run::$control->string->encodeIso($this->mailManager->send_subject);
+		$mail->Subject		= Run::$control->string->encodeFixUtf8($this->mailManager->send_subject);
 		$mail->AltBody		= strip_tags($this->mailManager->send_message); // optional, comment out and test
-		$mail->setFrom($this->mailManager->send_from['mail'], Run::$control->string->encodeIso($this->mailManager->send_from['name']));
-		$mail->AddAddress($this->mailManager->send_to['mail'], Run::$control->string->encodeIso($this->mailManager->send_to['name']));
-		if(isset($this->mailManager->send_reply['mail']) && $this->mailManager->send_reply['mail'] != "") $mail->AddReplyTo($this->mailManager->send_reply['mail'], Run::$control->string->encodeIso($this->mailManager->send_reply['name']));
+		$mail->setFrom($this->mailManager->send_from['mail'], Run::$control->string->encodeFixUtf8($this->mailManager->send_from['name']));
+		$mail->AddAddress($this->mailManager->send_to['mail'], Run::$control->string->encodeFixUtf8($this->mailManager->send_to['name']));
+		if(isset($this->mailManager->send_reply['mail']) && $this->mailManager->send_reply['mail'] != "") $mail->AddReplyTo($this->mailManager->send_reply['mail'], Run::$control->string->encodeFixUtf8($this->mailManager->send_reply['name']));
 
 		$this->mailManager->content_html = str_replace("[id]", $this->mailManager->ref_pk, $this->mailManager->content_html);
 
@@ -40,8 +42,8 @@ class MailSender {
 				$mail->AddBCC($copy['mail'], $copy['name']);
 			}
 		}
-
-		$mail->MsgHTML($this->mailManager->content_html);
+		$mail->CharSet = 'UTF-8';
+		$mail->MsgHTML(Run::$control->string->encodeFixUtf8($this->mailManager->content_html));
 		$mail->IsHTML(true);
 
 		$mail->Host 		= $this->mailManager->properties[$this->mailManager->send_prefix.'host']; 					
@@ -60,7 +62,6 @@ class MailSender {
 		$mail->SMTPDebug  	= 1;                 // sets the prefix to the servier	
 	
 		$resposta = $mail->Send();
-		Debug::p("teste: ".$mail->ErrorInfo, $this->mailManager->content_html);
 		//echo ">>>> ".$mail->SMTPAuth;
 		$error 	= ob_get_contents();
 		ob_end_clean();
@@ -69,6 +70,7 @@ class MailSender {
 
 		if( !$resposta ) {
 			Error::writeLog("Erro MailInfo: ".$mail->ErrorInfo."\n".$error, __FILE__, __LINE__, '');
+			Debug::p("Erro: ".$mail->ErrorInfo, $error);
 	    	Error::show(0, "MailSender: Ocorreu um erro ao enviar e-mail: \n ".$mail->ErrorInfo. __FUNCTION__, __FILE__, __LINE__, '');
 	    	
 	    	if(Config::MAIL_TRY_SEND_SERVER === true){

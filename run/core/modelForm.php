@@ -40,7 +40,7 @@ class modelForm{
 	public  		 $query		 			= NULL;
 	public 			 $dataIntern			= array(); // dados internos, usados como referência, ID, paginação, ordenação, etc...
 	public 			 $dataList				= array(); // dados recebidos do select->getList
-	public 			 $dataListTotal			= 0; // dados recebidos do select->getList
+	public 			 $dataListTotal			= 0; 	   // dados recebidos do select->getList
 	public 			 $dataForm				= array(); // dados recebidos do form
 	public 			 $dataFormChecked		= array(); // retorno dos dados convertidos e analisados
 	public 			 $dataFormRecorded		= array(); // retorno dos dados salvos e processados
@@ -59,58 +59,72 @@ class modelForm{
 
 		// --------------------------------------------------------------------------
 
+		Debug::p("exeInitial");
 		$this->exeInitial();
 
 		// --------------------------------------------------------------------------
 
+		Debug::p("exeCheckSettings");
 		$this->exeCheckSettings();
 
 		// --------------------------------------------------------------------------
 
+		Debug::p("exeDataRequests");
 		$this->exeDataRequests();
 
 		// --------------------------------------------------------------------------
 
+		Debug::p("exeCleanData");
 		$this->exeCleanData();
 
 		// --------------------------------------------------------------------------
 
+		Debug::p("exeCheckTokenAndValidate");
 		$this->exeCheckTokenAndValidate();
 
 		// --------------------------------------------------------------------------
 
+		Debug::p("exeDatabaseConnect");
 		$this->exeDatabaseConnect();
 
 		// --------------------------------------------------------------------------
 
+		Debug::p("exeAutoDelete");
 		$this->exeAutoDelete();
 
 		// --------------------------------------------------------------------------
 
+		Debug::p("exeSave");
 		$this->exeSave();
 
 		// --------------------------------------------------------------------------
 
+		Debug::p("exeSelect");
 		$this->exeSelect();
 
 		// --------------------------------------------------------------------------
 
+		Debug::p("exeSetSession");
 		$this->exeSetSession();
 
 		// --------------------------------------------------------------------------
 
+		Debug::p("exeDelSession");
 		$this->exeDelSession();
 
 		// --------------------------------------------------------------------------
 
+		Debug::p("exeGetSession");
 		$this->exeGetSession();
 
 		// --------------------------------------------------------------------------
 
+		Debug::p("getDebugs");
 		$this->getDebugs();
 
 		// --------------------------------------------------------------------------
 
+		Debug::p("exeCheckErrors");
 		$this->exeCheckErrors();
 
 		// --------------------------------------------------------------------------
@@ -147,14 +161,18 @@ class modelForm{
 				if(is_array($erros) && count($erros) > 0){
 					// Debug::p("SAVE/erros", $erros);
 				}else{
+					if(isset($this->dataForm['form_id']) && count($this->dataErrors) <= 0 && ($this->settings['permission_'.$this->settings['auto_save_type']] == true) ){
+						$this->exeCustomSave();
+					}
 					$this->session->delDataSession();
 					//exit;
-					Render::setResponse($this->settings['msg_'.$this->settings['auto_save_type'].'_sucess'], "success", $this->session->getFormSessionId());
+					Run::$view->render->setResponse($this->settings['msg_'.$this->settings['auto_save_type'].'_sucess'], "success", $this->session->getFormSessionId());
 					
 					Run::$benchmark->writeMark("FormModel/autoDelete", "FormModel/saveData/save/delDataSession");
 
 					// Debug::p("dataFormRecorded", $this->dataFormRecorded);
 
+		
 					if($this->settings['auto_save_type'] == "insert"){
 						if($this->settings['redirect_insert'] !== false){
 							$this->settings['redirect_insert'] = $this->aux->convertStringToData($this->settings['redirect_insert']);
@@ -183,9 +201,6 @@ class modelForm{
 			}
 			//$this->delete();
 		}
-		if(isset($this->dataForm['form_id']) && count($this->dataErrors) <= 0 && ($this->settings['permission_'.$this->settings['auto_save_type']] == true) ){
-			$this->exeCustomSave();
-		}
 	}
 
 
@@ -209,7 +224,7 @@ class modelForm{
 				$errorMsg = str_replace('[path]', Run::$router->path['base'].Run::$router->getPath(-1), Language::get("form_msg_auto_load_error"));
 				$errorMsg = $this->aux->convertStringToData($errorMsg);
 				// Debug::p("errorMsg", Run::$router->getPath(-1));
-				Render::setResponse($errorMsg, "danger", $this->session->getFormSessionId());
+				Run::$view->render->setResponse($errorMsg, "danger", $this->session->getFormSessionId());
 			}
 		}else{
 			$this->dataFormSequencial 	= $this->dataForm;
@@ -307,15 +322,15 @@ class modelForm{
 				View::redirect("500");
 			}else if(count($_POST) < 1){
 				Error::writeLog("modelForm: A requisição form foi realizada de forma incorreta. A URL foi chamada deliberadamente, sem post.", __FILE__, __LINE__);
-				Render::setResponse("<p>Você tentou acessar uma URL inválida ou tentou enviar os dados do formulário e ocorreu um erro interno.</p><p>Caso esteja com dificuldades em enviar os dados, por favor, entre em contato com o suporte técnico.</p>", "danger msg-error500 msg-".$this->session->getFormSessionId(), $this->session->getFormSessionId());
+				Run::$view->render->setResponse("<p>Você tentou acessar uma URL inválida ou tentou enviar os dados do formulário e ocorreu um erro interno.</p><p>Caso esteja com dificuldades em enviar os dados, por favor, entre em contato com o suporte técnico.</p>", "danger msg-error500 msg-".$this->session->getFormSessionId(), $this->session->getFormSessionId());
 				View::redirect("500");
 			}else if((count($_POST) > 1 || count($_GET) > 1) ){
 				Error::writeLog("modelForm: Ocorreu um erro ao processar os dados enviados.", __FILE__, __LINE__);
-				Render::setResponse("<p>Você tentou enviar os dados do formulário e ocorreu um erro interno.</p><p>Caso esteja com dificuldades em enviar os dados, por favor, entre em contato com o suporte técnico.</p>", "danger msg-error500 msg-".$this->session->getFormSessionId(), $this->session->getFormSessionId());
+				Run::$view->render->setResponse("<p>Você tentou enviar os dados do formulário e ocorreu um erro interno.</p><p>Caso esteja com dificuldades em enviar os dados, por favor, entre em contato com o suporte técnico.</p>", "danger msg-error500 msg-".$this->session->getFormSessionId(), $this->session->getFormSessionId());
 				View::redirect("500");
 			}else{
 				Error::writeLog("modelForm: Ocorreu um erro ao processar os dados enviados, sem request.", __FILE__, __LINE__);
-				Render::setResponse("<p>Você tentou acessar uma URL inválida ou tentou enviar os dados do formulário e ocorreu um erro interno.</p><p>Caso esteja com dificuldades em enviar os dados, por favor, entre em contato com o suporte técnico.</p>", "danger msg-error500 msg-".$this->session->getFormSessionId(), $this->session->getFormSessionId());
+				Run::$view->render->setResponse("<p>Você tentou acessar uma URL inválida ou tentou enviar os dados do formulário e ocorreu um erro interno.</p><p>Caso esteja com dificuldades em enviar os dados, por favor, entre em contato com o suporte técnico.</p>", "danger msg-error500 msg-".$this->session->getFormSessionId(), $this->session->getFormSessionId());
 				View::redirect("500");
 			}
 		}
@@ -368,7 +383,7 @@ class modelForm{
 
 
 	public function exeCheckTokenAndValidate(){
-		$this->validate    	= new Validate();		
+		$this->validate    	= new Validate($this);		
 		Run::$benchmark->writeMark("FormModel/Check/Schema/Settings", "FormModel/Instance/Mysql/Validate/SaveData/SelectData");
 		//Valida se existe erro ao configurar o schema e o setting no model da aplicação
 		if(count($this->data->dataErrors) > 0){

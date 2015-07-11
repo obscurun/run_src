@@ -6,10 +6,12 @@ class Validate{
 	public $dataForm 		= array();
 	public $errors			= array();
 	public $messages		= array();
+	public $model			= array();
 	public $fields_removed	= array();
 	//*************************************************************************************************************************
-	function Validate(){
+	function Validate($model){
 		Debug::log("Iniciando Core/Form/Validate.", __LINE__, __FUNCTION__, __CLASS__, __FILE__);
+		$this->model = $model;
 	}
 	//*************************************************************************************************************************
 	public function validator($schema, $data, $dataOriginal){
@@ -156,15 +158,20 @@ class Validate{
 		return $this->validatorJS();
 	}
 	//-------------------------------------------------------------------------------------------------------------------------
-	public function validatorJS($settings){
+	public function validatorJS(){
+
+		$settings = $this->model->settings;
+
 		$settings['CLIENT_PLACEHOLDERS'] = "";
 		$settings['CLIENT_MASKS'] = "";
 
+		Debug::p($settings);
+
 		Debug::log("Validate->validatorJS:", __LINE__, __FUNCTION__, __CLASS__, __FILE__);
-		if(!isset($settings['VAL_CLIENT'])){
-			$settings['VAL_CLIENT'] = false;
+		if(!isset($settings['val_client'])){
+			$settings['val_client'] = false;
 		}
-		if(!$settings['VAL_CLIENT'] == true) return false;
+		if(!$settings['val_client'] == true) return false;
 		$script = "";
 
 		if(isset(Config::$PATH_RUN)){
@@ -174,21 +181,21 @@ class Validate{
 		}
 		$script .= "\n\t<script>"; //if(typeof(fields) == 'string')
 		$script .= "\n\tjQuery(document).ready(function($){";
-		$script .= "\n\t\t _val_". $settings['FORM'] ." = $(\"#". $settings['FORM'] ."\").submit(function(){";
-		$script .= "\n\t\t\t if(typeof window.exec_". $settings['FORM'] ." == 'function') exec_". $settings['FORM'] ."();";
-		$script .= "\n\t\t\t return $('#". $settings['FORM'] ."').validate();";
+		$script .= "\n\t\t _val_". $settings['form_id'] ." = $(\"#". $settings['form_id'] ."\").submit(function(){";
+		$script .= "\n\t\t\t if(typeof window.exec_". $settings['form_id'] ." == 'function') exec_". $settings['form_id'] ."();";
+		$script .= "\n\t\t\t return $('#". $settings['form_id'] ."').validate();";
 		$script .= "\n\t\t}).validate({";
 		$script .= "\n\t\t ". $settings['CLIENT_EXTRAS'];
 		$script .= "\n\t\trules:{";
 	//- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -	
 		$n = 0;
-		foreach($this->SCHEMA as $field => $settings){
+		foreach($this->model->schema['fields'] as $field => $settings){
 			if($settings["multiple"] === true){
 				if($settings["serial"] == true) $field .= "_0";
 				else $field .= "[]";
 			}
 			$n++;
-			if($n < count($this->SCHEMA)) $virgula = ",";
+			if($n < count($this->model->schema['fields'])) $virgula = ",";
 			else $virgula = "";
 			$count_erros = 0;
 			if(count($settings['validation']) > 0 && $settings['validation'] != false){
@@ -232,13 +239,13 @@ class Validate{
 		$script .= "\n\t\tmessages:{";		
 		//- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -	
 		$n = 0;
-		foreach($this->SCHEMA as $field => $set){
+		foreach($this->model->schema['fields'] as $field => $set){
 			if($set["multiple"] === true){
 				if($set["serial"] == true) $field .= "_0";
 				else $field .= "[]";
 			}
 			$n++;
-			if($n < count($this->SCHEMA)) $virgula = ",";
+			if($n < count($this->model->schema['fields'])) $virgula = ",";
 			else $virgula = "";
 			$count_erros = 0;
 			if(count($set['validation']) > 0 && $set['validation'] != false){
@@ -251,7 +258,7 @@ class Validate{
 					if(!isset($value[2])) $value[2] = false;
 					if($value[1] !== true && $value[1] !== false ) $value[0] = $value[1];
 					if($value[1] !== false){
-						$value = "\"". View::html($this->getMsg($type, $value[2], $value[0], isset($data[$field]))) ."\"";
+						$value = "\"". Run::$view->render->html($this->getMsg($type, $value[2], $value[0], isset($data[$field]))) ."\"";
 						if(strlen($value) >= 3) if($n2 > 0) $virgula2 = ","; else $virgula2 = "";
 						if(strlen($value) >= 3) $n2++;
 						if(strlen($value) >= 3) $script .= "$virgula2\n\t\t\t\t$type	: $value ";	
@@ -915,18 +922,18 @@ class Validate{
 			}
 		}
 		//Debug::print_r($fields);
-		//Debug::print_r($this->SCHEMA);
+		//Debug::print_r($this->model->schema['fields']);
 		foreach($fields as $k => $field){
-			//echo "<br /> CHECK /".$field ."/".array_key_exists($field, $this->SCHEMA);
-			if(array_key_exists($field, $this->SCHEMA)){
+			//echo "<br /> CHECK /".$field ."/".array_key_exists($field, $this->model->schema['fields']);
+			if(array_key_exists($field, $this->model->schema['fields'])){
 					//echo "<br /> $valueServer ".$field." / ".$type." / ".$value;
-				foreach($this->SCHEMA[$field]['validation'] as $type => $value){
-					if(!isset($this->SCHEMA[$field]['validation_bkp'])) $this->SCHEMA[$field]['validation_bkp'] =  array();
-					if(!isset($this->SCHEMA[$field]['validation_bkp'][$type])) $this->SCHEMA[$field]['validation_bkp'][$type] =  array();
-					if($valueServer === true AND $this->SCHEMA[$field]['validation_bkp'][$type]){ echo ">> ". $this->print_rr($this->SCHEMA[$field]['validation_bkp'][$type]); $this->SCHEMA[$field]['validation'][$type][0] = $this->SCHEMA[$field]['validation_bkp'][$type]['server'];}
-					if($valueClient === true AND $this->SCHEMA[$field]['validation_bkp'][$type]) $this->SCHEMA[$field]['validation'][$type] = $this->SCHEMA[$field]['validation_bkp'][$type]['client'];
-					if($valueServer === false){  $this->SCHEMA[$field]['validation_bkp'][$type]['server'] = (!isset($this->SCHEMA[$field][$type][0])) ? false : $this->SCHEMA[$field][$type][0]; $this->SCHEMA[$field]['validation'][$type][0] = false; }
-					if($valueClient === false){  $this->SCHEMA[$field]['validation_bkp'][$type]['client'] = (!isset($this->SCHEMA[$field][$type][1])) ? false : $this->SCHEMA[$field][$type][1]; $this->SCHEMA[$field]['validation'][$type][1] = false; }
+				foreach($this->model->schema['fields'][$field]['validation'] as $type => $value){
+					if(!isset($this->model->schema['fields'][$field]['validation_bkp'])) $this->model->schema['fields'][$field]['validation_bkp'] =  array();
+					if(!isset($this->model->schema['fields'][$field]['validation_bkp'][$type])) $this->model->schema['fields'][$field]['validation_bkp'][$type] =  array();
+					if($valueServer === true AND $this->model->schema['fields'][$field]['validation_bkp'][$type]){ echo ">> ". $this->print_rr($this->model->schema['fields'][$field]['validation_bkp'][$type]); $this->model->schema['fields'][$field]['validation'][$type][0] = $this->model->schema['fields'][$field]['validation_bkp'][$type]['server'];}
+					if($valueClient === true AND $this->model->schema['fields'][$field]['validation_bkp'][$type]) $this->model->schema['fields'][$field]['validation'][$type] = $this->model->schema['fields'][$field]['validation_bkp'][$type]['client'];
+					if($valueServer === false){  $this->model->schema['fields'][$field]['validation_bkp'][$type]['server'] = (!isset($this->model->schema['fields'][$field][$type][0])) ? false : $this->model->schema['fields'][$field][$type][0]; $this->model->schema['fields'][$field]['validation'][$type][0] = false; }
+					if($valueClient === false){  $this->model->schema['fields'][$field]['validation_bkp'][$type]['client'] = (!isset($this->model->schema['fields'][$field][$type][1])) ? false : $this->model->schema['fields'][$field][$type][1]; $this->model->schema['fields'][$field]['validation'][$type][1] = false; }
 				}
 			}
 		}

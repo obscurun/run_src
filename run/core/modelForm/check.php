@@ -88,6 +88,12 @@ class check{
 		if(!array_key_exists('msg_update_error',		$settings)){ $settings['msg_update_error']		= Language::get("form_msg_update_error")." ". $settings['nick_name'] .".";		}
 		if(!array_key_exists('msg_delete_error',		$settings)){ $settings['msg_delete_error']		= Language::get("form_msg_delete_error")." ". $settings['nick_name'] .".";		}
 
+		$settings['redirect'] = str_replace( "//", "/",	$settings['redirect']);
+		$settings['redirect_insert'] = str_replace( "//", "/",	$settings['redirect_insert']);
+		$settings['redirect_update'] = str_replace( "//", "/",	$settings['redirect_update']);
+		$settings['redirect_delete'] = str_replace( "//", "/",	$settings['redirect_delete']);
+
+
 		return $settings;
 	}
 	//-----------------------------------------------------------------------------------------------------------------------------

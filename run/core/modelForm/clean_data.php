@@ -14,7 +14,7 @@ class CleanData{
 		if(isset($_GET['cleanForm']) && $_GET['cleanForm'] === $this->model->settings['form_id']){
 			$dataFormNew = array();
 			$dataFormNew['cleaned'] = true;			
-			if($this->model->settings['show_msg_clean']) Render::setResponse("<p>Atenção: Você limpou os dados do formulário</p><p>Se preferir, <b><a href='".$this->model->aux->getRecoverForm("")."'>recupere os dados salvos anteriormente</a></b></p><p>Observação: Após atualizar o formulário abaixo, não será possível recuperar os dados anteriores.</p>", "warning msg-cleaned msg-".$this->model->session->getFormSessionId(), $this->model->session->getFormSessionId());
+			if($this->model->settings['show_msg_clean']) Run::$view->render->setResponse("<p>Atenção: Você limpou os dados do formulário</p><p>Se preferir, <b><a href='".$this->model->aux->getRecoverForm("")."'>recupere os dados salvos anteriormente</a></b></p><p>Observação: Após atualizar o formulário abaixo, não será possível recuperar os dados anteriores.</p>", "warning msg-cleaned msg-".$this->model->session->getFormSessionId(), $this->model->session->getFormSessionId());
 
 			$dataFormNew[$this->model->schema['from'][0]['pk']] = $_GET[$this->model->settings['ref']];
 
@@ -47,9 +47,9 @@ class CleanData{
 			if(is_array($dataRecovered) && count($dataRecovered) > 0){
 				$this->model->dataFormSequencial = $dataRecovered;
 				$this->model->session->setDataFormSession();
-				if($this->model->settings['show_msg_clean']) Render::setResponse("<p>Os dados limpos anteriormente foram recuperados com sucesso.</p>", "warning msg-cleaned msg-".$this->model->session->getFormSessionId(), $this->model->session->getFormSessionId());
+				if($this->model->settings['show_msg_clean']) Run::$view->render->setResponse("<p>Os dados limpos anteriormente foram recuperados com sucesso.</p>", "warning msg-cleaned msg-".$this->model->session->getFormSessionId(), $this->model->session->getFormSessionId());
 			}else{
-				Render::setResponse("<p>Não foi possível recuperar os dados anteriores.</p>", "danger msg-cleaned msg-".$this->model->session->getFormSessionId(), $this->model->session->getFormSessionId());
+				Run::$view->render->setResponse("<p>Não foi possível recuperar os dados anteriores.</p>", "danger msg-cleaned msg-".$this->model->session->getFormSessionId(), $this->model->session->getFormSessionId());
 			}
 			View::redirect("back");
 		}

@@ -182,7 +182,7 @@ class FormAux{
 	public function echoAction(){
 		//Debug::p($_SERVER);
 		$url = Run::$router->path['pageBase']."form/";
-		if($_SERVER['REDIRECT_QUERY_STRING'] != '') $url .= "?".$_SERVER['REDIRECT_QUERY_STRING'];
+		if($_SERVER['QUERY_STRING'] != '') $url .= "?".$_SERVER['QUERY_STRING'];
 		echo $url;
 	}
 	//-------------------------------------------------------------------------------------------------------------------------
@@ -239,10 +239,10 @@ class FormAux{
 	}
 
 
-
-
-
-
+	//-------------------------------------------------------------------------------------------------------------------------
+	public function validate(){
+		echo "".$this->model->validate->validateJS();
+	}
 	//-------------------------------------------------------------------------------------------------------------------------
 	public function convertStringToData($str){		//Run::$DEBUG_PRINT = 1;
 		preg_match('/\[[a-z(_)?]*(_)?\]/', $str, $matches, PREG_OFFSET_CAPTURE);

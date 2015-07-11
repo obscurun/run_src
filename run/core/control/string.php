@@ -38,7 +38,7 @@ class String{
 //*****************************************************************************************************************************
 	//-------------------------------------------------------------------------------------------------------------------------
 	public function removeSpecialsNormalize($value, $isFile = false){		
-		$value =  iconv("UTF-8", "ASCII//TRANSLIT", $value);
+		//$value =  iconv("UTF-8", "ASCII//TRANSLIT", $value); // TA COM ERRO
 		$specialsCh = array();
 		for($i=127;$i<256;$i++){
 			$specialsCh[chr($i)] = "";

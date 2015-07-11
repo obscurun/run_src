@@ -42,11 +42,11 @@ class ErrorsForm{
 		$errorsList = $this->echoErrorsList($qFields, $qErrors);
 		if(!$errorsList || count($errorsList) <= 0) return false;//
 		$typeMsg = (int)$this->model->dataFormSequencial[$this->model->schema['from'][0]['pk']] > 0 ? "update":"insert";
-		Render::setResponse("<h4>".Language::get('form_'.$typeMsg.'_unsaved')."</h4>", "danger", $this->model->session->getFormSessionId()."errors", "unsaved");
-		Render::echoResponse($this->model->session->getFormSessionId()."errors");
+		Run::$view->render->setResponse("<h4>".Language::get('form_'.$typeMsg.'_unsaved')."</h4>", "danger", $this->model->session->getFormSessionId()."errors", "unsaved");
+		Run::$view->render->echoResponse($this->model->session->getFormSessionId()."errors");
 		$errorsList = "<h4>".Language::get("form_error_message")."</h4>" . $errorsList;
-		Render::setResponse($errorsList, $type, $this->model->session->getFormSessionId()."errors");
-		Render::echoResponse($this->model->session->getFormSessionId()."errors");
+		Run::$view->render->setResponse($errorsList, $type, $this->model->session->getFormSessionId()."errors");
+		Run::$view->render->echoResponse($this->model->session->getFormSessionId()."errors");
 	}
 }
 // ############################################################################################################################

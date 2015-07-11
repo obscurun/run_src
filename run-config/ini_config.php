@@ -58,7 +58,7 @@ class Config{
 //-  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  
 	const			 MAIL_TRY_SEND_SERVER		= true;											// boolean 	- tenta disparar e-mail pela função mail do servidor, caso SMTP falhe
 	const			 MAIL_AUTO_SEND_LIMIT		= 5;											// boolean 	- limite do select para enviar em sequencia em periodicAutoSendMail
-	const			 CRON_JOB_TIME				= 5;											// boolean 	- config no servidor em minutos, para auto execução periódica
+	const			 CRON_JOB_TIME				= 1;											// boolean 	- config no servidor em minutos, para auto execução periódica
 //-  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  
 	const			 USE_LOGIN					= true;											// boolean 	- usa a classe login para gerenciar acesso
 	const			 LOGIN_TABLE				= "admins"; 									// string 	- tabela de usuarios usada

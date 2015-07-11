@@ -85,6 +85,7 @@ class Router extends RouterBase{
 			Run::$benchmark->writeMark("loadPageFile/Inicio", "loadPageFile/else4/Final");
 			exit;
 		}else{
+			echo "<!-- $page_control, $page_view, $page_single, $page_single_full não existe -->";
 			$this->load("404");
 			Run::$benchmark->writeMark("loadPageFile/Inicio", "loadPageFile/else/Final");
 			Error::writeLog("Router->loadPageFile: Pág Control ou View <b>$pag</b> não existe. (control/".$pag."_control.php).", __FILE__, __LINE__);
@@ -95,7 +96,7 @@ class Router extends RouterBase{
 	//-  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -
 	private function loadPageContent($pag){
 		Debug::log("Router - loadPageContent() ", __LINE__, __FUNCTION__, __CLASS__, __FILE__);
-		$class 	= ucwords($pag)."Controller";
+		$class 	= ucwords(str_replace( "-", "_",	$pag))."Controller";
 		$method	= isset(self::$levels[$this->level_to_load_method]) ? self::$levels[$this->level_to_load_method] : "index";
 		$method = $this->checkFullUrlExist($class, $method);
 			
@@ -133,6 +134,7 @@ class Router extends RouterBase{
 		}else{
 			if(!class_exists($class)) Error::show(8, "Router->loadPageContent: Classe <b>$class</b> não existe. (control/".$pag."_control.php).", __FILE__, __LINE__);
 			else Error::show(8, "Router->loadPageContent: Metodo <b>$method</b> não existe. {self::$controller->acceptNextUnknownLevels} (control/".$pag."_control.php).", __FILE__, __LINE__);
+			echo "<!-- $class ou $method não existe -->";
 			$this->load("404");
 		}
 		$this->flush();

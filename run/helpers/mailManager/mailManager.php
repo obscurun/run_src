@@ -1,5 +1,5 @@
 <?php
-Run::$DEBUG_PRINT = false;
+Run::$DEBUG_PRINT = true;
 Run::loadHelper("mailManager/mailSender");
 // ********************************************************************************************************************************
 class MailManager{
@@ -61,7 +61,7 @@ class MailManager{
 										"\"1\""
 								))
 						->execute()->getResult();
-		//Debug::p($result);
+		//Debug::p($result); exit;
 		$warMsg = $this->database->getWarning();
 		if((is_integer($result) || $warMsg != "") && $this->database->getError() != "00000"){ 
 			Error::show(5200, "Model-> Erro no SQL:\n ".$warMsg."\n  ". $this->database->getError() ."  \n$sql_query ".__FUNCTION__, __FILE__, __LINE__, '');
@@ -145,12 +145,24 @@ class MailManager{
 	}
 	//-------------------------------------------------------------------------------------------------------------------------
 	public function periodicAutoSendMail(){
+		Run::$DEBUG_PRINT = true;
 		$t = (int)Run::CRON_JOB_TIME;
-		set_time_limit(($t*60)+30+Run::MAIL_AUTO_SEND_LIMIT);
+		$time_exe = ($t*60)+30+Run::MAIL_AUTO_SEND_LIMIT*3;
+		set_time_limit($time_exe);
+		ob_flush();
+		flush();
+		Debug::p("time_exe (t=".$t.")", $time_exe);
+		ob_flush();
+		flush();
+    	Run::$benchmark->mark("periodicAutoSendMail/Inicio");
 		for( $n=0 ; $n<=$t ; $n++ ){
-			$this->triggerPeriodicAutoSendMail();
-			sleep(60-Run::MAIL_AUTO_SEND_LIMIT);
+			$result = $this->triggerPeriodicAutoSendMail();
+			if($result !== true ) break;
+    		Run::$benchmark->writeMark("periodicAutoSendMail/Inicio", "periodicAutoSendMail/loop$t");
+			sleep(60-Run::MAIL_AUTO_SEND_LIMIT*3);
 		}
+    	Run::$benchmark->writeMark("periodicAutoSendMail/Inicio", "periodicAutoSendMail/final");
+		Debug::p("periodicAutoSendMail finalizado");
 		exit;
 	}
 	//-------------------------------------------------------------------------------------------------------------------------
@@ -185,7 +197,9 @@ class MailManager{
 			Error::show(5200, "Model-> Erro ao selecionar mailManager:\n ".$warMsg."\n  ". $this->database->getError() ."  \n$sql_query ".__FUNCTION__, __FILE__, __LINE__, '');
 		}
 		else{
-			//Debug::p($result);
+			if(count($result) == 0){
+				return false;
+			}
 			foreach($result as $pk => $field){
 				if($field['content'] == ""){
 					$result = $query->update("mail_manager")->set(" sent_status = '-3', try_count = try_count+1, status_int = -2, date_update = '". Run::$control->date->getDateUs() ."'")->where(" pk_mail = '".$field['pk_mail']."'")->execute()->getResult();
@@ -216,6 +230,7 @@ class MailManager{
 				sleep(1);
 			}
 		}
+		return true;
 	}
 	//-------------------------------------------------------------------------------------------------------------------------
 	public function checkReadMail($pk=0){
@@ -248,7 +263,8 @@ class MailManager{
 		$this->send_to['name'] 		= $this->properties[$this->send_prefix."name"];
 		$this->send_reply['mail'] 	= $this->properties[$this->send_prefix."reply_mail"];
 		$this->send_reply['name'] 	= $this->properties[$this->send_prefix."reply_name"];
-		//Debug::p($this->send_prefix);
+		//Debug::p($this->properties);
+		//Debug::p($this->send_from);
 
 	}
 	//-------------------------------------------------------------------------------------------------------------------------	
@@ -292,6 +308,47 @@ class MailManager{
 			$html .= "</html>";
 		}
 		$html = str_replace('</body>', "<img src=\"".Run::$router->path['url']."blank.gif?checkReadMail=[id]\" width=\"0\" border=\"0\" height=\"0\">"."</body>", $html);
+		return $html;
+	}
+	//-------------------------------------------------------------------------------------------------------------------------	
+	public function getDatatable($data=array()){
+		/*
+			formato aceito:
+			array(
+				array('propriedade' => 'valor'),
+				array('propriedade' => 'valor'),
+				array('propriedade' => 'valor')
+			)
+		*/
+		if(!is_array($data) && $data != ''){
+			$dados = array();
+			foreach($data->schema['fields'] as $name => $prop){
+				if($prop['type'] == "date_update") continue;
+				$val = $data->dataFormRecorded[$prop['belongsTo']][$name];
+				if(is_array($val)) $val = implode(", ", $val);
+				array_push($dados, array($prop['label'] => $val));
+			}
+			$data = $dados;
+		}
+
+		$html .= "<font face=\"Arial\" size=\"2\" style=\"font-size:11px;\">";
+		$html .= '<table width="100%" border="0" align="center" cellpadding="5" cellspacing="0">';
+
+		foreach($data as $k => $values){
+			$html .= "<tr>";
+			foreach($values as $prop => $val){
+				$html .= "<td align='right'  style='border-bottom:1px dotted #bbb;'><b>";
+				$html .= $prop;
+				$html .= "</b>:</td>";
+				$html .= "<td align='left'  style='border-bottom:1px dotted #ccc;'>";
+				$html .= $val;
+				$html .= "</td>";
+			}
+			$html .= "</tr>";
+		}
+
+		$html .= "</table>";
+		$html .= "</font>";
 		return $html;
 	}
 }

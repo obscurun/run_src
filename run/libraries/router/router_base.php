@@ -29,7 +29,7 @@ class RouterBase extends Levels{
 		$page_path = Config::PATH_PAG."view/". $page .".php";
 		if( 
 			( ((count(Router::$params)<=3 && $accept===false) || $accept===true) && file_exists($page_path) )
-			|| (Router::$useLanguage==true && file_exists($page_path))
+			|| (Run::$router->useLanguage==true && file_exists($page_path))
 		){
 			include($page_path);
 		}else if(self::$flagLoadedView404 != true){
