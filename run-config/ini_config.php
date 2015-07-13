@@ -75,14 +75,14 @@ class Config{
 //*******************************************************************************************************************************
 	function onStartConfig(){
 		switch($_SERVER['SERVER_NAME']){
-			case "127.0.0.1":
+			case "www.rafaelteixeira.com":
 									 //type			//id 				//host 				//database 			//schema		//user 			//password
-				Model::setConnection('mysql',		'default',			'localhost',		'run',				'', 			'run', 			'dev123'		);
+				Model::setConnection('mysql',		'default',			'localhost',		'rafael_run',		'', 			'rafael_run',	'dev123'		);
 				break;
 			default:
 									 //type			//id 				//host 				//database 			//schema		//user 			//password
 				Model::setConnection('mysql',		'default',			'localhost',		'run',				'', 			'root', 		'dev123'		);
-				Model::setConnection('mysql',		'runb',				'localhost',		'runb',				'', 			'root',			'dev123'		);
+				//Model::setConnection('mysql',		'runb',				'localhost',		'runb',				'', 			'root',			'dev123'		);
 				Model::setConnection('postgre',		'postgre',			'localhost',		'run',				'run', 			'postgres',		'dev'			);
 				Model::setConnection('postgre',		'postgre_form1',	'localhost',		'run_form1',		'public', 		'postgres',		'dev'			);
 				break;

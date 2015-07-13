@@ -14,23 +14,23 @@ class String{
 //*****************************************************************************************************************************
 	public function encodeFixUtf8($text){ // enconding para UTF-8
 		return $text;
-		return ForceUTF8\Encoding::fixUTF8($text);
+		return Encoding::fixUTF8($text);
 	}
 	//-------------------------------------------------------------------------------------------------------------------------
 	public function encodeUtf8($text){ // enconding para UTF-8
 		return $text;
-		return ForceUTF8\Encoding::toUTF8($text);
+		return Encoding::toUTF8($text);
 	}
 	//-------------------------------------------------------------------------------------------------------------------------
 	public function encodeIso($text){ // encoding para ISO 8859-1
 		return $text;
-		return ForceUTF8\Encoding::toLatin1($text);
+		return Encoding::toLatin1($text);
 	}
 	//-------------------------------------------------------------------------------------------------------------------------
 	public function encoding($text){ // encoding para ISO 8859-1
 		return $text;
-		if(strrpos(Run::ENCODING, "utf") != "") return ForceUTF8\Encoding::toUTF8($text);
-		else return ForceUTF8\Encoding::toLatin1($text);
+		if(strrpos(Run::ENCODING, "utf") != "") return Encoding::toUTF8($text);
+		else return Encoding::toLatin1($text);
 	}
 
 //*****************************************************************************************************************************

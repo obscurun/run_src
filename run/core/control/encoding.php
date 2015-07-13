@@ -37,7 +37,7 @@ POSSIBILITY OF SUCH DAMAGE.
  * @license  Revised BSD
   */
 
-namespace ForceUTF8;
+//namespace ForceUTF8;
 
 class Encoding {
 
@@ -252,7 +252,7 @@ class Encoding {
       }
       return $text;
     } elseif(is_string($text)) {
-      return static::utf8_decode($text, $option);
+      return self::utf8_decode($text, $option);
     } else {
       return $text;
     }
@@ -277,9 +277,9 @@ class Encoding {
     $last = "";
     while($last <> $text){
       $last = $text;
-      $text = self::toUTF8(static::utf8_decode($text, $option));
+      $text = self::toUTF8(self::utf8_decode($text, $option));
     }
-    $text = self::toUTF8(static::utf8_decode($text, $option));
+    $text = self::toUTF8(self::utf8_decode($text, $option));
     return $text;
   }
 

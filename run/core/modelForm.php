@@ -438,7 +438,7 @@ class modelForm{
 
 	public function exeDataRequests(){
 		// Executa método exeBeforeRequest usando na aplicação, trata os requests e unifica em DataForm e executa exeAfterRequest
-		$this->data  		= new FormModel\Data($this, $this->schema, $this->settings);
+		$this->data  		= new DataCheck($this, $this->schema, $this->settings);
 		$this->exeBeforeRequest();
 		$this->dataForm 	= $this->data->getRequests();
 		$this->dataIntern 	= $this->data->getDataInternal();

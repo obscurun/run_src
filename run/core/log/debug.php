@@ -128,8 +128,9 @@ class Debug{
 	//-------------------------------------------------------------------------------------------------------------------------	
 	public static function p($dado1, $dado2 = false){
 		if(!Run::$DEBUG_PRINT) return false;
-		$from0 = debug_backtrace(DEBUG_BACKTRACE_PROVIDE_OBJECT, 2)[0];
-		$from1 = debug_backtrace(DEBUG_BACKTRACE_PROVIDE_OBJECT, 2)[1];
+		$bt = debug_backtrace(DEBUG_BACKTRACE_PROVIDE_OBJECT, 2);
+		$from0 = $bt[0];
+		$from1 = $bt[1];
 		echo "<pre class='debug_php' style='background:rgba(0,0,0,.8); color:#fff; padding:15px; font-size:10px; line-height:10px;float:left;clear:both;padding-right:35px;'> <span class='d'>Debug: {$from1['class']} / Linha: {$from0['line']}</span> \r\n";
 		//print_r((debug_backtrace(DEBUG_BACKTRACE_PROVIDE_OBJECT, 3))); //array_reverse 
 		if(is_array($dado1)) print_r($dado1);
@@ -143,8 +144,9 @@ class Debug{
 	//-------------------------------------------------------------------------------------------------------------------------	
 	public static function print_r($dado1, $dado2 = false) {
 		if(!Run::$DEBUG_PRINT) return false;
-		$from0 = debug_backtrace(DEBUG_BACKTRACE_PROVIDE_OBJECT, 2)[0];
-		$from1 = debug_backtrace(DEBUG_BACKTRACE_PROVIDE_OBJECT, 2)[1];
+		$bt = debug_backtrace(DEBUG_BACKTRACE_PROVIDE_OBJECT, 2);
+		$from0 = $bt[0];
+		$from1 = $bt[1];
 		echo "<pre class='debug_php' style='background:rgba(0,0,0,.8); color:#fff; padding:15px; font-size:10px; line-height:10px;float:left;clear:both;padding-right:35px;'> <span class='d'>Debug: {$from1['class']} / Linha: {$from0['line']}</span> \r\n";
 		//print_r((debug_backtrace(DEBUG_BACKTRACE_PROVIDE_OBJECT, 3))); //array_reverse 
 		if(is_array($dado1)) print_r($dado1);

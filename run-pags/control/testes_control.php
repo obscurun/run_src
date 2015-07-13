@@ -26,7 +26,7 @@ class TestesController extends Router{
 		Run::$router->setTemplateData("title", "Envio Teste");
 		Run::loadHelper("mailManager/mailManager");
 		$send = new mailManager();
-		$send->setTo("rafael.teixeira@sccon.com.br")->setMessage("Mensagem de <b>teste</b>")->setSubject("Teste e-mail 10")->addMailList();//->send();
+		$send->setTo("rafael.teixeira@sccon.com.br")->setMessage("teste no servidor <b>teste</b>")->setSubject("mensagem de rafaelteixeira.com")->addMailList();//->send();
 		//$this->loadView("form1");
 	}
 	//-  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -

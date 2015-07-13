@@ -19,7 +19,7 @@
         <br clear="all" />
 		<div class=" blc-content">
 			<article class="col-lg-8">
-            <? Render::echoResponse(); ?>
+            <? Run::$view->render->echoResponse(); ?>
             <? $this->model->errors->echoErrorsResponse(5, 5); ?>
 			<div class="well bs-component">
                 <form action="<? $this->model->aux->echoAction(); ?>" method="POST" enctype="multipart/form-data" onsubmit="return orderMultipleIndex(this);" class="form-horizontal">
