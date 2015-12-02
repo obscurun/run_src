@@ -62,9 +62,9 @@ class check{
 		//-  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  - 
 		if(!array_key_exists('use_url_ref',				$settings)){ $settings['use_url_ref']			= true;				}
 		if(!array_key_exists('redirect',				$settings)){ $settings['redirect']				= "back";			}
-		if(!array_key_exists('redirect_insert',			$settings)){ $settings['redirect_insert']		= false;			}
-		if(!array_key_exists('redirect_update',			$settings)){ $settings['redirect_update']		= false;			}
-		if(!array_key_exists('redirect_delete',			$settings)){ $settings['redirect_delete']		= false;			}
+		if(!array_key_exists('redirect_insert',			$settings)){ $settings['redirect_insert']		= $settings['redirect'];			}
+		if(!array_key_exists('redirect_update',			$settings)){ $settings['redirect_update']		= $settings['redirect_insert'];			}
+		if(!array_key_exists('redirect_delete',			$settings)){ $settings['redirect_delete']		= $settings['redirect'];			}
 		//-  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  -  - 
 		if(!array_key_exists('list_edit_show',			$settings)){ $settings['list_edit_show']		= true;				}
 		if(!array_key_exists('list_edit_label',			$settings)){ $settings['list_edit_label']		= "Ações";			}
