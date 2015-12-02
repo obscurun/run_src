@@ -1,0 +1,9 @@
+{
+  "name": "Project",
+  "version": "0",
+  "description": "escopo do projeto",
+  "license": "MIT",
+  "dependencies": {
+    "bootstrap": "~3.3.2"
+  }
+}
